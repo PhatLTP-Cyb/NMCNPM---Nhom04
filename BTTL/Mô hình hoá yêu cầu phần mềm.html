@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#state -->
+<html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Học liệu tương tác về mô hình hoá yêu cầu phần mềm: sơ đồ use case, đặc tả use case, activity diagram, state chart diagram">
+  <title>Mô hình hoá yêu cầu phần mềm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+  <link href="./Mô hình hoá yêu cầu phần mềm_files/css2" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #fbf7ef;
+      --paper-strong: #fffdf8;
+      --surface: #f2e8da;
+      --surface-deep: #e8dac7;
+      --ink: #302821;
+      --ink-soft: #695b4f;
+      --coffee: #70472f;
+      --coffee-dark: #40281d;
+      --caramel: #c6813e;
+      --sage: #68765d;
+      --sage-soft: #e1e7db;
+      --rose: #a24b3d;
+      --rose-soft: #f3dfd9;
+      --line: #d9caba;
+      --shadow: 0 18px 46px rgba(64, 40, 29, 0.11);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 84px; font-size: clamp(17px, 0.6vw + 9px, 21px); }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: radial-gradient(circle at 7% 0%, rgba(198, 129, 62, 0.11), transparent 28rem), linear-gradient(180deg, #f5ede2, var(--paper) 32rem);
+      font-family: "Be Vietnam Pro", "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    .shell { width: min(1520px, calc(100% - 48px)); margin: 0 auto; }
+    h1, h2, h3 { font-family: "Lora", serif; color: var(--coffee-dark); line-height: 1.25; margin: 0; }
+    h3 { font-size: 1.08rem; margin-bottom: 8px; }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 0 0 12px; padding-left: 22px; }
+    li { margin-bottom: 4px; }
+    code { background: var(--surface); padding: 1px 6px; border-radius: 6px; font-size: 0.9em; }
+
+    /* điều hướng */
+    .nav {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(255, 253, 248, 0.92); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-in { width: min(1520px, calc(100% - 48px)); margin: 0 auto; display: flex; align-items: center; gap: 24px; height: 64px; }
+    .nav .brand { display: flex; align-items: center; gap: 10px; flex: none; color: var(--coffee-dark); font-weight: 800; font-size: 0.9rem; text-decoration: none; }
+    .nav .mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--coffee-dark); color: #fffaf3; font-family: "Lora", serif; font-size: 0.85rem; }
+    .nav .week { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--caramel); border: 1px solid var(--caramel); border-radius: 999px; padding: 1px 9px; }
+    .nav ul { list-style: none; display: flex; gap: 2px; margin: 0 0 0 auto; padding: 0; overflow-x: auto; scrollbar-width: none; }
+    .nav li { margin: 0; }
+    .nav a.lnk { position: relative; display: block; padding: 18px 12px; white-space: nowrap; color: var(--ink-soft); text-decoration: none; font-size: 0.86rem; font-weight: 600; }
+    .nav a.lnk i { font-style: normal; font-size: 0.7rem; font-weight: 800; color: var(--caramel); margin-right: 6px; }
+    .nav a.lnk:hover { color: var(--coffee-dark); }
+    .nav a.lnk.on { color: var(--coffee-dark); }
+    .nav a.lnk.on::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: var(--caramel); }
+    .nav .progress { position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--coffee); }
+    @media (max-width: 760px) { .nav .week, .nav .brand span.t { display: none; } .nav-in { gap: 10px; } }
+
+    .hero {
+      margin-top: 16px; padding: clamp(36px, 6vw, 64px);
+      border-radius: 28px; color: #fffaf3;
+      background: linear-gradient(120deg, #2f261f, #4d3022); box-shadow: var(--shadow);
+    }
+    .hero .eyebrow { color: #e5b784; }
+    .hero h1 { color: #fffaf3; font-size: clamp(2rem, 5vw, 3.4rem); margin: 8px 0 14px; }
+    .hero p { max-width: 720px; color: #eadccb; font-size: 1.05rem; margin: 0; }
+    .eyebrow { font-size: 0.76rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: var(--caramel); margin: 0 0 6px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+    .chip { padding: 5px 13px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.3); font-size: 0.84rem; font-weight: 600; color: #fffaf3; text-decoration: none; }
+    .chip:hover { background: rgba(255, 255, 255, 0.12); }
+
+    /* khối bài học */
+    .lesson { margin: 56px 0; }
+    .lh { display: grid; grid-template-columns: auto 1fr; gap: 4px 18px; align-items: baseline; margin-bottom: 22px; }
+    .lh .num { grid-row: 1 / span 2; font-family: "Lora", serif; font-size: 3.2rem; line-height: 1; color: var(--caramel); font-weight: 700; }
+    .lh h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); }
+    .lh .lead { grid-column: 2; color: var(--ink-soft); margin: 0; max-width: 820px; }
+
+    .card { background: var(--paper-strong); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; box-shadow: 0 6px 20px rgba(64, 40, 29, 0.05); }
+    .card.sage { background: var(--sage-soft); border-color: #c7d1bd; }
+    .card.rose { background: var(--rose-soft); border-color: #e4bfb5; }
+    .card h3 { margin-top: 0; }
+    .card :last-child { margin-bottom: 0; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .mt { margin-top: 18px; }
+
+    .btn {
+      border: 1px solid var(--coffee); background: var(--coffee); color: #fff; font: inherit; font-weight: 700; font-size: 0.88rem;
+      padding: 7px 16px; border-radius: 999px; cursor: pointer;
+    }
+    .ic { width: 1.1em; height: 1.1em; flex: none; vertical-align: -0.18em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; }
+    h3 .ic, .eyebrow .ic, .hint .ic { color: var(--caramel); margin-right: 0.4em; }
+    .card.sage h3 .ic { color: var(--sage); }
+    .card.rose h3 .ic { color: var(--rose); }
+    b > .ic, .fb > .ic { margin-right: 0.4em; }
+    .btn:hover:not(:disabled) { background: var(--coffee-dark); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn.ghost { background: var(--paper-strong); color: var(--coffee-dark); border-color: var(--line); }
+    .btn.ghost:hover:not(:disabled) { background: var(--surface); }
+
+    /* bước */
+    .steps-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .step-btn {
+      display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--paper-strong);
+      border-radius: 999px; padding: 5px 14px 5px 6px; font: inherit; font-size: 0.86rem; font-weight: 600; color: var(--ink-soft); cursor: pointer;
+    }
+    .step-btn b { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--surface); color: var(--coffee-dark); font-size: 0.78rem; }
+    .step-btn.done b { background: var(--sage); color: #fff; }
+    .step-btn.on { border-color: var(--coffee); color: var(--coffee-dark); background: var(--surface); }
+    .step-btn.on b { background: var(--coffee); color: #fff; }
+    .steps-nav { display: flex; gap: 8px; margin-bottom: 14px; }
+
+    .viz { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(340px, 1fr); gap: 22px; align-items: start; }
+    .canvas { background: var(--paper-strong); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; overflow: auto; box-shadow: 0 6px 20px rgba(64, 40, 29, 0.05); }
+    .canvas svg { display: block; width: 100%; height: auto; }
+    .viz.wide .canvas svg { max-height: calc(100vh - 130px); margin: 0 auto; }
+    .viz.wide .canvas { grid-column: 1 / -1; }
+    .viz.wide { grid-template-columns: 1fr 1fr; }
+    .viz.wide .side { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; align-items: start; position: static; }
+    .side { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 64px; }
+    .side .card { padding: 16px 18px; }
+    .side h3 { font-size: 1rem; }
+    .side ul { padding-left: 18px; font-size: 0.92rem; }
+    .side p { font-size: 0.93rem; }
+    .info { min-height: 96px; background: var(--surface); border-style: dashed; font-size: 0.92rem; }
+    .info .hint { color: var(--ink-soft); }
+    .tag { display: inline-block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 9px; border-radius: 999px; background: var(--coffee); color: #fff; margin-bottom: 6px; }
+
+    /* SVG */
+    svg text { font-family: "Be Vietnam Pro", "Noto Sans", sans-serif; font-size: 15px; fill: var(--ink); }
+    svg .small { font-size: 13px; }
+    svg .tiny { font-size: 12.5px; fill: var(--ink-soft); }
+    svg .ital { font-style: italic; fill: var(--ink-soft); }
+    svg .halo { paint-order: stroke; stroke: var(--paper-strong); stroke-width: 4px; stroke-linejoin: round; }
+    svg .bold { font-weight: 700; }
+    #ad-svg text { font-size: 16px; }
+    #ad-svg .small { font-size: 15px; }
+    #ad-svg .lane-head { font-size: 15px; }
+    .off { opacity: 0; pointer-events: none; }
+    [data-step], [data-kind] { transition: opacity 0.35s; }
+    .clickable { cursor: pointer; }
+    .clickable:hover .shape { fill: var(--surface); }
+    .clickable.sel .shape { stroke: var(--caramel); stroke-width: 3; }
+    @keyframes pulse { 0% { filter: drop-shadow(0 0 0 rgba(198, 129, 62, 0)); } 40% { filter: drop-shadow(0 0 7px rgba(198, 129, 62, 0.95)); } 100% { filter: drop-shadow(0 0 0 rgba(198, 129, 62, 0)); } }
+    .fresh { animation: pulse 1.2s ease-out 1; }
+    .uc-oval { fill: var(--paper-strong); stroke: var(--coffee); stroke-width: 1.6; }
+    .uc-boundary { fill: rgba(242, 232, 218, 0.45); stroke: var(--sage); stroke-width: 2; }
+    .actor-line { stroke: var(--ink); stroke-width: 2; fill: none; stroke-linecap: round; }
+    .actor-head { fill: var(--paper-strong); stroke: var(--ink); stroke-width: 2; }
+    .actor-ext .actor-line, .actor-ext .actor-head { stroke: var(--sage); }
+    .assoc { stroke: var(--ink-soft); stroke-width: 1.4; fill: none; }
+    .dep { stroke: var(--rose); stroke-width: 1.5; stroke-dasharray: 6 4; fill: none; }
+    .dep-label { fill: var(--rose); font-style: italic; font-size: 13px; }
+
+    .lane-band { fill: rgba(242, 232, 218, 0.4); stroke: var(--line); }
+    .lane-band.alt { fill: rgba(225, 231, 219, 0.45); }
+    .lane-head { fill: var(--coffee-dark); font-weight: 800; font-size: 14px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .act-box { fill: var(--paper-strong); stroke: var(--coffee); stroke-width: 1.6; }
+    .dec-box { fill: #fbf0dc; stroke: var(--caramel); stroke-width: 1.8; }
+    .ctl-dot { fill: var(--coffee-dark); }
+    .bar { fill: var(--coffee-dark); }
+    .flow { fill: none; stroke: var(--coffee-dark); stroke-width: 1.6; }
+    .flow.used { stroke: var(--sage); stroke-width: 3.2; }
+    .node-active .shape { fill: #f6dcb4 !important; stroke: var(--caramel); stroke-width: 3; }
+    .trace .shape, .trace.flow, .trace .bar { stroke: var(--rose) !important; stroke-width: 3.4 !important; }
+    .trace .bar { fill: var(--rose); }
+    .token { fill: var(--rose); stroke: #fff; stroke-width: 2; }
+
+    .st-box { fill: var(--paper-strong); stroke: var(--coffee); stroke-width: 1.8; }
+    .st-cur .st-box { fill: #d5e0c9; stroke: var(--sage); stroke-width: 3.4; }
+    .st-edge { fill: none; stroke: var(--coffee-dark); stroke-width: 1.6; }
+    .st-edge.fired { stroke: var(--rose); stroke-width: 3.6; }
+    .st-fin-ring { fill: none; stroke: var(--coffee-dark); stroke-width: 2; }
+    .ga { fill: var(--ink-soft); }
+
+    /* bảng */
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-strong); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { background: var(--surface); color: var(--coffee-dark); font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+
+    /* đặc tả */
+    .spec th { width: 190px; text-transform: none; font-size: 0.9rem; letter-spacing: 0; cursor: pointer; background: var(--surface); }
+    .spec tr:hover th { background: var(--surface-deep); }
+    .spec tr.sel th { background: var(--coffee); color: #fff; }
+    .spec tr.sel td { background: #fdf3e2; }
+    .spec ol { margin: 0; }
+    .spec li.hl, .spec .alt.hl { background: #f9d9a0; border-radius: 6px; }
+    .spec .alt { padding: 4px 8px; margin-bottom: 6px; border-left: 3px solid var(--caramel); border-radius: 0 6px 6px 0; cursor: pointer; }
+    .spec .alt b { color: var(--coffee-dark); }
+    .spec li { padding: 2px 6px; }
+
+    /* sai và đúng */
+    .fix { display: grid; grid-template-columns: 1fr auto; gap: 10px 16px; align-items: center; padding: 14px 18px; background: var(--paper-strong); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 10px; }
+    .fix .bad { color: var(--rose); font-weight: 600; }
+    .fix .good { grid-column: 1 / -1; display: none; background: var(--sage-soft); border-radius: 10px; padding: 10px 14px; font-size: 0.93rem; }
+    .fix.open .good { display: block; }
+
+    /* ý nghĩa */
+    .hot { background: #f9e3bd; border-bottom: 2px solid var(--caramel); border-radius: 4px; padding: 0 3px; cursor: pointer; font-weight: 600; }
+    .hot.on { background: var(--caramel); color: #fff; }
+    .req-text { font-size: 1.12rem; line-height: 1.95; }
+    .pipeline { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; margin-top: 18px; }
+    .pipe { flex: 1 1 200px; padding: 14px 16px; border-radius: 14px; background: var(--paper-strong); border: 1px solid var(--line); text-decoration: none; color: inherit; }
+    .pipe:hover { background: var(--surface); }
+    .pipe b { display: block; color: var(--coffee-dark); }
+    .pipe span { font-size: 0.86rem; color: var(--ink-soft); }
+    .pipe .q { font-style: italic; }
+
+    /* mô phỏng */
+    .sim { display: grid; gap: 12px; }
+    .sim-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .log { list-style: none; padding: 0; margin: 0; font-size: 0.88rem; max-height: 220px; overflow: auto; }
+    .log li { padding: 4px 8px; border-bottom: 1px dashed var(--line); margin: 0; }
+    .log li.err { color: var(--rose); font-weight: 600; }
+    .log li.ok { color: var(--sage); font-weight: 600; }
+    .evt-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .evt-grid .btn { text-align: left; border-radius: 12px; font-size: 0.82rem; padding: 6px 10px; }
+    .cur-state { font-family: "Lora", serif; font-size: 1.25rem; color: var(--coffee-dark); font-weight: 700; }
+    label.chk { display: flex; gap: 8px; align-items: flex-start; font-size: 0.88rem; cursor: pointer; }
+    tr.fired td { background: #f9d9a0; }
+
+    /* câu hỏi */
+    .quiz-q { padding: 16px 20px; background: var(--paper-strong); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 12px; }
+    .quiz-q p { font-weight: 600; }
+    .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+    .opt.right { background: var(--sage); border-color: var(--sage); color: #fff; }
+    .opt.wrong { background: var(--rose); border-color: var(--rose); color: #fff; }
+    .fb { margin-top: 10px; font-size: 0.9rem; display: none; }
+    .quiz-q.done .fb { display: block; }
+    .score { font-weight: 700; color: var(--coffee-dark); }
+
+    footer { margin: 60px 0 40px; color: var(--ink-soft); font-size: 0.85rem; text-align: center; }
+
+    @media (max-width: 960px) {
+      .viz, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .grid-5 { grid-template-columns: 1fr 1fr; }
+      .side, .viz.wide .side { position: static; }
+      .viz.wide .side { grid-template-columns: 1fr; }
+      .spec th { width: 120px; }
+    }
+    @media print {
+      .nav, .steps-nav, .btn { display: none; }
+      .side { position: static; }
+    }
+  </style>
+</head>
+<body>
+<nav class="nav" id="nav">
+  <div class="nav-in">
+    <a class="brand" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#top"><span class="mark">SE</span><span class="t">Công nghệ phần mềm</span><span class="week">Tuần 4</span></a>
+    <ul>
+      <li><a class="lnk on" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#y-nghia"><i>01</i>Ý nghĩa</a></li>
+      <li><a class="lnk" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#usecase"><i>02</i>Use case</a></li>
+      <li><a class="lnk" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#dac-ta"><i>03</i>Đặc tả</a></li>
+      <li><a class="lnk" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#activity"><i>04</i>Activity</a></li>
+      <li><a class="lnk" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#state"><i>05</i>State chart</a></li>
+      <li><a class="lnk" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#tong-ket"><i>06</i>So sánh</a></li>
+    </ul>
+  </div>
+  <div class="progress" id="progress" style="width: 0%;"></div>
+</nav>
+<div class="shell" id="top">
+
+  <header class="hero">
+    <p class="eyebrow">Bài giảng tương tác</p>
+    <h1>Mô hình hoá yêu cầu phần mềm</h1>
+    <p>Bốn mô hình dùng để đặc tả yêu cầu, áp dụng vào cùng một bài toán: hệ thống đặt lịch khám của phòng khám An Tâm. Mỗi mô hình được dựng từng bước và có phần để thao tác trên sơ đồ.</p>
+    <div class="chips">
+      <a class="chip" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#usecase">Sơ đồ use case</a>
+      <a class="chip" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#dac-ta">Đặc tả use case</a>
+      <a class="chip" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#activity">Activity diagram</a>
+      <a class="chip" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#state">State chart diagram</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- 01 Ý NGHĨA -->
+    <section class="lesson" id="y-nghia">
+      <div class="lh">
+        <span class="num">01</span>
+        <h2>Ý nghĩa của mô hình hoá yêu cầu</h2>
+        <p class="lead">Mô hình hoá là biểu diễn yêu cầu bằng ký pháp có quy tắc, bổ sung cho văn bản tự nhiên.</p>
+      </div>
+
+      <div class="viz">
+        <div class="card">
+          <p class="eyebrow"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"></path> <path d="m5.1 8-2.9-.8"></path> <path d="m6 12-1.9 2"></path> <path d="M7.2 2.2 8 5.1"></path> <path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"></path></svg>Thao tác</p>
+          <h3>Đọc một đoạn yêu cầu bằng văn bản</h3>
+          <p>Nhấn vào các cụm được tô màu để xem đoạn văn còn thiếu thông tin gì.</p>
+          <p class="req-text" id="req-text">
+            <span class="hot on" data-k="0">Bệnh nhân hoặc nhân viên tiếp nhận</span> có thể <span class="hot" data-k="1">đặt lịch khám</span> với một bác sĩ.
+            <span class="hot" data-k="2">Nếu bác sĩ nghỉ đột xuất</span>, phòng khám phải báo cho bệnh nhân.
+            Lịch hẹn có thể <span class="hot" data-k="3">huỷ hoặc đổi trước giờ khám</span>.
+            Khi đến phòng khám, bệnh nhân <span class="hot" data-k="4">làm thủ tục tiếp nhận rồi chờ bác sĩ gọi</span>.
+          </p>
+        </div>
+        <aside class="side">
+          <div class="card info" id="req-info"><span class="tag">Câu hỏi còn bỏ ngỏ</span><p>Ai được đặt lịch? Còn vai trò nào khác dùng hệ thống, như bác sĩ hoặc quản lý?</p><p><b>Mô hình trả lời:</b> Sơ đồ use case</p><p style="color:var(--ink-soft)">Mỗi vai trò là một actor. Use case nào không nối với actor nào cho thấy còn thiếu vai trò.</p></div>
+        </aside>
+      </div>
+
+      <div class="grid-5 mt" id="benefits"><div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"></path> <path d="M7 11h10"></path> <path d="M7 15h6"></path> <path d="M7 7h8"></path></svg>Ngôn ngữ chung</h3><p style="font-size:.9rem">Bác sĩ, lập trình viên và quản lý cùng đọc một sơ đồ theo cùng một cách.</p></div><div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"></path> <circle cx="11" cy="11" r="8"></circle></svg>Lộ thiếu sót sớm</h3><p style="font-size:.9rem">Không vẽ được một nhánh hoặc không điền được một mục nghĩa là yêu cầu còn thiếu. Phát hiện ở giai đoạn này thì chưa có mã nào phải sửa lại.</p></div><div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path> <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path> <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></svg>Nhiều góc nhìn</h3><p style="font-size:.9rem">Use case cho phạm vi, activity cho trình tự, state chart cho vòng đời. Mỗi góc làm lộ một loại vấn đề khác nhau.</p></div><div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2"></path> <rect x="14" y="2" width="8" height="8" rx="1"></rect></svg>Cơ sở cho bước sau</h3><p style="font-size:.9rem">Mỗi luồng trong đặc tả có thể thành một ca kiểm thử. Các trạng thái của lịch hẹn trở thành giá trị của cột trạng thái trong cơ sở dữ liệu.</p></div><div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6" r="3"></circle> <path d="M5 9v12"></path> <circle cx="19" cy="18" r="3"></circle> <path d="m15 9-3-3 3-3"></path> <path d="M12 6h5a2 2 0 0 1 2 2v7"></path></svg>Đánh giá thay đổi</h3><p style="font-size:.9rem">Khi yêu cầu đổi, nhìn mô hình biết use case, luồng và trạng thái nào bị ảnh hưởng.</p></div></div>
+
+      <div class="grid-2 mt">
+        <div class="card sage">
+          <h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle> <path d="m16 9-5.5 5.5L8 12"></path></svg>Mô hình có giá trị khi</h3>
+          <ul>
+            <li>Mức chi tiết phù hợp với người đọc: khách hàng cần ít chi tiết hơn nhóm phát triển.</li>
+            <li>Stakeholder đọc hiểu và xác nhận được.</li>
+            <li>Các mô hình khớp nhau, và mỗi phần chỉ ra được yêu cầu gốc của nó.</li>
+          </ul>
+        </div>
+        <div class="card rose">
+          <h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle> <path d="M12 16v-4"></path> <path d="M12 8h.01"></path></svg>Giới hạn cần biết</h3>
+          <ul>
+            <li>Mô hình chức năng không ghi được yêu cầu phi chức năng như hiệu năng, bảo mật. Những yêu cầu này vẫn cần văn bản.</li>
+            <li>Sơ đồ không ai đọc thì không có giá trị. Chỉ vẽ khi sơ đồ trả lời một câu hỏi cụ thể.</li>
+            <li>Sơ đồ đẹp chưa chắc đúng. Cần đối chiếu với stakeholder.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="mt">Bốn mô hình và câu hỏi mỗi mô hình trả lời</h3>
+      <div class="pipeline">
+        <a class="pipe" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#usecase"><b>1. Sơ đồ use case</b><span class="q">Ai dùng hệ thống để đạt mục tiêu gì?</span></a>
+        <a class="pipe" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#dac-ta"><b>2. Đặc tả use case</b><span class="q">Mỗi use case gồm những bước nào, và xử lý ra sao khi có sự cố?</span></a>
+        <a class="pipe" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#activity"><b>3. Activity diagram</b><span class="q">Công việc diễn ra theo thứ tự nào, ai làm, việc nào làm song song?</span></a>
+        <a class="pipe" href="https://pub.nndkhoa9.win/intro2se/w4/software-modeling.html#state"><b>4. State chart diagram</b><span class="q">Đối tượng có những trạng thái nào, và sự kiện nào làm nó đổi trạng thái?</span></a>
+      </div>
+    </section>
+
+    <!-- 02 USE CASE -->
+    <section class="lesson" id="usecase">
+      <div class="lh">
+        <span class="num">02</span>
+        <h2>Sơ đồ use case</h2>
+        <p class="lead">Sơ đồ use case cho biết ai dùng hệ thống và dùng để làm gì. Sơ đồ không mô tả thứ tự các bước.</p>
+      </div>
+      <div id="uc-stepper"><div class="steps-row"><button class="step-btn on"><b>1</b><span>Actor</span></button><button class="step-btn"><b>2</b><span>Use case</span></button><button class="step-btn"><b>3</b><span>Ranh giới</span></button><button class="step-btn"><b>4</b><span>Association</span></button><button class="step-btn"><b>5</b><span>Include, extend</span></button></div><div class="steps-nav"><button class="btn ghost" data-d="-1" disabled=""><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>Bước trước</button><button class="btn" data-d="1">Bước sau<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button></div></div>
+      <div class="viz wide">
+        <div class="canvas"><svg id="uc-svg" viewBox="0 0 960 530" role="img" aria-label="Sơ đồ use case hệ thống đặt lịch khám"><defs>
+    <marker id="uc-open" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#a24b3d" stroke-width="1.4"></path></marker>
+    <marker id="uc-fill" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="#40281d"></path></marker>
+  </defs><g data-step="3" class="clickable off"><rect x="220" y="20" width="560" height="490" rx="14" class="uc-boundary shape"></rect><text x="236" text-anchor="start" class="bold" y="47"><tspan x="236" dy="0">Hệ thống đặt lịch khám phòng khám An Tâm</tspan></text></g><g data-step="2" class="clickable off"><ellipse cx="350" cy="90" rx="100" ry="31" class="uc-oval shape"></ellipse><text x="350" text-anchor="middle" class="" y="95"><tspan x="350" dy="0">Đặt lịch khám</tspan></text></g><g data-step="2" class="clickable off"><ellipse cx="350" cy="180" rx="100" ry="31" class="uc-oval shape"></ellipse><text x="350" text-anchor="middle" class="" y="185"><tspan x="350" dy="0">Đổi lịch khám</tspan></text></g><g data-step="2" class="clickable off"><ellipse cx="350" cy="270" rx="100" ry="31" class="uc-oval shape"></ellipse><text x="350" text-anchor="middle" class="" y="275"><tspan x="350" dy="0">Huỷ lịch khám</tspan></text></g><g data-step="2" class="clickable off"><ellipse cx="350" cy="360" rx="100" ry="31" class="uc-oval shape"></ellipse><text x="350" text-anchor="middle" class="" y="365"><tspan x="350" dy="0">Xác nhận lịch hẹn</tspan></text></g><g data-step="2" class="clickable off"><ellipse cx="350" cy="450" rx="100" ry="31" class="uc-oval shape"></ellipse><text x="350" text-anchor="middle" class="" y="455"><tspan x="350" dy="0">Check-in bệnh nhân</tspan></text></g><g data-step="2" class="clickable off"><ellipse cx="660" cy="90" rx="100" ry="31" class="uc-oval shape"></ellipse><text x="660" text-anchor="middle" class="" y="87"><tspan x="660" dy="0">Đăng ký hồ sơ</tspan><tspan x="660" dy="16">bệnh nhân mới</tspan></text></g><g data-step="2" class="clickable off"><ellipse cx="660" cy="180" rx="100" ry="31" class="uc-oval shape"></ellipse><text x="660" text-anchor="middle" class="" y="185"><tspan x="660" dy="0">Xem khung giờ trống</tspan></text></g><g data-step="2" class="clickable off"><ellipse cx="660" cy="360" rx="100" ry="31" class="uc-oval shape"></ellipse><text x="660" text-anchor="middle" class="" y="365"><tspan x="660" dy="0">Gửi thông báo SMS</tspan></text></g><g data-step="2" class="clickable off"><ellipse cx="660" cy="450" rx="100" ry="31" class="uc-oval shape"></ellipse><text x="660" text-anchor="middle" class="" y="447"><tspan x="660" dy="0">Xem danh sách</tspan><tspan x="660" dy="16">khám trong ngày</tspan></text></g><g class="clickable fresh" data-step="1"><rect x="46" y="142" width="88" height="86" fill="transparent" class="shape" style="fill: transparent;"></rect><circle cx="90" cy="156" r="10" class="actor-head"></circle><path d="M90 166V196M72 176H108M90 196L76 222M90 196L104 222" class="actor-line"></path><text x="90" text-anchor="middle" class="small bold" y="242"><tspan x="90" dy="0">Bệnh nhân</tspan></text></g><g class="clickable fresh" data-step="1"><rect x="46" y="342" width="88" height="102" fill="transparent" class="shape" style="fill: transparent;"></rect><circle cx="90" cy="356" r="10" class="actor-head"></circle><path d="M90 366V396M72 376H108M90 396L76 422M90 396L104 422" class="actor-line"></path><text x="90" text-anchor="middle" class="small bold" y="442"><tspan x="90" dy="0">Nhân viên</tspan><tspan x="90" dy="15">tiếp nhận</tspan></text></g><g class="actor-ext clickable fresh" data-step="1"><rect x="826" y="257" width="88" height="102" fill="transparent" class="shape" style="fill: transparent;"></rect><circle cx="870" cy="271" r="10" class="actor-head"></circle><path d="M870 281V311M852 291H888M870 311L856 337M870 311L884 337" class="actor-line"></path><text x="870" text-anchor="middle" class="small bold" y="357"><tspan x="870" dy="0">«hệ thống»</tspan><tspan x="870" dy="15">Cổng SMS</tspan></text></g><g class="clickable fresh" data-step="1"><rect x="826" y="407" width="88" height="86" fill="transparent" class="shape" style="fill: transparent;"></rect><circle cx="870" cy="421" r="10" class="actor-head"></circle><path d="M870 431V461M852 441H888M870 461L856 487M870 461L884 487" class="actor-line"></path><text x="870" text-anchor="middle" class="small bold" y="507"><tspan x="870" dy="0">Bác sĩ</tspan></text></g><g data-step="4" class="clickable off"><line x1="110" y1="178" x2="250" y2="90" class="assoc"></line><line x1="110" y1="178" x2="250" y2="90" stroke="transparent" stroke-width="12"></line></g><g data-step="4" class="clickable off"><line x1="110" y1="178" x2="250" y2="180" class="assoc"></line><line x1="110" y1="178" x2="250" y2="180" stroke="transparent" stroke-width="12"></line></g><g data-step="4" class="clickable off"><line x1="110" y1="178" x2="250" y2="270" class="assoc"></line><line x1="110" y1="178" x2="250" y2="270" stroke="transparent" stroke-width="12"></line></g><g data-step="4" class="clickable off"><line x1="110" y1="378" x2="250" y2="90" class="assoc"></line><line x1="110" y1="378" x2="250" y2="90" stroke="transparent" stroke-width="12"></line></g><g data-step="4" class="clickable off"><line x1="110" y1="378" x2="250" y2="180" class="assoc"></line><line x1="110" y1="378" x2="250" y2="180" stroke="transparent" stroke-width="12"></line></g><g data-step="4" class="clickable off"><line x1="110" y1="378" x2="250" y2="270" class="assoc"></line><line x1="110" y1="378" x2="250" y2="270" stroke="transparent" stroke-width="12"></line></g><g data-step="4" class="clickable off"><line x1="110" y1="378" x2="250" y2="360" class="assoc"></line><line x1="110" y1="378" x2="250" y2="360" stroke="transparent" stroke-width="12"></line></g><g data-step="4" class="clickable off"><line x1="110" y1="378" x2="250" y2="450" class="assoc"></line><line x1="110" y1="378" x2="250" y2="450" stroke="transparent" stroke-width="12"></line></g><g data-step="4" class="clickable off"><line x1="850" y1="443" x2="760" y2="450" class="assoc"></line><line x1="850" y1="443" x2="760" y2="450" stroke="transparent" stroke-width="12"></line></g><g data-step="4" class="clickable off"><line x1="850" y1="293" x2="760" y2="360" class="assoc"></line><line x1="850" y1="293" x2="760" y2="360" stroke="transparent" stroke-width="12"></line></g><g data-step="5" class="clickable off"><line x1="422.98923874513235" y1="111.19042415181262" x2="587.0107612548677" y2="158.8095758481874" class="dep" marker-end="url(#uc-open)"></line><line x1="422.98923874513235" y1="111.19042415181262" x2="587.0107612548677" y2="158.8095758481874" stroke="transparent" stroke-width="12"></line><text x="505" text-anchor="middle" class="dep-label halo" y="127"><tspan x="505" dy="0">«include»</tspan></text></g><g data-step="5" class="clickable off"><line x1="450" y1="180" x2="560" y2="180" class="dep" marker-end="url(#uc-open)"></line><line x1="450" y1="180" x2="560" y2="180" stroke="transparent" stroke-width="12"></line><text x="505" text-anchor="middle" class="dep-label halo" y="172"><tspan x="505" dy="0">«include»</tspan></text></g><g data-step="5" class="clickable off"><line x1="450" y1="360" x2="560" y2="360" class="dep" marker-end="url(#uc-open)"></line><line x1="450" y1="360" x2="560" y2="360" stroke="transparent" stroke-width="12"></line><text x="505" text-anchor="middle" class="dep-label halo" y="352"><tspan x="505" dy="0">«include»</tspan></text></g><g data-step="5" class="clickable off"><line x1="422.98923874513235" y1="291.19042415181264" x2="587.0107612548677" y2="338.80957584818736" class="dep" marker-end="url(#uc-open)"></line><line x1="422.98923874513235" y1="291.19042415181264" x2="587.0107612548677" y2="338.80957584818736" stroke="transparent" stroke-width="12"></line><text x="505" text-anchor="middle" class="dep-label halo" y="307"><tspan x="505" dy="0">«include»</tspan></text></g><g data-step="5" class="clickable off"><line x1="560" y1="90" x2="450" y2="90" class="dep" marker-end="url(#uc-open)"></line><line x1="560" y1="90" x2="450" y2="90" stroke="transparent" stroke-width="12"></line><text x="505" text-anchor="middle" class="dep-label halo" y="82"><tspan x="505" dy="0">«extend»</tspan></text><text x="505" text-anchor="middle" class="dep-label halo" y="106"><tspan x="505" dy="0">[chưa có hồ sơ]</tspan></text></g></svg></div>
+        <aside class="side">
+          <div class="card" id="uc-text"><span class="tag">Actor</span><h3>Xác định actor</h3><p>Tìm những vai trò hoặc hệ thống bên ngoài tương tác trực tiếp với hệ thống: bệnh nhân, nhân viên tiếp nhận, bác sĩ và cổng SMS. Quản lý phòng khám là stakeholder nhưng chưa thao tác trực tiếp trong phạm vi này, nên chưa là actor.</p><p style="margin-bottom:4px"><b><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle> <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path> <path d="M12 17h.01"></path></svg>Tự hỏi ở bước này</b></p><ul><li>Ai khởi động một chức năng?</li><li>Ai nhận kết quả hoặc thông báo?</li><li>Hệ thống nào bên ngoài mà phần mềm phải gọi?</li></ul></div>
+          <div class="card info" id="uc-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"></path> <path d="m5.1 8-2.9-.8"></path> <path d="m6 12-1.9 2"></path> <path d="M7.2 2.2 8 5.1"></path> <path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"></path></svg>Nhấn vào actor, use case, ranh giới hoặc đường nối để xem giải thích.</p></div>
+        </aside>
+      </div>
+
+      <h3 class="mt">Các mục cần quan tâm</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Phần tử</th><th>Quy ước</th><th>Câu hỏi tự kiểm tra</th></tr></thead>
+          <tbody>
+            <tr><td><b>Actor</b></td><td>Vai trò nằm ngoài hệ thống, vẽ hình người. Hệ thống ngoài cũng là actor. Tên là danh từ chỉ vai trò.</td><td>Có vai trò nào dùng hệ thống mà chưa được vẽ? Tên có phải vai trò, không phải tên một người cụ thể?</td></tr>
+            <tr><td><b>Use case</b></td><td>Hình elip chứa tên. Tên gồm động từ và đối tượng. Mỗi use case là một mục tiêu trọn vẹn của actor.</td><td>Kết thúc use case, actor có đạt được kết quả có giá trị không? Tên có quá nhỏ (nhập một trường) hoặc quá lớn (quản lý toàn bộ) không?</td></tr>
+            <tr><td><b>Ranh giới hệ thống</b></td><td>Hình chữ nhật bao các use case. Actor nằm ngoài.</td><td>Phần nào hệ thống phải xây, phần nào đã có sẵn?</td></tr>
+            <tr><td><b>Association</b></td><td>Đường thẳng nối actor với use case. Không có mũi tên, không thể hiện luồng dữ liệu.</td><td>Use case nào chưa có actor? Actor nào chưa nối với use case?</td></tr>
+            <tr><td><b>Include</b></td><td>Mũi tên đứt nét từ use case gốc đến use case được bao gồm. Use case được bao gồm chạy mỗi khi use case gốc chạy, thường tách ra để dùng chung.</td><td>Hành vi này có nằm trong nhiều use case không? Use case gốc có chạy được khi thiếu nó không?</td></tr>
+            <tr><td><b>Extend</b></td><td>Mũi tên đứt nét từ use case mở rộng đến use case gốc. Phần mở rộng chỉ chạy khi điều kiện đúng.</td><td>Điều kiện ghi ở đâu? Use case gốc có trọn vẹn khi không có phần mở rộng không?</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-2 mt">
+        <div class="card rose">
+          <h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path> <path d="M12 9v4"></path> <path d="M12 17h.01"></path></svg>Lỗi thường gặp</h3>
+          <ul>
+            <li>Vẽ use case theo thao tác kỹ thuật (Thêm, Sửa, Xoá) thay vì mục tiêu của actor.</li>
+            <li>Nhầm stakeholder với actor. Quản lý phòng khám quan tâm đến hệ thống nhưng chưa thao tác trực tiếp, nên chưa là actor.</li>
+            <li>Vẽ ngược chiều mũi tên include và extend.</li>
+            <li>Dùng include và extend để chia use case thành các bước. Các bước thuộc về đặc tả, không thuộc sơ đồ.</li>
+            <li>Vẽ hàng chục use case trên một trang. Nên nhóm theo gói hoặc theo actor.</li>
+          </ul>
+        </div>
+        <div class="card sage">
+          <h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"></path> <path d="M13 12h8"></path> <path d="M13 19h8"></path> <path d="m3 17 2 2 4-4"></path> <path d="m3 7 2 2 4-4"></path></svg>Cách dựng từ tình huống</h3>
+          <ol>
+            <li>Gạch chân danh từ chỉ người và hệ thống ngoài trong lời stakeholder để tìm actor.</li>
+            <li>Gạch chân động từ chỉ mục tiêu để tìm use case.</li>
+            <li>Với mỗi actor, hỏi: muốn đạt điều gì, cần thông tin gì, muốn được báo khi nào.</li>
+            <li>Rà lại: mỗi use case có ít nhất một actor, mỗi actor có ít nhất một use case.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 ĐẶC TẢ USE CASE -->
+    <section class="lesson" id="dac-ta">
+      <div class="lh">
+        <span class="num">03</span>
+        <h2>Đặc tả use case</h2>
+        <p class="lead">Mỗi use case trong sơ đồ được mô tả chi tiết bằng một bản đặc tả theo mẫu. Sơ đồ cho biết hệ thống làm gì. Đặc tả cho biết người dùng và hệ thống trao đổi với nhau thế nào.</p>
+      </div>
+      <div class="viz">
+        <div class="table-wrap">
+          <table class="spec" id="spec-table"><tbody><tr><th>Mã và tên</th><td>UC-01 Đặt lịch khám</td></tr><tr><th>Mô tả tóm tắt</th><td>Cho phép bệnh nhân hoặc nhân viên tiếp nhận đặt lịch khám với một bác sĩ vào một khung giờ còn trống.</td></tr><tr><th>Actor chính</th><td>Bệnh nhân; Nhân viên tiếp nhận (đặt thay cho bệnh nhân).</td></tr><tr><th>Actor phụ</th><td>Không có. Cổng SMS chỉ tham gia ở UC-08 Gửi thông báo SMS.</td></tr><tr><th>Kích hoạt</th><td>Người dùng chọn chức năng đặt lịch khám.</td></tr><tr><th>Tiền điều kiện</th><td>Người dùng đã đăng nhập. Bác sĩ có lịch làm việc đã công bố cho các ngày sắp tới.</td></tr><tr><th>Hậu điều kiện (thành công)</th><td>Một lịch hẹn mới tồn tại ở trạng thái “Chờ xác nhận”. Khung giờ được giữ cho bệnh nhân.</td></tr><tr><th>Hậu điều kiện (thất bại)</th><td>Không có lịch hẹn mới. Khung giờ không bị giữ.</td></tr><tr><th>Luồng chính</th><td><ol><li>Hệ thống hiển thị danh sách chuyên khoa.</li><li>Người dùng chọn một chuyên khoa.</li><li class="">Hệ thống hiển thị bác sĩ và khung giờ còn trống của chuyên khoa (thực hiện UC-06 Xem khung giờ trống).</li><li>Người dùng chọn một bác sĩ và một khung giờ.</li><li class="">Hệ thống kiểm tra bệnh nhân đã có hồ sơ.</li><li>Người dùng nhập lý do khám và xác nhận đặt lịch.</li><li class="">Hệ thống kiểm tra khung giờ vẫn còn trống.</li><li>Hệ thống tạo lịch hẹn ở trạng thái “Chờ xác nhận” và giữ khung giờ.</li><li>Hệ thống hiển thị mã lịch hẹn cho người dùng và đưa lịch hẹn vào hàng chờ xác nhận. Use case kết thúc.</li></ol></td></tr><tr><th>Luồng thay thế</th><td><div class="alt"><b>3a.</b> <i>Chuyên khoa không còn khung giờ trống:</i> Hệ thống thông báo và gợi ý ngày gần nhất còn chỗ. Quay về bước 2.</div><div class="alt"><b>5a.</b> <i>Bệnh nhân chưa có hồ sơ:</i> Hệ thống thực hiện UC-07 Đăng ký hồ sơ bệnh nhân mới, sau đó tiếp tục ở bước 6.</div><div class="alt"><b>7a.</b> <i>Khung giờ vừa bị người khác đặt:</i> Hệ thống thông báo và gợi ý lựa chọn khác. Quay về bước 2.</div></td></tr><tr><th>Luồng ngoại lệ</th><td>8a. Hệ thống không lưu được lịch hẹn (lỗi cơ sở dữ liệu): hệ thống thông báo lỗi, không giữ khung giờ, use case kết thúc thất bại.</td></tr><tr><th>Quy tắc nghiệp vụ</th><td>BR-01: mỗi bệnh nhân có tối đa 2 lịch hẹn ở trạng thái “Chờ xác nhận” hoặc “Đã xác nhận”. BR-02: chỉ đặt lịch cho khung giờ cách hiện tại ít nhất 2 giờ. (Giả định của ví dụ.)</td></tr><tr><th>Yêu cầu phi chức năng</th><td>Bước 3 hiển thị kết quả trong vòng 2 giây với 95% yêu cầu. (Giả định của ví dụ.)</td></tr><tr><th>Include, extend</th><td>Include: UC-06 Xem khung giờ trống (bước 3). Extend: UC-07 Đăng ký hồ sơ bệnh nhân mới (điểm mở rộng ở bước 5).</td></tr></tbody></table>
+        </div>
+        <aside class="side">
+          <div class="card info" id="spec-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"></path> <path d="m5.1 8-2.9-.8"></path> <path d="m6 12-1.9 2"></path> <path d="M7.2 2.2 8 5.1"></path> <path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"></path></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card">
+            <h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"></path> <path d="M13 12h8"></path> <path d="M13 19h8"></path> <path d="m3 17 2 2 4-4"></path> <path d="m3 7 2 2 4-4"></path></svg>Quy ước đánh số</h3>
+            <ul>
+              <li>Luồng chính đánh số 1, 2, 3.</li>
+              <li>Luồng thay thế lấy số bước rẽ nhánh cộng chữ cái: <code>3a</code>, <code>5a</code>.</li>
+              <li>Luồng thay thế ghi rõ quay về bước nào hoặc kết thúc ra sao.</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+
+      <h3 class="mt">Viết bước cho đúng</h3>
+      <p>Dưới đây là năm câu viết bước hay sai. Nhấn vào từng câu để xem bản sửa và lý do.</p>
+      <div id="fixes"><div class="fix" id="fix0"><div class="bad">Hệ thống lưu thông tin vào bảng appointments trong cơ sở dữ liệu.</div><button class="btn ghost" data-i="0"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path> <circle cx="12" cy="12" r="3"></circle></svg>Xem bản sửa</button><div class="good"><b>Sửa thành:</b> Hệ thống tạo lịch hẹn ở trạng thái “Chờ xác nhận”.<br><span style="color:var(--ink-soft)">Đặc tả mô tả hành vi nhìn thấy được, không nêu cách cài đặt. Cách lưu dữ liệu thuộc về thiết kế.</span></div></div><div class="fix" id="fix1"><div class="bad">Người dùng bấm nút “Đặt lịch” màu xanh ở góc phải màn hình.</div><button class="btn ghost" data-i="1"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path> <circle cx="12" cy="12" r="3"></circle></svg>Xem bản sửa</button><div class="good"><b>Sửa thành:</b> Người dùng chọn chức năng đặt lịch khám.<br><span style="color:var(--ink-soft)">Giao diện có thể đổi mà yêu cầu không đổi. Mô tả giao diện thuộc về tài liệu thiết kế giao diện.</span></div></div><div class="fix" id="fix2"><div class="bad">Hệ thống kiểm tra và xử lý các trường hợp lỗi.</div><button class="btn ghost" data-i="2"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path> <circle cx="12" cy="12" r="3"></circle></svg>Xem bản sửa</button><div class="good"><b>Sửa thành:</b> 7a. Khung giờ đã được người khác đặt: hệ thống thông báo và gợi ý lựa chọn khác, quay về bước 2.<br><span style="color:var(--ink-soft)">Câu gốc không nói lỗi nào và xử lý ra sao, nên không viết được ca kiểm thử. Mỗi lỗi cần điều kiện, hành động và bước quay về.</span></div></div><div class="fix" id="fix3"><div class="bad">Bệnh nhân nhập thông tin, hệ thống xử lý rồi thông báo kết quả.</div><button class="btn ghost" data-i="3"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path> <circle cx="12" cy="12" r="3"></circle></svg>Xem bản sửa</button><div class="good"><b>Sửa thành:</b> Bước 6: Người dùng nhập lý do khám và xác nhận. Bước 7: Hệ thống kiểm tra khung giờ. Bước 8: Hệ thống tạo lịch hẹn.<br><span style="color:var(--ink-soft)">Mỗi bước chỉ có một chủ thể và một hành động. Gộp việc của hai bên vào một câu thì không rõ ai chịu trách nhiệm.</span></div></div><div class="fix" id="fix4"><div class="bad">Hệ thống phải phản hồi nhanh.</div><button class="btn ghost" data-i="4"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path> <circle cx="12" cy="12" r="3"></circle></svg>Xem bản sửa</button><div class="good"><b>Sửa thành:</b> Bước 3 hiển thị kết quả trong vòng 2 giây với 95% yêu cầu.<br><span style="color:var(--ink-soft)">Yêu cầu phải kiểm chứng được: nêu đại lượng, ngưỡng và điều kiện đo.</span></div></div></div>
+    </section>
+
+    <!-- 04 ACTIVITY -->
+    <section class="lesson" id="activity">
+      <div class="lh">
+        <span class="num">04</span>
+        <h2>Activity diagram</h2>
+        <p class="lead">Activity diagram mô tả trình tự công việc: hành động, thứ tự, điểm rẽ nhánh và việc làm song song. Sơ đồ thường được dựng từ luồng chính và luồng thay thế của đặc tả.</p>
+      </div>
+      <div id="ad-stepper"><div class="steps-row"><button class="step-btn on"><b>1</b><span>Swimlane</span></button><button class="step-btn"><b>2</b><span>Bắt đầu, kết thúc</span></button><button class="step-btn"><b>3</b><span>Hành động</span></button><button class="step-btn"><b>4</b><span>Luồng</span></button><button class="step-btn"><b>5</b><span>Rẽ nhánh</span></button><button class="step-btn"><b>6</b><span>Song song</span></button><button class="step-btn"><b>7</b><span>Toàn bộ</span></button></div><div class="steps-nav"><button class="btn ghost" data-d="-1" disabled=""><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>Bước trước</button><button class="btn" data-d="1">Bước sau<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button></div></div>
+      <div class="viz">
+        <div class="canvas tall"><svg id="ad-svg" viewBox="0 0 760 1200" role="img" aria-label="Activity diagram của use case Đặt lịch khám"><defs>
+    <marker id="ad-open" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#a24b3d" stroke-width="1.4"></path></marker>
+    <marker id="ad-fill" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="#40281d"></path></marker>
+  </defs><rect x="0" y="0" width="280" height="1200" class="lane-band"></rect><g data-kind="lane" style="opacity: 1;"><rect x="0" y="0" width="280" height="34" fill="#e8dac7" stroke="#d9caba"></rect><text x="140" text-anchor="middle" class="lane-head" y="22"><tspan x="140" dy="0">Người dùng</tspan></text></g><rect x="280" y="0" width="480" height="1200" class="lane-band alt"></rect><g data-kind="lane" style="opacity: 1;"><rect x="280" y="0" width="480" height="34" fill="#e8dac7" stroke="#d9caba"></rect><text x="520" text-anchor="middle" class="lane-head" y="22"><tspan x="520" dy="0">Hệ thống</tspan></text></g><g data-kind="edge branch" data-id="e1" style="opacity: 0.13;"><path d="M140 75 L140 92" class="flow used" marker-end="url(#ad-fill)"></path></g><g data-kind="edge branch" data-id="e2" style="opacity: 0.13;"><path d="M140 120 L140 138" class="flow used" marker-end="url(#ad-fill)"></path></g><g data-kind="edge" data-id="e3" style="opacity: 0.13;"><path d="M140 182 L140 196 L410 196 L410 218" class="flow used" marker-end="url(#ad-fill)"></path></g><g data-kind="edge branch" data-id="e4" style="opacity: 0.13;"><path d="M410 262 L410 290" class="flow used" marker-end="url(#ad-fill)"></path></g><g data-kind="edge branch" data-id="e5" style="opacity: 0.13;"><path d="M488 322 L585 322" class="flow" marker-end="url(#ad-fill)"></path><text x="536" text-anchor="middle" class="small bold halo" y="316"><tspan x="536" dy="0">[không]</tspan></text></g><g data-kind="edge branch" data-id="e6" style="opacity: 0.13;"><path d="M660 298 L660 106 L154 106" class="flow" marker-end="url(#ad-fill)"></path></g><g data-kind="edge branch" data-id="e7" style="opacity: 0.13;"><path d="M410 354 L410 372 L140 372 L140 388" class="flow" marker-end="url(#ad-fill)"></path><text x="420" text-anchor="start" class="small bold halo" y="371"><tspan x="420" dy="0">[còn]</tspan></text></g><g data-kind="edge branch" data-id="e8" style="opacity: 0.13;"><path d="M140 432 L140 450 L410 450 L410 468" class="flow" marker-end="url(#ad-fill)"></path></g><g data-kind="edge branch" data-id="e9" style="opacity: 0.13;"><path d="M332 500 L225 500" class="flow" marker-end="url(#ad-fill)"></path><text x="278" text-anchor="middle" class="small bold halo" y="495"><tspan x="278" dy="0">[chưa có]</tspan></text></g><g data-kind="edge branch branch" data-id="e10" style="opacity: 0.13;"><path d="M410 532 L410 566" class="flow" marker-end="url(#ad-fill)"></path><text x="420" text-anchor="start" class="small bold halo" y="558"><tspan x="420" dy="0">[đã có]</tspan></text></g><g data-kind="edge branch" data-id="e11" style="opacity: 0.13;"><path d="M140 522 L140 580 L396 580" class="flow" marker-end="url(#ad-fill)"></path></g><g data-kind="edge branch" data-id="e12" style="opacity: 0.13;"><path d="M410 594 L410 620 L140 620 L140 638" class="flow" marker-end="url(#ad-fill)"></path></g><g data-kind="edge" data-id="e13" style="opacity: 0.13;"><path d="M140 682 L140 700 L410 700 L410 718" class="flow" marker-end="url(#ad-fill)"></path></g><g data-kind="edge branch" data-id="e14" style="opacity: 0.13;"><path d="M410 762 L410 798" class="flow" marker-end="url(#ad-fill)"></path></g><g data-kind="edge branch" data-id="e15" style="opacity: 0.13;"><path d="M410 862 L410 898" class="flow" marker-end="url(#ad-fill)"></path><text x="420" text-anchor="start" class="small bold halo" y="889"><tspan x="420" dy="0">[còn]</tspan></text></g><g data-kind="edge branch" data-id="e16" style="opacity: 0.13;"><path d="M488 830 L660 830 L660 346" class="flow" marker-end="url(#ad-fill)"></path><text x="574" text-anchor="middle" class="small bold halo" y="825"><tspan x="574" dy="0">[đã bị đặt]</tspan></text></g><g data-kind="edge parallel" data-id="e17" style="opacity: 0.13;"><path d="M410 942 L410 981" class="flow" marker-end="url(#ad-fill)"></path></g><g data-kind="edge parallel" data-id="e18" style="opacity: 0.13;"><path d="M380 989 L380 1028" class="flow" marker-end="url(#ad-fill)"></path></g><g data-kind="edge parallel" data-id="e19" style="opacity: 0.13;"><path d="M590 989 L590 1028" class="flow" marker-end="url(#ad-fill)"></path></g><g data-kind="edge parallel" data-id="e20" style="opacity: 0.13;"><path d="M380 1072 L380 1111" class="flow" marker-end="url(#ad-fill)"></path></g><g data-kind="edge parallel" data-id="e21" style="opacity: 0.13;"><path d="M590 1072 L590 1111" class="flow" marker-end="url(#ad-fill)"></path></g><g data-kind="edge parallel" data-id="e22" style="opacity: 0.13;"><path d="M410 1119 L410 1153" class="flow" marker-end="url(#ad-fill)"></path></g><g data-kind="initfinal" data-id="s" class="" style="opacity: 0.13;"><circle cx="140" cy="66" r="9" class="ctl-dot shape"></circle></g><g data-kind="branch" data-id="m1" style="opacity: 0.13;" class=""><path d="M140 92L154 106L140 120L126 106Z" class="dec-box shape"></path></g><g data-kind="action" data-id="a1" style="opacity: 0.13;" class=""><rect x="55" y="138" width="170" height="44" rx="16" class="act-box shape"></rect><text x="140" text-anchor="middle" class="small" y="165"><tspan x="140" dy="0">Chọn chuyên khoa</tspan></text></g><g data-kind="action" data-id="a2" style="opacity: 0.13;" class=""><rect x="315" y="218" width="190" height="44" rx="16" class="act-box shape"></rect><text x="410" text-anchor="middle" class="small" y="236"><tspan x="410" dy="0">Hiển thị bác sĩ</tspan><tspan x="410" dy="18">và khung giờ trống</tspan></text></g><g data-kind="branch" data-id="d1" style="opacity: 0.13;" class="node-active"><path d="M410 290L488 322L410 354L332 322Z" class="dec-box shape"></path><text x="410" text-anchor="middle" class="small" y="318.5"><tspan x="410" dy="0">Còn khung</tspan><tspan x="410" dy="17">giờ trống?</tspan></text></g><g data-kind="action" data-id="a3" style="opacity: 0.13;"><rect x="585" y="298" width="150" height="48" rx="16" class="act-box shape"></rect><text x="660" text-anchor="middle" class="small" y="318"><tspan x="660" dy="0">Thông báo và gợi ý</tspan><tspan x="660" dy="18">lựa chọn khác</tspan></text></g><g data-kind="action" data-id="a4" style="opacity: 0.13;"><rect x="55" y="388" width="170" height="44" rx="16" class="act-box shape"></rect><text x="140" text-anchor="middle" class="small" y="406"><tspan x="140" dy="0">Chọn bác sĩ</tspan><tspan x="140" dy="18">và khung giờ</tspan></text></g><g data-kind="branch" data-id="d2" style="opacity: 0.13;"><path d="M410 468L488 500L410 532L332 500Z" class="dec-box shape"></path><text x="410" text-anchor="middle" class="small" y="496.5"><tspan x="410" dy="0">Đã có hồ sơ</tspan><tspan x="410" dy="17">bệnh nhân?</tspan></text></g><g data-kind="action" data-id="a5" style="opacity: 0.13;"><rect x="55" y="478" width="170" height="44" rx="16" class="act-box shape"></rect><text x="140" text-anchor="middle" class="small" y="496"><tspan x="140" dy="0">Đăng ký hồ sơ</tspan><tspan x="140" dy="18">bệnh nhân mới</tspan></text></g><g data-kind="branch" data-id="m2" style="opacity: 0.13;"><path d="M410 566L424 580L410 594L396 580Z" class="dec-box shape"></path></g><g data-kind="action" data-id="a6" style="opacity: 0.13;"><rect x="55" y="638" width="170" height="44" rx="16" class="act-box shape"></rect><text x="140" text-anchor="middle" class="small" y="656"><tspan x="140" dy="0">Nhập lý do khám</tspan><tspan x="140" dy="18">và xác nhận</tspan></text></g><g data-kind="action" data-id="a7" style="opacity: 0.13;"><rect x="315" y="718" width="190" height="44" rx="16" class="act-box shape"></rect><text x="410" text-anchor="middle" class="small" y="736"><tspan x="410" dy="0">Kiểm tra khung</tspan><tspan x="410" dy="18">giờ còn trống</tspan></text></g><g data-kind="branch" data-id="d3" style="opacity: 0.13;"><path d="M410 798L488 830L410 862L332 830Z" class="dec-box shape"></path><text x="410" text-anchor="middle" class="small" y="826.5"><tspan x="410" dy="0">Khung giờ</tspan><tspan x="410" dy="17">vẫn trống?</tspan></text></g><g data-kind="action" data-id="a7b" style="opacity: 0.13;"><rect x="315" y="898" width="190" height="44" rx="16" class="act-box shape"></rect><text x="410" text-anchor="middle" class="small" y="916"><tspan x="410" dy="0">Tạo lịch hẹn</tspan><tspan x="410" dy="18">“Chờ xác nhận”</tspan></text></g><g data-kind="parallel" data-id="fk" style="opacity: 0.13;"><rect x="370" y="981" width="230" height="8" rx="2" class="bar"></rect></g><g data-kind="action parallel" data-id="a9" style="opacity: 0.13;"><rect x="305" y="1028" width="150" height="44" rx="16" class="act-box shape"></rect><text x="380" text-anchor="middle" class="small" y="1046"><tspan x="380" dy="0">Hiển thị mã</tspan><tspan x="380" dy="18">lịch hẹn</tspan></text></g><g data-kind="action parallel" data-id="a8" style="opacity: 0.13;"><rect x="515" y="1028" width="150" height="44" rx="16" class="act-box shape"></rect><text x="590" text-anchor="middle" class="small" y="1046"><tspan x="590" dy="0">Đưa vào hàng</tspan><tspan x="590" dy="18">chờ xác nhận</tspan></text></g><g data-kind="parallel" data-id="jn" style="opacity: 0.13;"><rect x="370" y="1111" width="230" height="8" rx="2" class="bar"></rect></g><g data-kind="initfinal" data-id="e" style="opacity: 0.13;"><circle cx="410" cy="1165" r="12" fill="#fffdf8" stroke="#40281d" stroke-width="2" class="shape"></circle><circle cx="410" cy="1165" r="7" class="ctl-dot"></circle></g><text x="365" text-anchor="end" class="tiny ital" y="981"><tspan x="365" dy="0">fork</tspan></text><text x="365" text-anchor="end" class="tiny ital" y="1111"><tspan x="365" dy="0">join</tspan></text><g><circle cx="386" cy="322" r="8" class="token"></circle></g></svg></div>
+        <aside class="side">
+          <div class="card" id="ad-text"><span class="tag">Swimlane</span><h3>Chia làn trách nhiệm</h3><p>Mỗi làn là một actor hoặc bộ phận. Ở đây có hai làn: Người dùng (bệnh nhân hoặc nhân viên) và Hệ thống. Hành động nằm ở làn nào thì làn đó thực hiện.</p><p style="margin-bottom:4px"><b><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle> <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path> <path d="M12 17h.01"></path></svg>Tự hỏi ở bước này</b></p><ul><li>Hành động này do ai làm?</li><li>Có bên nào cần thêm làn không (ví dụ cổng SMS)?</li></ul></div>
+          <div class="card">
+            <h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path></svg>Mô phỏng luồng điều khiển</h3>
+            <p>Token là bước đang được thực hiện. Bấm “Bước tiếp” để đi qua từng hành động và chọn nhánh tại mỗi điểm rẽ.</p>
+            <div class="sim">
+              <div class="sim-row" id="ad-ctrl"><button class="btn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.029 4.285A2 2 0 0 0 7 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z"></path> <path d="M3 4v16"></path></svg>Bước tiếp</button><button class="btn ghost"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path> <path d="M3 3v5h5"></path></svg>Đặt lại</button></div>
+              <ul class="log" id="ad-log"><li>Thực hiện: Hiển thị bác sĩ và khung giờ trống</li><li>Thực hiện: Chọn chuyên khoa</li><li>Bắt đầu: token ở nút bắt đầu.</li></ul>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <h3 class="mt">Đối chiếu đặc tả với activity diagram</h3>
+      <p>Mỗi luồng thay thế trong đặc tả phải có nhánh tương ứng trong sơ đồ. Nhấn vào một dòng để xem phần tử đó.</p>
+      <div class="table-wrap">
+        <table id="trace-table">
+          <thead><tr><th>Trong đặc tả</th><th>Trong activity diagram</th></tr></thead>
+          <tbody><tr style="cursor: pointer;"><td><b>3a. Chuyên khoa không còn khung giờ trống</b></td><td>Nhánh [không] của decision “Còn khung giờ trống?” dẫn đến hành động “Thông báo và gợi ý”, rồi merge quay về “Chọn chuyên khoa”.</td></tr><tr style="cursor: pointer;"><td><b>5a. Bệnh nhân chưa có hồ sơ</b></td><td>Nhánh [chưa có] của decision “Đã có hồ sơ bệnh nhân?” dẫn đến hành động “Đăng ký hồ sơ bệnh nhân mới”, rồi merge về luồng chính.</td></tr><tr style="cursor: pointer;"><td><b>7a. Khung giờ đã bị người khác đặt</b></td><td>Nhánh [đã bị đặt] của decision “Khung giờ vẫn trống?” dẫn đến “Thông báo và gợi ý”.</td></tr><tr style="cursor: pointer;"><td><b>Bước 9. Hiển thị mã và đưa vào hàng chờ</b></td><td>Fork tách hai hành động độc lập; join chờ cả hai xong.</td></tr><tr style="cursor: pointer;"><td><b>8a. Lỗi lưu lịch hẹn</b></td><td>Chưa vẽ. Thử bổ sung: thêm một decision sau hành động “Tạo lịch hẹn”, nhánh lỗi dẫn đến nút kết thúc thất bại.</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap mt">
+        <table>
+          <thead><tr><th>Phần tử</th><th>Quy ước</th><th>Câu hỏi tự kiểm tra</th></tr></thead>
+          <tbody>
+            <tr><td><b>Nút bắt đầu, kết thúc</b></td><td>Chấm đặc là điểm bắt đầu, vòng tròn có chấm là điểm kết thúc. Mỗi sơ đồ có một điểm bắt đầu.</td><td>Từng đường đi có đến được điểm kết thúc không?</td></tr>
+            <tr><td><b>Hành động</b></td><td>Hình chữ nhật bo góc, tên là động từ ngắn. Mỗi hành động là một việc cụ thể.</td><td>Hành động có nằm đúng làn của người hoặc hệ thống thực hiện nó không?</td></tr>
+            <tr><td><b>Luồng điều khiển</b></td><td>Mũi tên nối các nút và chỉ thứ tự thực hiện.</td><td>Nút nào thiếu mũi tên vào hoặc ra (trừ nút bắt đầu và kết thúc)?</td></tr>
+            <tr><td><b>Decision và merge</b></td><td>Hình thoi. Decision có một luồng vào và nhiều luồng ra, mỗi luồng ra ghi điều kiện guard trong ngoặc vuông. Merge gom nhiều luồng vào thành một luồng ra.</td><td>Các guard có loại trừ nhau và đủ các trường hợp không?</td></tr>
+            <tr><td><b>Fork và join</b></td><td>Thanh ngang đậm. Fork tách một luồng thành nhiều luồng song song. Join chờ tất cả các luồng đến rồi mới đi tiếp.</td><td>Mỗi fork có join tương ứng không? Hai việc này có độc lập với nhau không?</td></tr>
+            <tr><td><b>Swimlane</b></td><td>Làn dọc hoặc ngang. Mỗi làn thuộc về một actor hoặc bộ phận chịu trách nhiệm.</td><td>Hành động nào chưa rõ ai làm?</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 05 STATE -->
+    <section class="lesson" id="state">
+      <div class="lh">
+        <span class="num">05</span>
+        <h2>State chart diagram</h2>
+        <p class="lead">State chart mô tả vòng đời của một đối tượng: trạng thái nó có thể ở, sự kiện làm nó đổi trạng thái và điều kiện cho phép đổi. Ở đây đối tượng là Lịch hẹn.</p>
+      </div>
+      <div id="st-stepper"><div class="steps-row"><button class="step-btn done"><b>1</b><span>Trạng thái</span></button><button class="step-btn done"><b>2</b><span>Bắt đầu, kết thúc</span></button><button class="step-btn on"><b>3</b><span>Sự kiện</span></button><button class="step-btn"><b>4</b><span>Guard, action</span></button></div><div class="steps-nav"><button class="btn ghost" data-d="-1"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>Bước trước</button><button class="btn" data-d="1">Bước sau<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button></div></div>
+      <div class="viz wide">
+        <div class="canvas"><svg id="st-svg" viewBox="0 0 1040 580" role="img" aria-label="State chart của đối tượng Lịch hẹn"><defs>
+    <marker id="st-open" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#a24b3d" stroke-width="1.4"></path></marker>
+    <marker id="st-fill" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="#40281d"></path></marker>
+  </defs><g data-stage="1" data-st="P" class=""><rect x="155" y="142" width="150" height="56" rx="14" class="st-box shape"></rect><text x="230" text-anchor="middle" class="bold" y="175"><tspan x="230" dy="0">Chờ xác nhận</tspan></text></g><g data-stage="1" data-st="C" class=""><rect x="505" y="142" width="150" height="56" rx="14" class="st-box shape"></rect><text x="580" text-anchor="middle" class="bold" y="175"><tspan x="580" dy="0">Đã xác nhận</tspan></text></g><g data-stage="1" data-st="K" class=""><rect x="855" y="142" width="150" height="56" rx="14" class="st-box shape"></rect><text x="930" text-anchor="middle" class="bold" y="175"><tspan x="930" dy="0">Đã tiếp nhận</tspan></text></g><g data-stage="1" data-st="X" class=""><rect x="225" y="312" width="150" height="56" rx="14" class="st-box shape"></rect><text x="300" text-anchor="middle" class="bold" y="345"><tspan x="300" dy="0">Đã huỷ</tspan></text></g><g data-stage="1" data-st="N" class=""><rect x="505" y="312" width="150" height="56" rx="14" class="st-box shape"></rect><text x="580" text-anchor="middle" class="bold" y="345"><tspan x="580" dy="0">Vắng mặt</tspan></text></g><g data-stage="1" data-st="I" class=""><rect x="855" y="312" width="150" height="56" rx="14" class="st-box shape"></rect><text x="930" text-anchor="middle" class="bold" y="345"><tspan x="930" dy="0">Đang khám</tspan></text></g><g data-stage="1" data-st="D" class=""><rect x="855" y="442" width="150" height="56" rx="14" class="st-box shape"></rect><text x="930" text-anchor="middle" class="bold" y="475"><tspan x="930" dy="0">Hoàn tất</tspan></text></g><g data-stage="2" data-st="init" class=""><circle cx="230" cy="62" r="8" class="ctl-dot st-box"></circle></g><g data-stage="2" class=""><circle cx="580" cy="540" r="12" class="st-fin-ring"></circle><circle cx="580" cy="540" r="7" class="ctl-dot"></circle></g><g data-stage="2" class=""><path d="M230 70 L230 142" class="st-edge" marker-end="url(#st-fill)"></path></g><g data-stage="3" class="fresh"><path d="M305 170 L505 170" class="st-edge" marker-end="url(#st-fill)"></path></g><g data-stage="3" class="fresh"><path d="M245 198 L290 312" class="st-edge" marker-end="url(#st-fill)"></path></g><g data-stage="3" class="fresh"><path d="M545 142C530 70 630 70 615 142" class="st-edge" marker-end="url(#st-fill)"></path></g><g data-stage="3" class="fresh"><path d="M540 198 L360 312" class="st-edge" marker-end="url(#st-fill)"></path></g><g data-stage="3" class="fresh"><path d="M655 170 L855 170" class="st-edge" marker-end="url(#st-fill)"></path></g><g data-stage="3" class="fresh"><path d="M580 198 L580 312" class="st-edge" marker-end="url(#st-fill)"></path></g><g data-stage="3" class="fresh"><path d="M930 198 L930 312" class="st-edge" marker-end="url(#st-fill)"></path></g><g data-stage="3" class="fresh"><path d="M930 368 L930 442" class="st-edge" marker-end="url(#st-fill)"></path></g><g data-stage="2" class=""><path d="M300 368 L300 540 L568 540" class="st-edge" marker-end="url(#st-fill)"></path></g><g data-stage="2" class=""><path d="M580 368 L580 528" class="st-edge" marker-end="url(#st-fill)"></path></g><g data-stage="2" class=""><path d="M930 498 L930 540 L592 540" class="st-edge" marker-end="url(#st-fill)"></path></g><g data-stage="3" class="fresh"><text x="240" y="100" text-anchor="start" class="halo"><tspan x="240" dy="0" class="small bold">đặt lịch</tspan></text></g><g data-stage="3" class="fresh"><text x="405" y="150" text-anchor="middle" class="halo"><tspan x="405" dy="0" class="small bold">xác nhận</tspan></text></g><g data-stage="3" class="fresh"><text x="238" y="236" text-anchor="end" class="halo"><tspan x="238" dy="0" class="small bold">huỷ lịch</tspan><tspan x="238" dy="14" class="small bold">quá 24 giờ chưa xác nhận</tspan></text></g><g data-stage="3" class="fresh"><text x="580" y="58" text-anchor="middle" class="halo"><tspan x="580" dy="0" class="small bold">đổi lịch</tspan></text></g><g data-stage="3" class="fresh"><text x="450" y="242" text-anchor="middle" class="halo"><tspan x="450" dy="0" class="small bold">huỷ lịch</tspan></text></g><g data-stage="3" class="fresh"><text x="755" y="150" text-anchor="middle" class="halo"><tspan x="755" dy="0" class="small bold">check-in</tspan></text></g><g data-stage="3" class="fresh"><text x="592" y="242" text-anchor="start" class="halo"><tspan x="592" dy="0" class="small bold">hết ca khám</tspan></text></g><g data-stage="3" class="fresh"><text x="920" y="246" text-anchor="end" class="halo"><tspan x="920" dy="0" class="small bold">bác sĩ gọi khám</tspan></text></g><g data-stage="3" class="fresh"><text x="920" y="410" text-anchor="end" class="halo"><tspan x="920" dy="0" class="small bold">kết thúc khám</tspan></text></g></svg></div>
+        <aside class="side">
+          <div class="card" id="st-text"><span class="tag">Sự kiện</span><h3>Nối bằng các chuyển trạng thái và sự kiện</h3><p>Với mỗi trạng thái, hỏi: sự kiện nào làm nó đổi sang trạng thái khác? Ghi tên sự kiện lên mũi tên. Đổi lịch không đổi trạng thái, nên vẽ mũi tên vòng về chính nó.</p><p style="margin-bottom:4px"><b><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle> <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path> <path d="M12 17h.01"></path></svg>Tự hỏi ở bước này</b></p><ul><li>Sự kiện đến từ đâu (người dùng, thời gian, hệ thống khác)?</li><li>Đặc tả use case có sự kiện nào chưa được vẽ ở trạng thái này không?</li></ul></div>
+          <div class="card">
+            <h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path></svg>Mô phỏng vòng đời</h3>
+            <p>Trạng thái hiện tại: <span class="cur-state" id="st-cur">Chưa có lịch hẹn</span></p>
+            <p style="font-size:.86rem;color:var(--ink-soft)">Điều kiện hiện tại (guard):</p>
+            <div id="st-guards" style="margin-bottom:10px"><label class="chk"><input type="checkbox" data-g="g_cancel" checked=""> Còn ít nhất 2 giờ trước giờ khám</label><label class="chk"><input type="checkbox" data-g="g_checkin" checked=""> Đã đến ngày khám</label><label class="chk"><input type="checkbox" data-g="g_slot" checked=""> Khung giờ mới còn trống</label></div>
+            <div class="evt-grid" id="st-events"><button class="btn ghost" data-ev="book">Đặt lịch</button><button class="btn ghost" data-ev="confirm">Nhân viên xác nhận</button><button class="btn ghost" data-ev="expire">Quá 24 giờ chưa xác nhận</button><button class="btn ghost" data-ev="reschedule">Bệnh nhân đổi lịch</button><button class="btn ghost" data-ev="cancel">Huỷ lịch</button><button class="btn ghost" data-ev="checkin">Check-in</button><button class="btn ghost" data-ev="noshow">Hết ca khám</button><button class="btn ghost" data-ev="call">Bác sĩ gọi khám</button><button class="btn ghost" data-ev="finish">Kết thúc khám</button></div>
+            <div class="sim-row" style="margin-top:10px"><button class="btn ghost" id="st-reset"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path> <path d="M3 3v5h5"></path></svg>Đặt lại</button></div>
+            <ul class="log" id="st-log" style="margin-top:8px"><li>Lịch hẹn chưa tồn tại. Thử sự kiện “Đặt lịch”.</li></ul>
+          </div>
+        </aside>
+      </div>
+
+      <h3 class="mt">Bảng chuyển trạng thái</h3>
+      <p>Bảng này mang cùng thông tin với sơ đồ. Dùng bảng để tìm chỗ còn thiếu: cặp (trạng thái, sự kiện) nào không có trong bảng thì hệ thống bỏ qua hoặc báo lỗi.</p>
+      <div class="table-wrap">
+        <table id="st-table">
+          <thead><tr><th>Từ trạng thái</th><th>Sự kiện</th><th>Điều kiện [guard]</th><th>Hành động / action</th><th>Đến trạng thái</th></tr></thead>
+          <tbody><tr><td>Chưa có lịch hẹn</td><td>đặt lịch</td><td></td><td>giữ khung giờ</td><td>Chờ xác nhận</td></tr><tr><td>Chờ xác nhận</td><td>xác nhận</td><td></td><td>gửi SMS xác nhận</td><td>Đã xác nhận</td></tr><tr><td>Chờ xác nhận</td><td>huỷ lịch</td><td></td><td>giải phóng khung giờ</td><td>Đã huỷ</td></tr><tr><td>Chờ xác nhận</td><td>quá 24 giờ chưa xác nhận</td><td></td><td>giải phóng khung giờ</td><td>Đã huỷ</td></tr><tr><td>Đã xác nhận</td><td>đổi lịch</td><td>khung giờ mới còn trống</td><td>chuyển sang khung giờ mới</td><td>Đã xác nhận</td></tr><tr><td>Đã xác nhận</td><td>huỷ lịch</td><td>còn ≥ 2 giờ trước giờ khám</td><td>giải phóng khung giờ, gửi SMS</td><td>Đã huỷ</td></tr><tr><td>Đã xác nhận</td><td>check-in</td><td>đã đến ngày khám</td><td>ghi nhận giờ đến</td><td>Đã tiếp nhận</td></tr><tr><td>Đã xác nhận</td><td>hết ca khám</td><td></td><td>ghi nhận vắng mặt</td><td>Vắng mặt</td></tr><tr><td>Đã tiếp nhận</td><td>bác sĩ gọi khám</td><td></td><td></td><td>Đang khám</td></tr><tr><td>Đang khám</td><td>kết thúc khám</td><td></td><td>lưu kết quả khám</td><td>Hoàn tất</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap mt">
+        <table>
+          <thead><tr><th>Phần tử</th><th>Quy ước</th><th>Câu hỏi tự kiểm tra</th></tr></thead>
+          <tbody>
+            <tr><td><b>Trạng thái</b></td><td>Hình chữ nhật bo góc. Là tình trạng đối tượng ở trong một khoảng thời gian, thường đặt tên bằng tính từ hoặc cụm “đã, đang, chờ”.</td><td>Đối tượng ở trạng thái này đủ lâu để đáng ghi nhận không? Hai trạng thái có cho phép các sự kiện khác nhau không?</td></tr>
+            <tr><td><b>Chuyển trạng thái</b></td><td>Mũi tên có nhãn <code>sự kiện [guard] / action</code>. Guard và action có thể bỏ khi không cần.</td><td>Sự kiện đến từ bên ngoài hoặc từ thời gian, hay chỉ là một bước nội bộ?</td></tr>
+            <tr><td><b>Guard</b></td><td>Điều kiện đúng hoặc sai, đặt trong ngoặc vuông. Chuyển trạng thái chỉ xảy ra khi guard đúng.</td><td>Khi guard sai, sự kiện bị bỏ qua hay xử lý khác? Đã ghi rõ chưa?</td></tr>
+            <tr><td><b>Action</b></td><td>Việc hệ thống làm khi chuyển trạng thái, viết sau dấu gạch chéo.</td><td>Action có kết quả quan sát được (gửi SMS, giải phóng khung giờ) không?</td></tr>
+            <tr><td><b>Bắt đầu, kết thúc</b></td><td>Chấm đặc là điểm vào, vòng tròn có chấm là điểm kết thúc vòng đời.</td><td>Từ mỗi trạng thái có đường đến trạng thái cuối không? Trạng thái nào không có đường đi đến nó?</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid-2 mt">
+        <div class="card rose">
+          <h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path> <path d="M12 9v4"></path> <path d="M12 17h.01"></path></svg>Lỗi thường gặp</h3>
+          <ul>
+            <li>Dùng state chart để mô tả quy trình nhiều bước. Quy trình thuộc về activity diagram.</li>
+            <li>Đặt tên trạng thái bằng động từ như “Xác nhận”. Trạng thái là tình trạng, không phải hành động, nên đặt tên như “Chờ xác nhận” hoặc “Đã xác nhận”.</li>
+            <li>Thiếu trạng thái cuối, hoặc có trạng thái đã vào thì không ra được.</li>
+            <li>Hai sự kiện giống nhau từ cùng một trạng thái mà không có guard để phân biệt.</li>
+          </ul>
+        </div>
+        <div class="card sage">
+          <h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 21h8"></path> <path d="m15 5 4 4"></path> <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path></svg>Khi nào nên vẽ</h3>
+          <p>Vẽ cho đối tượng có hành vi phụ thuộc vào tình trạng hiện tại: lịch hẹn, đơn hàng, tài khoản, hồ sơ bệnh án. Không cần vẽ khi đối tượng chỉ lưu dữ liệu và không có quy tắc về thứ tự thay đổi.</p>
+          <p>Sự kiện trong sơ đồ thường đến từ một use case. Ví dụ sự kiện “xác nhận” đến từ use case Xác nhận lịch hẹn.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 TỔNG KẾT -->
+    <section class="lesson" id="tong-ket">
+      <div class="lh">
+        <span class="num">06</span>
+        <h2>So sánh bốn mô hình</h2>
+        <p class="lead">Mỗi mô hình nhìn yêu cầu từ một góc. Một chức năng thường cần nhiều mô hình; chức năng đơn giản có thể chỉ cần một hoặc hai.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th></th><th>Sơ đồ use case</th><th>Đặc tả use case</th><th>Activity diagram</th><th>State chart</th></tr></thead>
+          <tbody>
+            <tr><td><b>Trả lời</b></td><td>Ai dùng, để làm gì</td><td>Các bước của một mục tiêu và cách xử lý khi rẽ nhánh</td><td>Thứ tự công việc, ai làm, việc song song</td><td>Vòng đời và quy tắc đổi trạng thái</td></tr>
+            <tr><td><b>Phạm vi</b></td><td>Toàn hệ thống</td><td>Một use case</td><td>Một use case hoặc một quy trình nghiệp vụ</td><td>Một loại đối tượng</td></tr>
+            <tr><td><b>Đầu vào</b></td><td>Lời của stakeholder</td><td>Sơ đồ use case</td><td>Đặc tả use case</td><td>Đặc tả use case và quy tắc nghiệp vụ</td></tr>
+            <tr><td><b>Dùng khi</b></td><td>Xác định phạm vi, họp với khách hàng</td><td>Chốt hành vi để thiết kế và viết ca kiểm thử</td><td>Luồng phức tạp, nhiều bên tham gia</td><td>Đối tượng có trạng thái rõ ràng</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="mt">Kiểm tra nhanh</h3>
+      <p>Chọn mô hình phù hợp nhất cho từng nhu cầu. <span class="score" id="quiz-score"></span></p>
+      <div id="quiz"><div class="quiz-q"><p>1. Họp đầu tiên với khách hàng: cần liệt kê ai dùng hệ thống và mỗi người làm được gì.</p><div class="opts"><button class="btn ghost opt" data-j="0">Sơ đồ use case</button><button class="btn ghost opt" data-j="1">Đặc tả use case</button><button class="btn ghost opt" data-j="2">Activity diagram</button><button class="btn ghost opt" data-j="3">State chart</button></div><div class="fb"></div></div><div class="quiz-q"><p>2. Cần ghi rõ bệnh nhân làm gì, hệ thống phản hồi gì ở từng bước, và xử lý ra sao khi khung giờ đã hết.</p><div class="opts"><button class="btn ghost opt" data-j="0">Sơ đồ use case</button><button class="btn ghost opt" data-j="1">Đặc tả use case</button><button class="btn ghost opt" data-j="2">Activity diagram</button><button class="btn ghost opt" data-j="3">State chart</button></div><div class="fb"></div></div><div class="quiz-q"><p>3. Cần cho thấy hai việc xảy ra đồng thời và ai chịu trách nhiệm từng việc.</p><div class="opts"><button class="btn ghost opt" data-j="0">Sơ đồ use case</button><button class="btn ghost opt" data-j="1">Đặc tả use case</button><button class="btn ghost opt" data-j="2">Activity diagram</button><button class="btn ghost opt" data-j="3">State chart</button></div><div class="fb"></div></div><div class="quiz-q"><p>4. Cần quy định lịch hẹn đã huỷ có được check-in hay không.</p><div class="opts"><button class="btn ghost opt" data-j="0">Sơ đồ use case</button><button class="btn ghost opt" data-j="1">Đặc tả use case</button><button class="btn ghost opt" data-j="2">Activity diagram</button><button class="btn ghost opt" data-j="3">State chart</button></div><div class="fb"></div></div><div class="quiz-q"><p>5. Cần kiểm tra mỗi luồng thay thế đã có nhánh tương ứng trong quy trình hay chưa.</p><div class="opts"><button class="btn ghost opt" data-j="0">Sơ đồ use case</button><button class="btn ghost opt" data-j="1">Đặc tả use case</button><button class="btn ghost opt" data-j="2">Activity diagram</button><button class="btn ghost opt" data-j="3">State chart</button></div><div class="fb"></div></div></div>
+    </section>
+  </main>
+
+  <footer>Phòng khám An Tâm là tình huống giả định dùng cho môn học.</footer>
+</div>
+
+<script>
+/* ================== tiện ích ================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+/* Biểu tượng: Lucide (https://lucide.dev), giấy phép ISC, nhúng trực tiếp để chạy offline. */
+const ICONS = {
+  'blocks': '<path d="M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2" /> <rect x="14" y="2" width="8" height="8" rx="1" />',
+  'chevron-left': '<path d="m15 18-6-6 6-6" />',
+  'chevron-right': '<path d="m9 18 6-6-6-6" />',
+  'circle-check': '<circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" />',
+  'circle-help': '<circle cx="12" cy="12" r="10" /> <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /> <path d="M12 17h.01" />',
+  'check': '<path d="M20 6 9 17l-5-5" />',
+  'eye-off': '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" /> <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" /> <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" /> <path d="m2 2 20 20" />',
+  'eye': '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /> <circle cx="12" cy="12" r="3" />',
+  'file-text': '<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /> <path d="M14 2v5a1 1 0 0 0 1 1h5" /> <path d="M10 9H8" /> <path d="M16 13H8" /> <path d="M16 17H8" />',
+  'git-compare': '<circle cx="18" cy="18" r="3" /> <circle cx="6" cy="6" r="3" /> <path d="M13 6h3a2 2 0 0 1 2 2v7" /> <path d="M11 18H8a2 2 0 0 1-2-2V9" />',
+  'git-pull-request-arrow': '<circle cx="5" cy="6" r="3" /> <path d="M5 9v12" /> <circle cx="19" cy="18" r="3" /> <path d="m15 9-3-3 3-3" /> <path d="M12 6h5a2 2 0 0 1 2 2v7" />',
+  'info': '<circle cx="12" cy="12" r="10" /> <path d="M12 16v-4" /> <path d="M12 8h.01" />',
+  'layers': '<path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" /> <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" /> <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" />',
+  'lightbulb': '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" />',
+  'list-checks': '<path d="M13 5h8" /> <path d="M13 12h8" /> <path d="M13 19h8" /> <path d="m3 17 2 2 4-4" /> <path d="m3 7 2 2 4-4" />',
+  'message-square-text': '<path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" /> <path d="M7 11h10" /> <path d="M7 15h6" /> <path d="M7 7h8" />',
+  'mouse-pointer-click': '<path d="M14 4.1 12 6" /> <path d="m5.1 8-2.9-.8" /> <path d="m6 12-1.9 2" /> <path d="M7.2 2.2 8 5.1" /> <path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z" />',
+  'pencil-line': '<path d="M13 21h8" /> <path d="m15 5 4 4" /> <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />',
+  'play': '<path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />',
+  'repeat': '<path d="m17 2 4 4-4 4" /> <path d="M3 11v-1a4 4 0 0 1 4-4h14" /> <path d="m7 22-4-4 4-4" /> <path d="M21 13v1a4 4 0 0 1-4 4H3" />',
+  'rotate-ccw': '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /> <path d="M3 3v5h5" />',
+  'search': '<path d="m21 21-4.34-4.34" /> <circle cx="11" cy="11" r="8" />',
+  'step-forward': '<path d="M10.029 4.285A2 2 0 0 0 7 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z" /> <path d="M3 4v16" />',
+  'triangle-alert': '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" />',
+  'users': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <path d="M16 3.128a4 4 0 0 1 0 7.744" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <circle cx="9" cy="7" r="4" />',
+  'workflow': '<rect width="8" height="8" x="3" y="3" rx="2" /> <path d="M7 11v4a2 2 0 0 0 2 2h4" /> <rect width="8" height="8" x="13" y="13" rx="2" />',
+  'x': '<path d="M18 6 6 18" /> <path d="m6 6 12 12" />'
+};
+const icon = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
+/* thay mọi phần tử [data-icon] bằng SVG tương ứng */
+function hydrateIcons(root = document) {
+  root.querySelectorAll('[data-icon]').forEach(e => { e.outerHTML = icon(e.dataset.icon); });
+}
+hydrateIcons();
+const NS = 'http://www.w3.org/2000/svg';
+function S(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+/* nhãn nhiều dòng; valign: 'mid' canh giữa quanh y, 'top' bắt đầu từ y */
+function txt(parent, lines, x, y, o = {}) {
+  const { anchor = 'middle', lh = 16, cls = '', valign = 'mid' } = o;
+  const t = S('text', { x, 'text-anchor': anchor, class: cls }, parent);
+  const y0 = valign === 'mid' ? y - ((lines.length - 1) * lh) / 2 + 5 : y;
+  t.setAttribute('y', y0);
+  lines.forEach((ln, i) => {
+    const ts = S('tspan', { x, dy: i ? lh : 0 }, t);
+    ts.textContent = ln;
+  });
+  return t;
+}
+function addDefs(svg, prefix) {
+  svg.insertAdjacentHTML('afterbegin', `<defs>
+    <marker id="${prefix}-open" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#a24b3d" stroke-width="1.4"/></marker>
+    <marker id="${prefix}-fill" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="#40281d"/></marker>
+  </defs>`);
+}
+function pathD(pts) { return pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join(' '); }
+
+function makeStepper(root, steps, cb) {
+  root.innerHTML = `<div class="steps-row"></div><div class="steps-nav"><button class="btn ghost" data-d="-1">${icon('chevron-left')}Bước trước</button><button class="btn" data-d="1">Bước sau${icon('chevron-right')}</button></div>`;
+  const row = root.firstChild;
+  steps.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'step-btn';
+    b.innerHTML = `<b>${i + 1}</b><span>${s.short}</span>`;
+    b.onclick = () => api.go(i);
+    row.appendChild(b);
+  });
+  const prev = root.querySelector('[data-d="-1"]'), next = root.querySelector('[data-d="1"]');
+  const api = {
+    cur: 0,
+    go(i) {
+      i = Math.max(0, Math.min(steps.length - 1, i));
+      api.cur = i;
+      [...row.children].forEach((b, j) => { b.classList.toggle('on', j === i); b.classList.toggle('done', j < i); });
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+      cb(i, steps[i]);
+    }
+  };
+  prev.onclick = () => api.go(api.cur - 1);
+  next.onclick = () => api.go(api.cur + 1);
+  return api;
+}
+function stepCard(el, s) {
+  el.innerHTML = `<span class="tag">${s.short}</span><h3>${s.title}</h3><p>${s.text}</p>` +
+    (s.check ? `<p style="margin-bottom:4px"><b>${icon('circle-help')}Tự hỏi ở bước này</b></p><ul>${s.check.map(c => `<li>${c}</li>`).join('')}</ul>` : '');
+}
+
+/* ================== 01 Ý nghĩa ================== */
+(function () {
+  const hot = [
+    { q: 'Ai được đặt lịch? Còn vai trò nào khác dùng hệ thống, như bác sĩ hoặc quản lý?', m: 'Sơ đồ use case', why: 'Mỗi vai trò là một actor. Use case nào không nối với actor nào cho thấy còn thiếu vai trò.' },
+    { q: 'Đặt lịch gồm những bước nào, cần nhập thông tin gì, và xử lý ra sao khi khung giờ vừa bị người khác đặt?', m: 'Đặc tả use case', why: 'Mẫu đặc tả có các mục tiền điều kiện, hậu điều kiện, luồng chính và luồng thay thế. Mục nào còn trống là câu cần hỏi lại stakeholder.' },
+    { q: 'Khi bác sĩ nghỉ, các lịch hẹn đã có chuyển đi đâu? Ai được báo, báo bằng cách nào, theo thứ tự nào?', m: 'Đặc tả use case (luồng thay thế) và activity diagram', why: 'Câu điều kiện trong văn bản thành một nhánh rẽ, có tên và có người phụ trách.' },
+    { q: 'Trước giờ khám bao lâu thì còn huỷ được? Lịch đã check-in có huỷ được không? Lịch đã huỷ có đặt lại được không?', m: 'State chart diagram', why: 'Quy tắc phụ thuộc vào trạng thái của lịch hẹn. State chart liệt kê các cặp trạng thái và sự kiện, nên cặp nào thiếu quy tắc sẽ lộ ra.' },
+    { q: 'Thủ tục tiếp nhận gồm việc gì, ai làm, việc nào làm cùng lúc? Bác sĩ gọi theo thứ tự nào?', m: 'Activity diagram với swimlane', why: 'Làn cho thấy ai làm. Fork và join cho thấy việc song song. Thứ tự gọi bệnh nhân là một quy tắc cần ghi lại.' }
+  ];
+  const info = $('#req-info');
+  $$('.hot').forEach(h => h.onclick = () => {
+    $$('.hot').forEach(x => x.classList.remove('on'));
+    h.classList.add('on');
+    const d = hot[+h.dataset.k];
+    info.innerHTML = `<span class="tag">Câu hỏi còn bỏ ngỏ</span><p>${d.q}</p><p><b>Mô hình trả lời:</b> ${d.m}</p><p style="color:var(--ink-soft)">${d.why}</p>`;
+  });
+
+  const ben = [
+    ['Ngôn ngữ chung', 'Bác sĩ, lập trình viên và quản lý cùng đọc một sơ đồ theo cùng một cách.'],
+    ['Lộ thiếu sót sớm', 'Không vẽ được một nhánh hoặc không điền được một mục nghĩa là yêu cầu còn thiếu. Phát hiện ở giai đoạn này thì chưa có mã nào phải sửa lại.'],
+    ['Nhiều góc nhìn', 'Use case cho phạm vi, activity cho trình tự, state chart cho vòng đời. Mỗi góc làm lộ một loại vấn đề khác nhau.'],
+    ['Cơ sở cho bước sau', 'Mỗi luồng trong đặc tả có thể thành một ca kiểm thử. Các trạng thái của lịch hẹn trở thành giá trị của cột trạng thái trong cơ sở dữ liệu.'],
+    ['Đánh giá thay đổi', 'Khi yêu cầu đổi, nhìn mô hình biết use case, luồng và trạng thái nào bị ảnh hưởng.']
+  ];
+  const benIcons = ['message-square-text', 'search', 'layers', 'blocks', 'git-pull-request-arrow'];
+  $('#benefits').innerHTML = ben.map((b, i) => `<div class="card"><h3>${icon(benIcons[i])}${b[0]}</h3><p style="font-size:.9rem">${b[1]}</p></div>`).join('');
+})();
+
+/* ================== 02 Use case diagram ================== */
+(function () {
+  const svg = $('#uc-svg');
+  addDefs(svg, 'uc');
+  const RX = 100, RY = 31;
+
+  const steps = [
+    { short: 'Actor', title: 'Xác định actor', text: 'Tìm những vai trò hoặc hệ thống bên ngoài tương tác trực tiếp với hệ thống: bệnh nhân, nhân viên tiếp nhận, bác sĩ và cổng SMS. Quản lý phòng khám là stakeholder nhưng chưa thao tác trực tiếp trong phạm vi này, nên chưa là actor.',
+      check: ['Ai khởi động một chức năng?', 'Ai nhận kết quả hoặc thông báo?', 'Hệ thống nào bên ngoài mà phần mềm phải gọi?'] },
+    { short: 'Use case', title: 'Xác định use case', text: 'Với mỗi actor, hỏi họ muốn đạt mục tiêu gì. Đặt tên gồm động từ và đối tượng. Bước này chỉ ghi tên mục tiêu, chưa ghi các bước thực hiện.',
+      check: ['Kết thúc use case, actor nhận được kết quả gì có giá trị?', 'Tên có quá nhỏ hoặc quá lớn không?'] },
+    { short: 'Ranh giới', title: 'Vẽ ranh giới hệ thống', text: 'Vẽ hình chữ nhật bao các use case cần xây dựng. Actor nằm ngoài. Nhờ ranh giới, nhóm và khách hàng thống nhất việc nào được làm, việc nào không.',
+      check: ['Chức năng nào nằm ngoài phạm vi phiên bản này?', 'Cổng SMS do ai cung cấp?'] },
+    { short: 'Association', title: 'Nối actor với use case', text: 'Vẽ đường thẳng từ actor đến mỗi use case mà actor tham gia. Bệnh nhân và nhân viên tiếp nhận cùng đặt, đổi và huỷ lịch. Chỉ nhân viên tiếp nhận xác nhận và check-in. Chỉ bác sĩ xem danh sách khám.',
+      check: ['Còn use case nào chưa có actor?', 'Còn actor nào chưa nối?'] },
+    { short: 'Include, extend', title: 'Thêm quan hệ giữa các use case', text: 'Đặt lịch và Đổi lịch đều cần xem khung giờ trống, nên tách thành một use case dùng chung (include). Xác nhận và Huỷ lịch đều gửi SMS (include). Đăng ký hồ sơ mới chỉ chạy khi bệnh nhân chưa có hồ sơ, nên là phần mở rộng của Đặt lịch (extend).',
+      check: ['Hành vi này chạy mỗi lần hay chỉ khi có điều kiện?', 'Mũi tên đã đi đúng hướng chưa?'] }
+  ];
+
+  const info = {
+    bn: ['Actor chính', 'Bệnh nhân', 'Tự đặt, đổi và huỷ lịch khám của mình. Actor là vai trò, không phải một người cụ thể như “Nguyễn Văn A”.'],
+    nv: ['Actor chính', 'Nhân viên tiếp nhận', 'Đặt lịch thay bệnh nhân khi bệnh nhân gọi điện hoặc đến trực tiếp, đồng thời xác nhận lịch và check-in. Một người có thể giữ nhiều vai trò; mỗi vai trò là một actor.'],
+    bs: ['Actor chính', 'Bác sĩ', 'Chỉ cần xem danh sách khám trong ngày. Nếu sau này bác sĩ tự đăng ký lịch làm việc thì thêm use case nối với actor này.'],
+    sms: ['Actor phụ (hệ thống ngoài)', 'Cổng SMS', 'Hệ thống bên ngoài mà phần mềm gọi để gửi tin nhắn. Actor phụ không khởi động use case. Nhãn «hệ thống» phân biệt nó với người.'],
+    A: ['Use case', 'Đặt lịch khám', 'Mục tiêu của bệnh nhân: có một lịch hẹn với bác sĩ vào khung giờ cụ thể. Tên gồm động từ (đặt) và đối tượng (lịch khám).'],
+    D: ['Use case', 'Đổi lịch khám', 'Chuyển một lịch hẹn sang khung giờ khác. Dùng lại hành vi xem khung giờ trống.'],
+    E: ['Use case', 'Huỷ lịch khám', 'Giải phóng khung giờ đã giữ và thông báo cho bệnh nhân.'],
+    X: ['Use case', 'Xác nhận lịch hẹn', 'Nhân viên tiếp nhận kiểm tra và chuyển lịch hẹn từ “Chờ xác nhận” sang “Đã xác nhận”.'],
+    F: ['Use case', 'Check-in bệnh nhân', 'Ghi nhận bệnh nhân đã đến phòng khám. Đây là điểm bắt đầu của lượt khám trong ngày.'],
+    B: ['Use case được include', 'Xem khung giờ trống', 'Hành vi dùng chung: đặt lịch và đổi lịch đều cần. Tách riêng để viết một lần và sửa ở một nơi.'],
+    C: ['Use case mở rộng', 'Đăng ký hồ sơ bệnh nhân mới', 'Chỉ xảy ra khi bệnh nhân chưa có hồ sơ. Đặt lịch vẫn hoàn chỉnh khi không có phần này.'],
+    H: ['Use case được include', 'Gửi thông báo SMS', 'Dùng chung cho nhiều use case. Chỉ use case này làm việc với Cổng SMS.'],
+    G: ['Use case', 'Xem danh sách khám trong ngày', 'Bác sĩ cần biết hôm nay ai đến khám và hồ sơ nào cần chuẩn bị.'],
+    boundary: ['Ranh giới hệ thống', 'Hệ thống đặt lịch khám', 'Phần nằm trong là phạm vi cần xây. Actor nằm ngoài vì không thuộc hệ thống.'],
+    inc: ['Quan hệ «include»', 'Bao gồm', 'Mũi tên đi từ use case gốc đến use case được bao gồm. Hành vi được bao gồm chạy mỗi khi use case gốc chạy.'],
+    ext: ['Quan hệ «extend»', 'Mở rộng', 'Mũi tên đi từ use case mở rộng đến use case gốc. Phần mở rộng chỉ chạy khi điều kiện đúng (ở đây: bệnh nhân chưa có hồ sơ). Use case gốc vẫn hoàn chỉnh khi không có nó.'],
+    assoc: ['Association', 'Liên kết', 'Đường thẳng cho biết actor tham gia use case. Không có mũi tên vì sơ đồ không biểu diễn hướng dữ liệu.']
+  };
+  const infoBox = $('#uc-info');
+  function showInfo(key, g) {
+    const d = info[key];
+    $$('#uc-svg .sel').forEach(e => e.classList.remove('sel'));
+    if (g) g.classList.add('sel');
+    infoBox.innerHTML = `<span class="tag">${d[0]}</span><h3>${d[1]}</h3><p>${d[2]}</p>`;
+  }
+  function add(g, key, step) {
+    g.setAttribute('data-step', step);
+    g.classList.add('clickable');
+    g.addEventListener('click', () => showInfo(key, g));
+  }
+
+  /* ranh giới */
+  const gb = S('g', {}, svg);
+  S('rect', { x: 220, y: 20, width: 560, height: 490, rx: 14, class: 'uc-boundary shape' }, gb);
+  txt(gb, ['Hệ thống đặt lịch khám phòng khám An Tâm'], 236, 42, { anchor: 'start', cls: 'bold' });
+  add(gb, 'boundary', 3);
+
+  /* use case */
+  const cases = {
+    A: [350, 90, ['Đặt lịch khám']], D: [350, 180, ['Đổi lịch khám']], E: [350, 270, ['Huỷ lịch khám']],
+    X: [350, 360, ['Xác nhận lịch hẹn']], F: [350, 450, ['Check-in bệnh nhân']],
+    C: [660, 90, ['Đăng ký hồ sơ', 'bệnh nhân mới']], B: [660, 180, ['Xem khung giờ trống']],
+    H: [660, 360, ['Gửi thông báo SMS']], G: [660, 450, ['Xem danh sách', 'khám trong ngày']]
+  };
+  const gUC = {};
+  for (const k in cases) {
+    const [x, y, t] = cases[k];
+    const g = S('g', {}, svg);
+    S('ellipse', { cx: x, cy: y, rx: RX, ry: RY, class: 'uc-oval shape' }, g);
+    txt(g, t, x, y, { lh: 16 });
+    add(g, k, 2);
+    gUC[k] = g;
+  }
+
+  /* actor */
+  const actors = {
+    bn: [90, 190, ['Bệnh nhân'], false], nv: [90, 390, ['Nhân viên', 'tiếp nhận'], false],
+    sms: [870, 305, ['«hệ thống»', 'Cổng SMS'], true], bs: [870, 455, ['Bác sĩ'], false]
+  };
+  for (const k in actors) {
+    const [x, y, t, ext] = actors[k];
+    const g = S('g', { class: ext ? 'actor-ext' : '' }, svg);
+    S('rect', { x: x - 44, y: y - 48, width: 88, height: 70 + 16 * t.length, fill: 'transparent', class: 'shape' }, g).style.fill = 'transparent';
+    S('circle', { cx: x, cy: y - 34, r: 10, class: 'actor-head' }, g);
+    S('path', { d: `M${x} ${y - 24}V${y + 6}M${x - 18} ${y - 14}H${x + 18}M${x} ${y + 6}L${x - 14} ${y + 32}M${x} ${y + 6}L${x + 14} ${y + 32}`, class: 'actor-line' }, g);
+    txt(g, t, x, y + 52, { lh: 15, valign: 'top', cls: 'small bold' });
+    add(g, k, 1);
+  }
+
+  /* association */
+  const clip = (fx, fy, cx, cy) => {
+    const dx = fx - cx, dy = fy - cy, k = 1 / Math.sqrt(dx * dx / (RX * RX) + dy * dy / (RY * RY));
+    return [cx + dx * k, cy + dy * k];
+  };
+  const assoc = { bn: ['A', 'D', 'E'], nv: ['A', 'D', 'E', 'X', 'F'], bs: ['G'], sms: ['H'] };
+  for (const a in assoc) {
+    const [ax, ay, , ] = actors[a];
+    const sx = ax < 400 ? ax + 20 : ax - 20, sy = ay - 12;
+    assoc[a].forEach(u => {
+      const [ux, uy] = cases[u];
+      const px = ax < 400 ? ux - RX : ux + RX, py = uy;
+      const g = S('g', {}, svg);
+      S('line', { x1: sx, y1: sy, x2: px, y2: py, class: 'assoc' }, g);
+      S('line', { x1: sx, y1: sy, x2: px, y2: py, stroke: 'transparent', 'stroke-width': 12 }, g);
+      add(g, 'assoc', 4);
+    });
+  }
+
+  /* include, extend */
+  const rels = [['A', 'B', 'inc'], ['D', 'B', 'inc'], ['X', 'H', 'inc'], ['E', 'H', 'inc'], ['C', 'A', 'ext']];
+  rels.forEach(([f, t, kind]) => {
+    const [fx, fy] = cases[f], [tx, ty] = cases[t];
+    const p1 = clip(tx, ty, fx, fy), p2 = clip(fx, fy, tx, ty);
+    const g = S('g', {}, svg);
+    S('line', { x1: p1[0], y1: p1[1], x2: p2[0], y2: p2[1], class: 'dep', 'marker-end': 'url(#uc-open)' }, g);
+    S('line', { x1: p1[0], y1: p1[1], x2: p2[0], y2: p2[1], stroke: 'transparent', 'stroke-width': 12 }, g);
+    const mx = (p1[0] + p2[0]) / 2, my = (p1[1] + p2[1]) / 2;
+    txt(g, ['«' + (kind === 'inc' ? 'include' : 'extend') + '»'], mx, my - 8, { cls: 'dep-label halo', valign: 'top' });
+    if (kind === 'ext') txt(g, ['[chưa có hồ sơ]'], mx, my + 16, { cls: 'dep-label halo', valign: 'top' });
+    add(g, kind, 5);
+  });
+
+  /* thứ tự lớp: ranh giới nằm dưới cùng */
+  svg.insertBefore(gb, svg.querySelector('defs').nextSibling);
+
+  const stepper = makeStepper($('#uc-stepper'), steps, (i, s) => {
+    $$('#uc-svg [data-step]').forEach(e => {
+      const n = +e.dataset.step;
+      e.classList.toggle('off', n > i + 1);
+      e.classList.remove('fresh');
+      if (n === i + 1) { void e.getBoundingClientRect(); e.classList.add('fresh'); }
+    });
+    stepCard($('#uc-text'), s);
+  });
+  stepper.go(0);
+})();
+
+/* ================== 03 Đặc tả use case ================== */
+(function () {
+  const main = [
+    'Hệ thống hiển thị danh sách chuyên khoa.',
+    'Người dùng chọn một chuyên khoa.',
+    'Hệ thống hiển thị bác sĩ và khung giờ còn trống của chuyên khoa (thực hiện UC-06 Xem khung giờ trống).',
+    'Người dùng chọn một bác sĩ và một khung giờ.',
+    'Hệ thống kiểm tra bệnh nhân đã có hồ sơ.',
+    'Người dùng nhập lý do khám và xác nhận đặt lịch.',
+    'Hệ thống kiểm tra khung giờ vẫn còn trống.',
+    'Hệ thống tạo lịch hẹn ở trạng thái “Chờ xác nhận” và giữ khung giờ.',
+    'Hệ thống hiển thị mã lịch hẹn cho người dùng và đưa lịch hẹn vào hàng chờ xác nhận. Use case kết thúc.'
+  ];
+  const alts = [
+    [3, '3a', 'Chuyên khoa không còn khung giờ trống', 'Hệ thống thông báo và gợi ý ngày gần nhất còn chỗ. Quay về bước 2.'],
+    [5, '5a', 'Bệnh nhân chưa có hồ sơ', 'Hệ thống thực hiện UC-07 Đăng ký hồ sơ bệnh nhân mới, sau đó tiếp tục ở bước 6.'],
+    [7, '7a', 'Khung giờ vừa bị người khác đặt', 'Hệ thống thông báo và gợi ý lựa chọn khác. Quay về bước 2.']
+  ];
+  const F = [
+    ['Mã và tên', 'UC-01 Đặt lịch khám', 'Mã giúp tìm lại use case này ở sơ đồ, yêu cầu và ca kiểm thử.', 'Tên lấy đúng từ sơ đồ use case. Đổi tên ở sơ đồ thì đổi ở đây.'],
+    ['Mô tả tóm tắt', 'Cho phép bệnh nhân hoặc nhân viên tiếp nhận đặt lịch khám với một bác sĩ vào một khung giờ còn trống.', 'Một đến hai câu cho biết use case làm gì, cho ai, đạt mục tiêu gì.', 'Không chép lại luồng sự kiện vào đây.'],
+    ['Actor chính', 'Bệnh nhân; Nhân viên tiếp nhận (đặt thay cho bệnh nhân).', 'Actor chính khởi động use case và nhận kết quả.', 'Khớp với các actor nối với use case trong sơ đồ.'],
+    ['Actor phụ', 'Không có. Cổng SMS chỉ tham gia ở UC-08 Gửi thông báo SMS.', 'Actor phụ giúp use case hoàn thành nhưng không khởi động nó.', 'Hệ thống ngoài như cổng SMS, cổng thanh toán thường là actor phụ.'],
+    ['Kích hoạt', 'Người dùng chọn chức năng đặt lịch khám.', 'Sự kiện làm use case bắt đầu.', 'Ghi sự kiện, không ghi giao diện (“bấm nút màu xanh”).'],
+    ['Tiền điều kiện', 'Người dùng đã đăng nhập. Bác sĩ có lịch làm việc đã công bố cho các ngày sắp tới.', 'Điều phải đúng trước khi use case bắt đầu. Các bước sau không kiểm tra lại.', 'Nếu điều kiện có thể sai và cần xử lý, chuyển thành luồng thay thế.'],
+    ['Hậu điều kiện (thành công)', 'Một lịch hẹn mới tồn tại ở trạng thái “Chờ xác nhận”. Khung giờ được giữ cho bệnh nhân.', 'Trạng thái của hệ thống khi use case kết thúc thành công. Dùng để viết kết quả mong đợi của ca kiểm thử.', 'Mô tả thay đổi dữ liệu quan sát được. Trạng thái “Chờ xác nhận” phải có trong state chart.'],
+    ['Hậu điều kiện (thất bại)', 'Không có lịch hẹn mới. Khung giờ không bị giữ.', 'Hệ thống vẫn phải nhất quán khi use case thất bại.', 'Ghi rõ mục này, kể cả khi trạng thái thất bại giống trạng thái ban đầu.'],
+    ['Luồng chính', main, 'Dãy bước khi mọi thứ suôn sẻ. Mỗi bước có một chủ thể (người dùng hoặc hệ thống) và một hành động.', 'Luồng chính không chứa câu “nếu”. Các rẽ nhánh chuyển sang luồng thay thế.'],
+    ['Luồng thay thế', alts, 'Cách khác để đạt mục tiêu, hoặc tình huống đặc biệt mà use case vẫn tiếp tục.', 'Mỗi luồng ghi bước rẽ, điều kiện, hành động và bước quay về.'],
+    ['Luồng ngoại lệ', '8a. Hệ thống không lưu được lịch hẹn (lỗi cơ sở dữ liệu): hệ thống thông báo lỗi, không giữ khung giờ, use case kết thúc thất bại.', 'Lỗi khiến use case không đạt được mục tiêu.', 'Mỗi ngoại lệ dẫn đến hậu điều kiện thất bại.'],
+    ['Quy tắc nghiệp vụ', 'BR-01: mỗi bệnh nhân có tối đa 2 lịch hẹn ở trạng thái “Chờ xác nhận” hoặc “Đã xác nhận”. BR-02: chỉ đặt lịch cho khung giờ cách hiện tại ít nhất 2 giờ. (Giả định của ví dụ.)', 'Quy tắc của tổ chức mà use case phải tuân theo. Ghi riêng để nhiều use case dùng lại.', 'Dẫn mã quy tắc vào bước liên quan và ghi rõ nguồn của quy tắc.'],
+    ['Yêu cầu phi chức năng', 'Bước 3 hiển thị kết quả trong vòng 2 giây với 95% yêu cầu. (Giả định của ví dụ.)', 'Yêu cầu về chất lượng gắn với use case này.', 'Phải đo được. “Nhanh” không kiểm thử được, “trong 2 giây” thì kiểm thử được.'],
+    ['Include, extend', 'Include: UC-06 Xem khung giờ trống (bước 3). Extend: UC-07 Đăng ký hồ sơ bệnh nhân mới (điểm mở rộng ở bước 5).', 'Liên kết đến các use case có quan hệ trong sơ đồ.', 'Khớp với mũi tên trên sơ đồ use case.']
+  ];
+  const tb = $('#spec-table tbody');
+  const info = $('#spec-info');
+  const mainLis = [];
+  F.forEach((f, idx) => {
+    const tr = document.createElement('tr');
+    const th = document.createElement('th'); th.textContent = f[0];
+    const td = document.createElement('td');
+    if (Array.isArray(f[1]) && typeof f[1][0] === 'string') {
+      const ol = document.createElement('ol');
+      f[1].forEach((s, i) => { const li = document.createElement('li'); li.textContent = s; ol.appendChild(li); mainLis[i + 1] = li; });
+      td.appendChild(ol);
+    } else if (Array.isArray(f[1])) {
+      f[1].forEach(([n, id, cond, act]) => {
+        const d = document.createElement('div'); d.className = 'alt';
+        d.innerHTML = `<b>${id}.</b> <i>${cond}:</i> ${act}`;
+        d.onmouseenter = () => mainLis[n].classList.add('hl');
+        d.onmouseleave = () => mainLis[n].classList.remove('hl');
+        td.appendChild(d);
+      });
+    } else td.textContent = f[1];
+    tr.append(th, td);
+    th.onclick = () => {
+      $$('tr.sel', tb).forEach(r => r.classList.remove('sel'));
+      tr.classList.add('sel');
+      info.innerHTML = `<span class="tag">${f[0]}</span><p><b>Dùng để làm gì.</b> ${f[2]}</p><p><b>Lưu ý.</b> ${f[3]}</p>`;
+    };
+    tb.appendChild(tr);
+  });
+
+  const fixes = [
+    ['Hệ thống lưu thông tin vào bảng appointments trong cơ sở dữ liệu.', 'Hệ thống tạo lịch hẹn ở trạng thái “Chờ xác nhận”.', 'Đặc tả mô tả hành vi nhìn thấy được, không nêu cách cài đặt. Cách lưu dữ liệu thuộc về thiết kế.'],
+    ['Người dùng bấm nút “Đặt lịch” màu xanh ở góc phải màn hình.', 'Người dùng chọn chức năng đặt lịch khám.', 'Giao diện có thể đổi mà yêu cầu không đổi. Mô tả giao diện thuộc về tài liệu thiết kế giao diện.'],
+    ['Hệ thống kiểm tra và xử lý các trường hợp lỗi.', '7a. Khung giờ đã được người khác đặt: hệ thống thông báo và gợi ý lựa chọn khác, quay về bước 2.', 'Câu gốc không nói lỗi nào và xử lý ra sao, nên không viết được ca kiểm thử. Mỗi lỗi cần điều kiện, hành động và bước quay về.'],
+    ['Bệnh nhân nhập thông tin, hệ thống xử lý rồi thông báo kết quả.', 'Bước 6: Người dùng nhập lý do khám và xác nhận. Bước 7: Hệ thống kiểm tra khung giờ. Bước 8: Hệ thống tạo lịch hẹn.', 'Mỗi bước chỉ có một chủ thể và một hành động. Gộp việc của hai bên vào một câu thì không rõ ai chịu trách nhiệm.'],
+    ['Hệ thống phải phản hồi nhanh.', 'Bước 3 hiển thị kết quả trong vòng 2 giây với 95% yêu cầu.', 'Yêu cầu phải kiểm chứng được: nêu đại lượng, ngưỡng và điều kiện đo.']
+  ];
+  $('#fixes').innerHTML = fixes.map((f, i) => `<div class="fix" id="fix${i}"><div class="bad">${f[0]}</div><button class="btn ghost" data-i="${i}">${icon('eye')}Xem bản sửa</button><div class="good"><b>Sửa thành:</b> ${f[1]}<br><span style="color:var(--ink-soft)">${f[2]}</span></div></div>`).join('');
+  $$('#fixes .btn').forEach(b => b.onclick = () => { const f = $('#fix' + b.dataset.i); f.classList.toggle('open'); b.innerHTML = f.classList.contains('open') ? icon('eye-off') + 'Ẩn' : icon('eye') + 'Xem bản sửa'; });
+})();
+
+/* ================== 04 Activity diagram ================== */
+(function () {
+  const svg = $('#ad-svg');
+  addDefs(svg, 'ad');
+
+  const N = {
+    s: { type: 'initial', x: 140, y: 66 },
+    m1: { type: 'merge', x: 140, y: 106 },
+    a1: { type: 'action', x: 140, y: 160, w: 170, h: 44, t: ['Chọn chuyên khoa'] },
+    a2: { type: 'action', x: 410, y: 240, w: 190, h: 44, t: ['Hiển thị bác sĩ', 'và khung giờ trống'] },
+    d1: { type: 'decision', x: 410, y: 322, t: ['Còn khung', 'giờ trống?'] },
+    a3: { type: 'action', x: 660, y: 322, w: 150, h: 48, t: ['Thông báo và gợi ý', 'lựa chọn khác'] },
+    a4: { type: 'action', x: 140, y: 410, w: 170, h: 44, t: ['Chọn bác sĩ', 'và khung giờ'] },
+    d2: { type: 'decision', x: 410, y: 500, t: ['Đã có hồ sơ', 'bệnh nhân?'] },
+    a5: { type: 'action', x: 140, y: 500, w: 170, h: 44, t: ['Đăng ký hồ sơ', 'bệnh nhân mới'] },
+    m2: { type: 'merge', x: 410, y: 580 },
+    a6: { type: 'action', x: 140, y: 660, w: 170, h: 44, t: ['Nhập lý do khám', 'và xác nhận'] },
+    a7: { type: 'action', x: 410, y: 740, w: 190, h: 44, t: ['Kiểm tra khung', 'giờ còn trống'] },
+    d3: { type: 'decision', x: 410, y: 830, t: ['Khung giờ', 'vẫn trống?'] },
+    a7b: { type: 'action', x: 410, y: 920, w: 190, h: 44, t: ['Tạo lịch hẹn', '“Chờ xác nhận”'] },
+    fk: { type: 'bar', x: 485, y: 985, w: 230 },
+    a9: { type: 'action', x: 380, y: 1050, w: 150, h: 44, t: ['Hiển thị mã', 'lịch hẹn'], par: true },
+    a8: { type: 'action', x: 590, y: 1050, w: 150, h: 44, t: ['Đưa vào hàng', 'chờ xác nhận'], par: true },
+    jn: { type: 'bar', x: 485, y: 1115, w: 230 },
+    e: { type: 'final', x: 410, y: 1165 }
+  };
+  const E = [
+    ['e1', 's', 'm1', [[140, 75], [140, 92]]],
+    ['e2', 'm1', 'a1', [[140, 120], [140, 138]]],
+    ['e3', 'a1', 'a2', [[140, 182], [140, 196], [410, 196], [410, 218]]],
+    ['e4', 'a2', 'd1', [[410, 262], [410, 290]]],
+    ['e5', 'd1', 'a3', [[488, 322], [585, 322]], '[không]', [536, 311]],
+    ['e6', 'a3', 'm1', [[660, 298], [660, 106], [154, 106]]],
+    ['e7', 'd1', 'a4', [[410, 354], [410, 372], [140, 372], [140, 388]], '[còn]', [420, 366, 'start']],
+    ['e8', 'a4', 'd2', [[140, 432], [140, 450], [410, 450], [410, 468]]],
+    ['e9', 'd2', 'a5', [[332, 500], [225, 500]], '[chưa có]', [278, 490]],
+    ['e10', 'd2', 'm2', [[410, 532], [410, 566]], '[đã có]', [420, 553, 'start']],
+    ['e11', 'a5', 'm2', [[140, 522], [140, 580], [396, 580]]],
+    ['e12', 'm2', 'a6', [[410, 594], [410, 620], [140, 620], [140, 638]]],
+    ['e13', 'a6', 'a7', [[140, 682], [140, 700], [410, 700], [410, 718]]],
+    ['e14', 'a7', 'd3', [[410, 762], [410, 798]]],
+    ['e15', 'd3', 'a7b', [[410, 862], [410, 898]], '[còn]', [420, 884, 'start']],
+    ['e16', 'd3', 'a3', [[488, 830], [660, 830], [660, 346]], '[đã bị đặt]', [574, 820]],
+    ['e17', 'a7b', 'fk', [[410, 942], [410, 981]]],
+    ['e18', 'fk', 'a9', [[380, 989], [380, 1028]]],
+    ['e19', 'fk', 'a8', [[590, 989], [590, 1028]]],
+    ['e20', 'a9', 'jn', [[380, 1072], [380, 1111]]],
+    ['e21', 'a8', 'jn', [[590, 1072], [590, 1111]]],
+    ['e22', 'jn', 'e', [[410, 1119], [410, 1153]]]
+  ];
+
+  /* làn */
+  const lanes = [['Người dùng', 0, 280], ['Hệ thống', 280, 480]];
+  lanes.forEach(([n, x, w], i) => {
+    S('rect', { x, y: 0, width: w, height: 1200, class: 'lane-band' + (i ? ' alt' : '') }, svg);
+    const g = S('g', { 'data-kind': 'lane' }, svg);
+    S('rect', { x, y: 0, width: w, height: 34, fill: '#e8dac7', stroke: '#d9caba' }, g);
+    txt(g, [n], x + w / 2, 17, { cls: 'lane-head' });
+  });
+
+  const kindOf = id => {
+    const n = N[id];
+    if (n.type === 'initial' || n.type === 'final') return 'initfinal';
+    if (n.type === 'decision' || n.type === 'merge') return 'branch';
+    if (n.type === 'bar') return 'parallel';
+    return n.par ? 'action parallel' : 'action';
+  };
+  const gEdge = {}, gNode = {};
+  E.forEach(([id, f, t, pts, label, lp]) => {
+    const kinds = ['edge'];
+    [f, t].forEach(x => { const k = kindOf(x); if (k === 'branch') kinds.push('branch'); if (k === 'parallel') kinds.push('parallel'); });
+    const g = S('g', { 'data-kind': kinds.join(' '), 'data-id': id }, svg);
+    S('path', { d: pathD(pts), class: 'flow', 'marker-end': 'url(#ad-fill)' }, g);
+    if (label) txt(g, [label], lp[0], lp[1], { anchor: lp[2] || 'middle', cls: 'small bold halo' });
+    gEdge[id] = g;
+  });
+
+  Object.entries(N).forEach(([id, n]) => {
+    const g = S('g', { 'data-kind': kindOf(id), 'data-id': id }, svg);
+    if (n.type === 'initial') S('circle', { cx: n.x, cy: n.y, r: 9, class: 'ctl-dot shape' }, g);
+    else if (n.type === 'final') {
+      S('circle', { cx: n.x, cy: n.y, r: 12, fill: '#fffdf8', stroke: '#40281d', 'stroke-width': 2, class: 'shape' }, g);
+      S('circle', { cx: n.x, cy: n.y, r: 7, class: 'ctl-dot' }, g);
+    } else if (n.type === 'merge') S('path', { d: `M${n.x} ${n.y - 14}L${n.x + 14} ${n.y}L${n.x} ${n.y + 14}L${n.x - 14} ${n.y}Z`, class: 'dec-box shape' }, g);
+    else if (n.type === 'decision') {
+      S('path', { d: `M${n.x} ${n.y - 32}L${n.x + 78} ${n.y}L${n.x} ${n.y + 32}L${n.x - 78} ${n.y}Z`, class: 'dec-box shape' }, g);
+      txt(g, n.t, n.x, n.y, { cls: 'small', lh: 17 });
+    } else if (n.type === 'bar') S('rect', { x: n.x - n.w / 2, y: n.y - 4, width: n.w, height: 8, rx: 2, class: 'bar' }, g);
+    else {
+      S('rect', { x: n.x - n.w / 2, y: n.y - n.h / 2, width: n.w, height: n.h, rx: 16, class: 'act-box shape' }, g);
+      txt(g, n.t, n.x, n.y, { cls: 'small', lh: 18 });
+    }
+    gNode[id] = g;
+  });
+  /* tên cho fork và join */
+  txt(svg, ['fork'], 365, 976, { anchor: 'end', cls: 'tiny ital' });
+  txt(svg, ['join'], 365, 1106, { anchor: 'end', cls: 'tiny ital' });
+
+  /* các bước tập trung */
+  const steps = [
+    { short: 'Swimlane', kinds: ['lane'], title: 'Chia làn trách nhiệm', text: 'Mỗi làn là một actor hoặc bộ phận. Ở đây có hai làn: Người dùng (bệnh nhân hoặc nhân viên) và Hệ thống. Hành động nằm ở làn nào thì làn đó thực hiện.', check: ['Hành động này do ai làm?', 'Có bên nào cần thêm làn không (ví dụ cổng SMS)?'] },
+    { short: 'Bắt đầu, kết thúc', kinds: ['initfinal'], title: 'Đặt điểm bắt đầu và điểm kết thúc', text: 'Điểm bắt đầu ứng với kích hoạt của use case. Điểm kết thúc ứng với hậu điều kiện thành công. Sơ đồ chỉ có một điểm bắt đầu.', check: ['Use case bắt đầu khi nào?', 'Kết thúc ở đâu, thành công hay thất bại?'] },
+    { short: 'Hành động', kinds: ['action'], title: 'Chuyển các bước thành hành động', text: 'Mỗi bước của luồng chính thành một hành động, đặt đúng làn. Tên là động từ ngắn. Bước hệ thống tự kiểm tra cũng là hành động.', check: ['Mỗi bước của đặc tả đã có hành động chưa?', 'Tên có đủ ngắn để đọc trong một hộp không?'] },
+    { short: 'Luồng', kinds: ['edge'], title: 'Nối bằng luồng điều khiển', text: 'Mũi tên chỉ thứ tự. Khi mũi tên sang làn khác, việc chuyển từ bên này sang bên kia: người dùng chọn xong thì hệ thống xử lý.', check: ['Hành động nào chưa có mũi tên ra?', 'Có vòng lặp nào không thoát ra được không?'] },
+    { short: 'Rẽ nhánh', kinds: ['branch'], title: 'Thêm decision và merge từ luồng thay thế', text: 'Mỗi luồng thay thế 3a, 5a, 7a thành một decision, mỗi nhánh ra có guard. Merge gom nhiều luồng về một điểm để đi tiếp. Nhánh 3a và 7a đều quay về bước chọn chuyên khoa qua merge.', check: ['Các guard có loại trừ nhau không?', 'Có trường hợp nào không thuộc nhánh nào không?'] },
+    { short: 'Song song', kinds: ['parallel'], title: 'Tách việc song song bằng fork và join', text: 'Sau khi tạo lịch hẹn, hai việc hiển thị mã cho người dùng và đưa lịch vào hàng chờ xác nhận không phụ thuộc nhau. Fork tách thành hai luồng; join chờ cả hai xong rồi mới đến điểm kết thúc.', check: ['Hai việc này có độc lập không?', 'Mỗi fork đã có join tương ứng chưa?'] },
+    { short: 'Toàn bộ', kinds: null, title: 'Đọc toàn bộ sơ đồ', text: 'Kiểm tra đường đi từ điểm bắt đầu đến điểm kết thúc. Đối chiếu từng luồng thay thế của đặc tả với một nhánh trong sơ đồ (xem bảng bên dưới). Sau đó chạy thử các đường đi trong phần mô phỏng.', check: ['Đường đi nào đến được điểm kết thúc?', 'Sơ đồ có khớp từng bước của đặc tả không?'] }
+  ];
+  const stepper = makeStepper($('#ad-stepper'), steps, (i, s) => {
+    $$('#ad-svg [data-kind]').forEach(e => {
+      const ks = e.dataset.kind.split(' ');
+      const on = !s.kinds || ks.some(k => s.kinds.includes(k));
+      e.style.opacity = on ? 1 : 0.13;
+    });
+    stepCard($('#ad-text'), s);
+  });
+  stepper.go(0);
+
+  /* truy vết */
+  const tr = [
+    ['3a. Chuyên khoa không còn khung giờ trống', 'Nhánh [không] của decision “Còn khung giờ trống?” dẫn đến hành động “Thông báo và gợi ý”, rồi merge quay về “Chọn chuyên khoa”.', ['d1', 'e5', 'a3', 'e6', 'm1']],
+    ['5a. Bệnh nhân chưa có hồ sơ', 'Nhánh [chưa có] của decision “Đã có hồ sơ bệnh nhân?” dẫn đến hành động “Đăng ký hồ sơ bệnh nhân mới”, rồi merge về luồng chính.', ['d2', 'e9', 'a5', 'e11', 'm2']],
+    ['7a. Khung giờ đã bị người khác đặt', 'Nhánh [đã bị đặt] của decision “Khung giờ vẫn trống?” dẫn đến “Thông báo và gợi ý”.', ['d3', 'e16', 'a3']],
+    ['Bước 9. Hiển thị mã và đưa vào hàng chờ', 'Fork tách hai hành động độc lập; join chờ cả hai xong.', ['fk', 'e18', 'e19', 'a9', 'a8', 'e20', 'e21', 'jn']],
+    ['8a. Lỗi lưu lịch hẹn', 'Chưa vẽ. Thử bổ sung: thêm một decision sau hành động “Tạo lịch hẹn”, nhánh lỗi dẫn đến nút kết thúc thất bại.', []]
+  ];
+  const tbd = $('#trace-table tbody');
+  tr.forEach(([a, b, ids]) => {
+    const r = document.createElement('tr');
+    r.style.cursor = 'pointer';
+    r.innerHTML = `<td><b>${a}</b></td><td>${b}</td>`;
+    r.onclick = () => {
+      $$('#ad-svg .trace').forEach(e => e.classList.remove('trace'));
+      $$('#trace-table tr.fired').forEach(e => e.classList.remove('fired'));
+      r.classList.add('fired');
+      ids.forEach(id => {
+        const g = gNode[id] || gEdge[id];
+        if (g) { g.classList.add('trace'); g.querySelectorAll('path.flow').forEach(p => p.classList.add('trace')); }
+      });
+      stepper.go(6);
+      if (ids.length) gNode[ids[0]].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    tbd.appendChild(r);
+  });
+
+  /* mô phỏng */
+  const outs = id => E.filter(e => e[1] === id);
+  const ins = id => E.filter(e => e[2] === id);
+  let sim;
+  const ctrl = $('#ad-ctrl'), log = $('#ad-log');
+  const tokenLayer = S('g', {}, svg);
+  function say(msg, cls) { const li = document.createElement('li'); li.textContent = msg; if (cls) li.className = cls; log.prepend(li); }
+  function nm(id) { const n = N[id]; return n.t ? n.t.join(' ').replace(/\s+/g, ' ') : id; }
+  function reset() {
+    sim = { tokens: ['s'], used: new Set(), pending: null, done: false };
+    log.innerHTML = '';
+    say('Bắt đầu: token ở nút bắt đầu.');
+    render();
+  }
+  function move(from, edge) {
+    sim.used.add(edge[0]);
+    const to = edge[2], n = N[to];
+    if (n.type === 'action') say('Thực hiện: ' + nm(to) + (n.par ? ' (luồng song song)' : ''));
+    else if (n.type === 'final') { say('Kết thúc use case.', 'ok'); }
+    return to;
+  }
+  function step() {
+    if (sim.pending || sim.done) return;
+    const cnt = {};
+    sim.tokens.forEach(t => cnt[t] = (cnt[t] || 0) + 1);
+    const next = [];
+    for (const id in cnt) {
+      const n = N[id];
+      if (n.type === 'final') { next.push(id); continue; }
+      if (n.type === 'decision') { sim.pending = id; next.push(id); continue; }
+      if (id === 'jn') {
+        if (cnt[id] >= ins(id).length) { say('Join: cả hai luồng đã đến, tiếp tục.'); next.push(move(id, outs(id)[0])); }
+        else for (let i = 0; i < cnt[id]; i++) next.push(id);
+        continue;
+      }
+      if (id === 'fk') { say('Fork: tách thành hai luồng song song.'); outs(id).forEach(e => next.push(move(id, e))); continue; }
+      if (n.type === 'merge' && ins(id).length > 1) { /* merge không chờ */ }
+      for (let i = 0; i < cnt[id]; i++) next.push(move(id, outs(id)[0]));
+    }
+    sim.tokens = next;
+    if (next.every(t => N[t].type === 'final')) sim.done = true;
+    render();
+  }
+  function choose(edge) {
+    const id = sim.pending;
+    say('Rẽ nhánh tại “' + nm(id) + '”: ' + edge[4]);
+    sim.tokens = sim.tokens.map(t => t === id ? move(id, edge) : t);
+    sim.pending = null;
+    render();
+  }
+  function render() {
+    $$('#ad-svg .flow').forEach(p => p.classList.remove('used'));
+    sim.used.forEach(id => gEdge[id].querySelector('path').classList.add('used'));
+    Object.values(gNode).forEach(g => g.classList.remove('node-active'));
+    sim.tokens.forEach(t => gNode[t].classList.add('node-active'));
+    tokenLayer.innerHTML = '';
+    const seen = {};
+    sim.tokens.forEach(t => {
+      const n = N[t]; const k = seen[t] = (seen[t] || 0);
+      seen[t]++;
+      S('circle', { cx: n.type === 'bar' ? n.x - 60 + k * 120 : n.x - (n.w ? n.w / 2 : 22) - 2 + (n.type === 'initial' || n.type === 'final' ? 24 : 0), cy: n.y, r: 8, class: 'token' }, tokenLayer);
+    });
+    ctrl.innerHTML = '';
+    const nx = document.createElement('button'); nx.className = 'btn'; nx.innerHTML = icon('step-forward') + 'Bước tiếp'; nx.disabled = !!sim.pending || sim.done; nx.onclick = step;
+    const rs = document.createElement('button'); rs.className = 'btn ghost'; rs.innerHTML = icon('rotate-ccw') + 'Đặt lại'; rs.onclick = reset;
+    ctrl.append(nx, rs);
+    if (sim.pending) {
+      const lab = document.createElement('div'); lab.style.cssText = 'width:100%;font-size:.88rem;font-weight:600'; lab.textContent = 'Chọn nhánh tại “' + nm(sim.pending) + '”:';
+      ctrl.appendChild(lab);
+      outs(sim.pending).forEach(e => { const b = document.createElement('button'); b.className = 'btn ghost'; b.textContent = e[4]; b.onclick = () => choose(e); ctrl.appendChild(b); });
+    }
+  }
+  reset();
+})();
+
+/* ================== 05 State chart ================== */
+(function () {
+  const svg = $('#st-svg');
+  addDefs(svg, 'st');
+  const W = 150, H = 56;
+  const ST = {
+    P: [230, 170, 'Chờ xác nhận'], C: [580, 170, 'Đã xác nhận'], K: [930, 170, 'Đã tiếp nhận'],
+    X: [300, 340, 'Đã huỷ'], N: [580, 340, 'Vắng mặt'], I: [930, 340, 'Đang khám'], D: [930, 470, 'Hoàn tất']
+  };
+  /* sự kiện: khoá -> nhãn nút */
+  const EV = {
+    book: 'Đặt lịch', confirm: 'Nhân viên xác nhận', expire: 'Quá 24 giờ chưa xác nhận', reschedule: 'Bệnh nhân đổi lịch',
+    cancel: 'Huỷ lịch', checkin: 'Check-in', noshow: 'Hết ca khám', call: 'Bác sĩ gọi khám', finish: 'Kết thúc khám'
+  };
+  const GU = {
+    g_cancel: 'Còn ít nhất 2 giờ trước giờ khám',
+    g_checkin: 'Đã đến ngày khám',
+    g_slot: 'Khung giờ mới còn trống'
+  };
+  const env = { g_cancel: true, g_checkin: true, g_slot: true };
+  /* chuyển trạng thái: id, từ, đến, sự kiện, guard khoá, guard chữ, action, đường dẫn, nhãn [x,y,anchor] */
+  const T = [
+    { id: 't0', f: 'init', t: 'P', ev: 'book', gk: null, g: '', a: 'giữ khung giờ', ek: 'e0' },
+    { id: 't1', f: 'P', t: 'C', ev: 'confirm', gk: null, g: '', a: 'gửi SMS xác nhận', ek: 'e1' },
+    { id: 't2', f: 'P', t: 'X', ev: 'cancel', gk: null, g: '', a: 'giải phóng khung giờ', ek: 'e2' },
+    { id: 't3', f: 'P', t: 'X', ev: 'expire', gk: null, g: '', a: 'giải phóng khung giờ', ek: 'e2' },
+    { id: 't4', f: 'C', t: 'C', ev: 'reschedule', gk: 'g_slot', g: 'khung giờ mới còn trống', a: 'chuyển sang khung giờ mới', ek: 'e3' },
+    { id: 't5', f: 'C', t: 'X', ev: 'cancel', gk: 'g_cancel', g: 'còn ≥ 2 giờ trước giờ khám', a: 'giải phóng khung giờ, gửi SMS', ek: 'e4' },
+    { id: 't6', f: 'C', t: 'K', ev: 'checkin', gk: 'g_checkin', g: 'đã đến ngày khám', a: 'ghi nhận giờ đến', ek: 'e5' },
+    { id: 't7', f: 'C', t: 'N', ev: 'noshow', gk: null, g: '', a: 'ghi nhận vắng mặt', ek: 'e6' },
+    { id: 't8', f: 'K', t: 'I', ev: 'call', gk: null, g: '', a: '', ek: 'e7' },
+    { id: 't9', f: 'I', t: 'D', ev: 'finish', gk: null, g: '', a: 'lưu kết quả khám', ek: 'e8' }
+  ];
+  const evText = { book: 'đặt lịch', confirm: 'xác nhận', expire: 'quá 24 giờ chưa xác nhận', reschedule: 'đổi lịch', cancel: 'huỷ lịch', checkin: 'check-in', noshow: 'hết ca khám', call: 'bác sĩ gọi khám', finish: 'kết thúc khám' };
+  const stName = k => k === 'init' ? 'Chưa có lịch hẹn' : ST[k][2];
+
+  /* cạnh vẽ */
+  const edges = {
+    e0: { pts: [[230, 70], [230, 142]], marker: true },
+    e1: { pts: [[305, 170], [505, 170]] },
+    e2: { pts: [[245, 198], [290, 312]] },
+    e3: { d: 'M545 142C530 70 630 70 615 142', loop: true },
+    e4: { pts: [[540, 198], [360, 312]] },
+    e5: { pts: [[655, 170], [855, 170]] },
+    e6: { pts: [[580, 198], [580, 312]] },
+    e7: { pts: [[930, 198], [930, 312]] },
+    e8: { pts: [[930, 368], [930, 442]] },
+    f1: { pts: [[300, 368], [300, 540], [568, 540]], fin: true },
+    f2: { pts: [[580, 368], [580, 528]], fin: true },
+    f3: { pts: [[930, 498], [930, 540], [592, 540]], fin: true }
+  };
+  /* nhãn: sự kiện, guard, action lấy từ T; vị trí cố định theo cạnh */
+  const labelPos = {
+    e0: ['start', 240, 100], e1: ['middle', 405, 150, 'up'], e2: ['end', 238, 236],
+    e3: ['middle', 580, 58, 'up'], e4: ['middle', 450, 242], e5: ['middle', 755, 150, 'up'],
+    e6: ['start', 592, 242], e7: ['end', 920, 246], e8: ['end', 920, 410]
+  };
+
+  const steps = [
+    { short: 'Trạng thái', stage: 1, title: 'Liệt kê các trạng thái', text: 'Chọn một đối tượng có vòng đời (ở đây là Lịch hẹn). Hỏi: theo lời stakeholder, nó có thể ở những trạng thái nào? Mỗi trạng thái kéo dài một thời gian và quy định việc được phép làm. Đặt tên bằng tính từ hoặc cụm “đã, đang, chờ”.', check: ['Hai trạng thái có cho phép các sự kiện khác nhau không? Nếu không, gộp lại.', 'Trạng thái nào là cuối, không còn thay đổi nữa?'] },
+    { short: 'Bắt đầu, kết thúc', stage: 2, title: 'Thêm trạng thái bắt đầu và kết thúc', text: 'Điểm bắt đầu cho biết lịch hẹn sinh ra ở trạng thái nào. Các trạng thái “Đã huỷ”, “Vắng mặt”, “Hoàn tất” đều dẫn đến điểm kết thúc vì lịch hẹn không đổi nữa.', check: ['Đối tượng được tạo ra ở trạng thái nào?', 'Trạng thái nào là cuối?'] },
+    { short: 'Sự kiện', stage: 3, title: 'Nối bằng các chuyển trạng thái và sự kiện', text: 'Với mỗi trạng thái, hỏi: sự kiện nào làm nó đổi sang trạng thái khác? Ghi tên sự kiện lên mũi tên. Đổi lịch không đổi trạng thái, nên vẽ mũi tên vòng về chính nó.', check: ['Sự kiện đến từ đâu (người dùng, thời gian, hệ thống khác)?', 'Đặc tả use case có sự kiện nào chưa được vẽ ở trạng thái này không?'] },
+    { short: 'Guard, action', stage: 4, title: 'Bổ sung điều kiện và hành động', text: 'Guard trong ngoặc vuông là điều kiện để chuyển trạng thái. Action sau dấu gạch chéo là việc hệ thống làm khi chuyển. Nhãn đầy đủ có dạng sự kiện [guard] / action. Sau bước này sơ đồ đủ để mô phỏng.', check: ['Khi guard sai, chuyện gì xảy ra với sự kiện?', 'Action có phải việc hệ thống thực hiện không?'] }
+  ];
+
+  const gAll = {};
+  const inGroup = (stage, extra) => { const g = S('g', { 'data-stage': stage }, svg); return g; };
+  /* trạng thái */
+  Object.entries(ST).forEach(([k, [x, y, name]]) => {
+    const g = S('g', { 'data-stage': 1, 'data-st': k }, svg);
+    S('rect', { x: x - W / 2, y: y - H / 2, width: W, height: H, rx: 14, class: 'st-box shape' }, g);
+    txt(g, [name], x, y, { cls: 'bold' });
+    gAll[k] = g;
+  });
+  /* initial / final */
+  const gInit = S('g', { 'data-stage': 2, 'data-st': 'init' }, svg);
+  S('circle', { cx: 230, cy: 62, r: 8, class: 'ctl-dot st-box' }, gInit);
+  const gFin = S('g', { 'data-stage': 2 }, svg);
+  S('circle', { cx: 580, cy: 540, r: 12, class: 'st-fin-ring' }, gFin);
+  S('circle', { cx: 580, cy: 540, r: 7, class: 'ctl-dot' }, gFin);
+  gAll.init = gInit;
+
+  /* cạnh */
+  const gEdges = {};
+  Object.entries(edges).forEach(([k, e]) => {
+    const stage = k === 'e0' || e.fin ? 2 : 3;
+    const g = S('g', { 'data-stage': stage }, svg);
+    S('path', { d: e.d || pathD(e.pts), class: 'st-edge', 'marker-end': 'url(#st-fill)' }, g);
+    gEdges[k] = g;
+  });
+  /* nhãn */
+  const gLabels = {};
+  Object.keys(labelPos).forEach(k => {
+    const list = T.filter(t => t.ek === k);
+    const [anchor, x, y, dir] = labelPos[k];
+    const g = S('g', { 'data-stage': 3 }, svg);
+    const lines = [];
+    list.forEach(t => {
+      const l = [evText[t.ev]];
+      lines.push({ t: evText[t.ev], c: 'small bold' });
+      if (t.g) lines.push({ t: '[' + t.g + ']', c: 'small ga ga4', stage4: true });
+      if (t.a) lines.push({ t: '/ ' + t.a, c: 'small ga ga4', stage4: true });
+    });
+    gLabels[k] = { g, lines, anchor, x, y, dir };
+  });
+  function renderLabels(stage) {
+    Object.values(gLabels).forEach(L => {
+      L.g.innerHTML = '';
+      const vis = L.lines.filter(l => !l.stage4 || stage >= 4);
+      const lh = 14;
+      const y0 = L.dir === 'up' ? L.y - (vis.length - 1) * lh : L.y;
+      const t = S('text', { x: L.x, y: y0, 'text-anchor': L.anchor, class: 'halo' }, L.g);
+      vis.forEach((l, i) => {
+        const ts = S('tspan', { x: L.x, dy: i ? lh : 0, class: l.c }, t);
+        ts.textContent = l.t;
+      });
+    });
+  }
+
+  const stepper = makeStepper($('#st-stepper'), steps, (i, s) => {
+    $$('#st-svg [data-stage]').forEach(e => {
+      const n = +e.dataset.stage;
+      e.classList.toggle('off', n > s.stage);
+      e.classList.remove('fresh');
+      if (n === s.stage) { void e.getBoundingClientRect(); e.classList.add('fresh'); }
+    });
+    renderLabels(s.stage);
+    stepCard($('#st-text'), s);
+  });
+  stepper.go(0);
+
+  /* bảng */
+  const tb = $('#st-table tbody');
+  const rows = {};
+  T.forEach(t => {
+    const r = document.createElement('tr');
+    r.innerHTML = `<td>${stName(t.f)}</td><td>${evText[t.ev]}</td><td>${t.g || ''}</td><td>${t.a || ''}</td><td>${stName(t.t)}</td>`;
+    tb.appendChild(r); rows[t.id] = r;
+  });
+
+  /* mô phỏng */
+  let cur = 'init';
+  const log = $('#st-log'), curEl = $('#st-cur');
+  function say(msg, cls) { const li = document.createElement('li'); li.textContent = msg; if (cls) li.className = cls; log.prepend(li); }
+  function paint(fired) {
+    curEl.textContent = stName(cur);
+    $$('#st-svg .st-cur').forEach(e => e.classList.remove('st-cur'));
+    if (gAll[cur] && cur !== 'init') gAll[cur].classList.add('st-cur');
+    $$('#st-svg .st-edge.fired').forEach(e => e.classList.remove('fired'));
+    $$('#st-table tr.fired').forEach(e => e.classList.remove('fired'));
+    if (fired) { gEdges[fired.ek].querySelector('path').classList.add('fired'); rows[fired.id].classList.add('fired'); }
+  }
+  function fire(ev) {
+    if (stepper.cur < 3) stepper.go(3);
+    const cands = T.filter(t => t.f === cur && t.ev === ev);
+    if (!cands.length) {
+      say(`Bỏ qua: sự kiện “${evText[ev]}” không có chuyển trạng thái nào từ “${stName(cur)}”.`, 'err');
+      return;
+    }
+    const t = cands[0];
+    if (t.gk && !env[t.gk]) {
+      say(`Không chuyển: sự kiện “${evText[ev]}” hợp lệ nhưng guard [${t.g}] đang sai.`, 'err');
+      return;
+    }
+    say(`Chuyển từ “${stName(t.f)}” sang “${stName(t.t)}” (${evText[ev]}${t.a ? ', ' + t.a : ''})`, 'ok');
+    cur = t.t;
+    paint(t);
+    if (['X', 'N', 'D'].includes(cur)) say('Trạng thái cuối: vòng đời của lịch hẹn kết thúc.');
+  }
+  function resetSt() { cur = 'init'; log.innerHTML = ''; say('Lịch hẹn chưa tồn tại. Thử sự kiện “Đặt lịch”.'); paint(null); }
+  $('#st-events').innerHTML = Object.entries(EV).map(([k, v]) => `<button class="btn ghost" data-ev="${k}">${v}</button>`).join('');
+  $$('#st-events .btn').forEach(b => b.onclick = () => fire(b.dataset.ev));
+  $('#st-guards').innerHTML = Object.entries(GU).map(([k, v]) => `<label class="chk"><input type="checkbox" data-g="${k}" checked> ${v}</label>`).join('');
+  $$('#st-guards input').forEach(c => c.onchange = () => { env[c.dataset.g] = c.checked; });
+  $('#st-reset').onclick = resetSt;
+  resetSt();
+})();
+
+/* ================== 06 Kiểm tra nhanh ================== */
+(function () {
+  const opts = ['Sơ đồ use case', 'Đặc tả use case', 'Activity diagram', 'State chart'];
+  const Q = [
+    ['Họp đầu tiên với khách hàng: cần liệt kê ai dùng hệ thống và mỗi người làm được gì.', 0, 'Sơ đồ use case cho thấy tổng quan actor và mục tiêu, dễ trình bày với người không chuyên.'],
+    ['Cần ghi rõ bệnh nhân làm gì, hệ thống phản hồi gì ở từng bước, và xử lý ra sao khi khung giờ đã hết.', 1, 'Các bước và tình huống rẽ nhánh của một use case được ghi trong đặc tả.'],
+    ['Cần cho thấy hai việc xảy ra đồng thời và ai chịu trách nhiệm từng việc.', 2, 'Fork, join và swimlane của activity diagram thể hiện trực tiếp việc song song và trách nhiệm.'],
+    ['Cần quy định lịch hẹn đã huỷ có được check-in hay không.', 3, 'Đây là quy tắc về sự kiện nào được phép ở trạng thái nào. State chart liệt kê các cặp này.'],
+    ['Cần kiểm tra mỗi luồng thay thế đã có nhánh tương ứng trong quy trình hay chưa.', 2, 'Activity diagram được dựng từ đặc tả. Mỗi luồng thay thế phải có một nhánh decision tương ứng.']
+  ];
+  let score = 0, done = 0;
+  const box = $('#quiz'), sc = $('#quiz-score');
+  Q.forEach((q, i) => {
+    const d = document.createElement('div'); d.className = 'quiz-q';
+    d.innerHTML = `<p>${i + 1}. ${q[0]}</p><div class="opts">${opts.map((o, j) => `<button class="btn ghost opt" data-j="${j}">${o}</button>`).join('')}</div><div class="fb"></div>`;
+    d.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+      if (d.classList.contains('done')) return;
+      const j = +b.dataset.j, ok = j === q[1];
+      d.classList.add('done'); done++; if (ok) score++;
+      b.classList.add(ok ? 'right' : 'wrong');
+      if (!ok) d.querySelectorAll('.opt')[q[1]].classList.add('right');
+      d.querySelector('.fb').innerHTML = icon(ok ? 'check' : 'x') + (ok ? 'Đúng. ' : 'Chưa đúng. Đáp án: ' + opts[q[1]] + '. ') + q[2];
+      sc.textContent = `Đúng ${score}/${done}.`;
+    });
+    box.appendChild(d);
+  });
+})();
+
+/* điều hướng: đánh dấu mục đang xem */
+(function () {
+  const links = $$('#nav a.lnk');
+  const bar = $('#progress');
+  const upd = () => { const h = document.documentElement; bar.style.width = (100 * h.scrollTop / (h.scrollHeight - h.clientHeight || 1)) + '%'; };
+  addEventListener('scroll', upd, { passive: true }); upd();
+  const secs = links.map(a => $(a.getAttribute('href')));
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) links.forEach((a, i) => a.classList.toggle('on', secs[i] === e.target));
+  }), { rootMargin: '-30% 0px -60% 0px' });
+  secs.forEach(s => s && io.observe(s));
+})();
+</script>
+
+
+<span id="PING_CONTENT_PUSH_NOTIFICATION" style="display: none;"></span></body></html>

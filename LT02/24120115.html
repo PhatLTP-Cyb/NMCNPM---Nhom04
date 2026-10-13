@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Lê Tấn Phát - MSSV: 24120115">
+    <meta name="description" content="Báo cáo học phần Nhập môn Công nghệ Phần mềm: Các đặc tính của một phần mềm tốt - Lê Tấn Phát (24120115)">
+    <title>BÁO CÁO: CÁC ĐẶC TÍNH CỦA MỘT PHẦN MỀM TỐT - Lê Tấn Phát (24120115)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #60a5fa;
+            --primary-subtle: #eff6ff;
+            --secondary: #0f172a;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --heading: #0f172a;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            
+            --success: #16a34a;
+            --success-bg: #f0fdf4;
+            --success-border: #bbf7d0;
+            
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+            --danger-border: #fecaca;
+            
+            --warning: #d97706;
+            --warning-bg: #fffbeb;
+            --warning-border: #fde68a;
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-full: 9999px;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --primary: #3b82f6;
+            --primary-dark: #60a5fa;
+            --primary-light: #93c5fd;
+            --primary-subtle: rgba(59, 130, 246, 0.12);
+            --secondary: #f8fafc;
+            --text-main: #cbd5e1;
+            --text-muted: #94a3b8;
+            --heading: #f1f5f9;
+            --bg-body: #090d16;
+            --bg-card: #111827;
+            --border: #1f2937;
+            --border-light: #1e293b;
+            
+            --success: #22c55e;
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --success-border: rgba(34, 197, 94, 0.25);
+            
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --danger-border: rgba(239, 68, 68, 0.25);
+            
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --warning-border: rgba(245, 158, 11, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.7;
+            font-size: 15.5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1, h2, h3, h4, .brand-font {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--heading);
+        }
+
+        /* Reading Progress Bar */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s;
+        }
+
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 2.5rem 1.25rem 4rem 1.25rem;
+        }
+
+        /* HEADER HERO */
+        .hero-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1e40af 100%);
+            color: #ffffff;
+            border-radius: var(--radius-lg);
+            padding: 3rem 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-header::before {
+            content: "";
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.35) 0%, rgba(30, 64, 175, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-header::after {
+            content: "";
+            position: absolute;
+            bottom: -30%;
+            left: 10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.25) 0%, rgba(30, 64, 175, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-badge-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.35rem 0.85rem;
+            border-radius: var(--radius-full);
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .hero-title {
+            font-size: 2.25rem;
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.025em;
+            margin-bottom: 1.75rem;
+            color: #ffffff;
+            position: relative;
+            z-index: 2;
+        }
+
+        .student-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            position: relative;
+            z-index: 2;
+        }
+
+        .meta-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .meta-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #93c5fd;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .meta-info-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .meta-info-value {
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* NAVIGATION & CONTROLS */
+        .nav-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 1rem;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-right: 0.5rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.45rem 0.9rem;
+            border-radius: var(--radius-sm);
+            white-space: nowrap;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: var(--primary-subtle);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-shrink: 0;
+        }
+
+        .action-btn {
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-main);
+            padding: 0.45rem 0.85rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-subtle);
+        }
+
+        .action-btn.btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .action-btn.btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* SECTION STYLING */
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: border-color 0.3s ease;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 2px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+        }
+
+        .section-num {
+            width: 38px;
+            height: 38px;
+            background: var(--primary);
+            color: #ffffff;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        /* PART 1: 7 CHARACTERISTICS GRID */
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .char-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            transition: all 0.25s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .char-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .char-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .char-icon-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .badge-c1 { background: #dbeafe; color: #1d4ed8; }
+        .badge-c2 { background: #fee2e2; color: #b91c1c; }
+        .badge-c3 { background: #fef3c7; color: #b45309; }
+        .badge-c4 { background: #e0e7ff; color: #4338ca; }
+        .badge-c5 { background: #dcfce7; color: #15803d; }
+        .badge-c6 { background: #f3e8ff; color: #7e22ce; }
+        .badge-c7 { background: #ffedd5; color: #c2410c; }
+
+        .char-title-wrap h3 {
+            font-size: 1.12rem;
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+        }
+
+        .char-tag {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .char-desc {
+            font-size: 0.94rem;
+            color: var(--text-main);
+            line-height: 1.65;
+            flex-grow: 1;
+        }
+
+        .char-subpoints {
+            margin-top: 1rem;
+            padding-top: 0.85rem;
+            border-top: 1px dashed var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .subpoint-item {
+            background: var(--bg-body);
+            padding: 0.65rem 0.85rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.88rem;
+            border-left: 3px solid var(--primary);
+        }
+
+        .subpoint-item strong {
+            color: var(--heading);
+        }
+
+        /* PART 2: TRADE-OFFS & PYRAMID & PRIORITY TABLE */
+        .tradeoff-callout {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-md);
+            padding: 1.5rem 1.75rem;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .tradeoff-comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-top: 1.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .tradeoff-comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .case-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1.15rem 1.25rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .case-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 700;
+            font-size: 0.98rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .case-medical { border-top: 3px solid #dc2626; }
+        .case-medical .case-header { color: #dc2626; }
+
+        .case-entertainment { border-top: 3px solid #8b5cf6; }
+        .case-entertainment .case-header { color: #8b5cf6; }
+
+        /* QUALITY PYRAMID VISUALIZATION */
+        .pyramid-wrapper {
+            margin: 2rem 0;
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.75rem;
+        }
+
+        .pyramid-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .pyramid-header h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .pyramid-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .pyramid-tier {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1.25rem;
+            border-radius: var(--radius-sm);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.92rem;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+        }
+
+        .pyramid-tier:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-md);
+        }
+
+        .tier-7 { background: linear-gradient(90deg, #ea580c, #f97316); width: 60%; margin: 0 auto; }
+        .tier-6 { background: linear-gradient(90deg, #9333ea, #a855f7); width: 68%; margin: 0 auto; }
+        .tier-5 { background: linear-gradient(90deg, #059669, #10b981); width: 76%; margin: 0 auto; }
+        .tier-4 { background: linear-gradient(90deg, #4f46e5, #6366f1); width: 84%; margin: 0 auto; }
+        .tier-3 { background: linear-gradient(90deg, #d97706, #f59e0b); width: 90%; margin: 0 auto; }
+        .tier-2 { background: linear-gradient(90deg, #dc2626, #ef4444); width: 95%; margin: 0 auto; }
+        .tier-1 { background: linear-gradient(90deg, #1e40af, #2563eb); width: 100%; margin: 0 auto; }
+
+        .tier-rank {
+            background: rgba(0,0,0,0.2);
+            padding: 0.2rem 0.55rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .tier-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tier-tag {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        /* PRIORITY TABLE */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            margin: 2rem 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        table.priority-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+            background: var(--bg-card);
+        }
+
+        table.priority-table th {
+            background: var(--bg-body);
+            color: var(--heading);
+            font-weight: 700;
+            padding: 1rem 1.25rem;
+            border-bottom: 2px solid var(--border);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        table.priority-table td {
+            padding: 1.05rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        table.priority-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        table.priority-table tbody tr:hover {
+            background: var(--primary-subtle);
+        }
+
+        .rank-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.85rem;
+        }
+
+        .rank-gold { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .rank-silver { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .rank-bronze { background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
+        .rank-normal { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border); }
+
+        /* REASONING ACCORDION / CARDS */
+        .reasoning-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .reason-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            padding: 1.35rem 1.6rem;
+            transition: transform 0.2s;
+        }
+
+        .reason-card:hover {
+            transform: translateX(4px);
+        }
+
+        .reason-card h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.45rem;
+            color: var(--heading);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .reason-card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-main);
+        }
+
+        /* PART 3: EXAMPLES VS COUNTER-EXAMPLES */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 0.75rem;
+            background: var(--bg-body);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .filter-label {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            padding: 0 0.5rem;
+        }
+
+        .filter-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .example-section {
+            margin-bottom: 2.25rem;
+            padding-bottom: 2.25rem;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .example-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .example-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .example-title {
+            font-size: 1.22rem;
+            font-weight: 800;
+            color: var(--heading);
+        }
+
+        .comparison-deck {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 820px) {
+            .comparison-deck {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comp-card {
+            border-radius: var(--radius-md);
+            padding: 1.4rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comp-good {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+        }
+
+        .comp-bad {
+            background: var(--danger-bg);
+            border: 1px solid var(--danger-border);
+        }
+
+        .comp-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 800;
+            font-size: 0.9rem;
+            margin-bottom: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .comp-good .comp-badge {
+            color: var(--success);
+        }
+
+        .comp-bad .comp-badge {
+            color: var(--danger);
+        }
+
+        .comp-text {
+            font-size: 0.94rem;
+            line-height: 1.7;
+            color: var(--text-main);
+        }
+
+        .code-tag {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(15, 23, 42, 0.08);
+            color: #be185d;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.88em;
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .code-tag {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f472b6;
+        }
+
+        .sub-category-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 1.5rem 0 0.85rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* FOOTER */
+        .site-footer {
+            text-align: center;
+            padding: 2.5rem 1rem 1rem 1rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        .site-footer strong {
+            color: var(--heading);
+        }
+
+        /* SCROLL TO TOP */
+        #scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            transition: all 0.25s;
+        }
+
+        #scroll-top:hover {
+            transform: translateY(-3px);
+            background: var(--primary-dark);
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            body {
+                background: white !important;
+                color: #1e293b !important;
+                font-size: 12pt;
+            }
+            .nav-bar, #progress-bar, #scroll-top, .filter-bar, .action-btn {
+                display: none !important;
+            }
+            .container {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            .hero-header {
+                background: #1e3a8a !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .section-card {
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid;
+                margin-bottom: 2rem !important;
+            }
+            .comp-good, .comp-bad, .pyramid-tier {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Reading Progress Bar -->
+<div id="progress-bar"></div>
+
+<div class="container">
+
+    <!-- HERO HEADER -->
+    <header class="hero-header">
+        <div class="hero-badge-wrap">
+            <span class="badge-pill">Báo cáo bài tập Nhập môn công nghệ phần mềm</span>
+            <span class="badge-pill">Khoa Công nghệ Thông tin</span>
+            <span class="badge-pill">ĐH KHTN - ĐHQG HCM</span>
+        </div>
+        <h1 class="hero-title">CÁC ĐẶC TÍNH CỦA MỘT PHẦN MỀM TỐT</h1>
+        
+        <div class="student-meta-grid">
+            <div class="meta-card">
+                <div class="meta-icon">📚</div>
+                <div>
+                    <div class="meta-info-label">Môn học</div>
+                    <div class="meta-info-value">Nhập môn Công nghệ Phần mềm</div>
+                </div>
+            </div>
+            <div class="meta-card">
+                <div class="meta-icon">👤</div>
+                <div>
+                    <div class="meta-info-label">Sinh viên thực hiện</div>
+                    <div class="meta-info-value">Lê Tấn Phát — 24120115</div>
+                </div>
+            </div>
+            <div class="meta-card">
+                <div class="meta-icon">👨‍🏫</div>
+                <div>
+                    <div class="meta-info-label">Giảng viên phụ trách</div>
+                    <div class="meta-info-value">Th.S Ngô Ngọc Đăng Khoa</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- STICKY NAVIGATION BAR -->
+    <nav class="nav-bar">
+        <div class="nav-links">
+            <a href="#phan-1" class="nav-link"><span>1️⃣</span> 7 Đặc tính cốt lõi</a>
+            <a href="#phan-2" class="nav-link"><span>2️⃣</span> Thứ tự ưu tiên & Lý do</a>
+            <a href="#phan-3" class="nav-link"><span>3️⃣</span> Ví dụ & Phản ví dụ</a>
+        </div>
+        <div class="nav-actions">
+            <button class="action-btn" id="theme-toggle" title="Chuyển đổi giao diện Sáng / Tối">
+                <span id="theme-icon">🌙</span> <span id="theme-text">Tối</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- PHẦN 1: CÁC ĐẶC TÍNH CỦA PHẦN MỀM TỐT -->
+    <section id="phan-1" class="section-card">
+        <div class="section-header">
+            <div class="section-title-wrap">
+                <div class="section-num">1</div>
+                <div>
+                    <h2 class="section-title">PHẦN 1: CÁC ĐẶC TÍNH CỦA PHẦN MỀM TỐT</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.2rem;">
+                        7 trụ cột chất lượng nền tảng định nghĩa sự thành công của một hệ thống phần mềm
+                    </p>
+                </div>
+            </div>
+            <span class="badge-pill" style="background: var(--primary-subtle); color: var(--primary); border: 1px solid var(--primary-light);">
+                7 Thuộc tính
+            </span>
+        </div>
+
+        <div class="char-grid">
+            <!-- 1. Đúng đắn -->
+            <div class="char-card">
+                <div class="char-card-header">
+                    <div class="char-icon-badge badge-c1">🎯</div>
+                    <div class="char-title-wrap">
+                        <h3>1. Đúng đắn</h3>
+                        <div class="char-tag">Correctness</div>
+                    </div>
+                </div>
+                <div class="char-desc">
+                    Phần mềm tạo ra phải hoạt động đúng theo đặc tả. Tính toán và xử lí dữ liệu chính xác, không sai lệch trong mọi trường hợp dữ liệu hợp lệ. Phải làm đúng việc yêu cầu vì đây là mục đích tạo ra nó.
+                </div>
+                <div class="char-subpoints">
+                    <div class="subpoint-item"><strong>Mục tiêu:</strong> Đúng logic nghiệp vụ, tính toán chính xác tuyệt đối, dữ liệu toàn vẹn.</div>
+                </div>
+            </div>
+
+            <!-- 2. Bảo mật -->
+            <div class="char-card">
+                <div class="char-card-header">
+                    <div class="char-icon-badge badge-c2">🛡️</div>
+                    <div class="char-title-wrap">
+                        <h3>2. Bảo mật</h3>
+                        <div class="char-tag">Security</div>
+                    </div>
+                </div>
+                <div class="char-desc">
+                    Khả năng bảo vệ dữ liệu, tài nguyên và dịch vụ khỏi truy cập, sửa đổi hoặc phá hoại trái phép. Thường được nhìn qua ba khía cạnh quen thuộc trong an toàn thông tin (mô hình CIA):
+                </div>
+                <div class="char-subpoints">
+                    <div class="subpoint-item"><strong>Tính bí mật (Confidentiality):</strong> Chỉ người được phân quyền mới có thể truy cập thông tin.</div>
+                    <div class="subpoint-item"><strong>Tính toàn vẹn (Integrity):</strong> Dữ liệu không bị can thiệp, biến dạng trái phép.</div>
+                    <div class="subpoint-item"><strong>Tính sẵn sàng (Availability):</strong> Dịch vụ luôn sẵn sàng phục vụ khi có yêu cầu hợp lệ.</div>
+                </div>
+            </div>
+
+            <!-- 3. Ổn định, đáng tin cậy -->
+            <div class="char-card">
+                <div class="char-card-header">
+                    <div class="char-icon-badge badge-c3">⚡</div>
+                    <div class="char-title-wrap">
+                        <h3>3. Ổn định, đáng tin cậy</h3>
+                        <div class="char-tag">Reliability</div>
+                    </div>
+                </div>
+                <div class="char-desc">
+                    Khả năng hệ thống hoạt động chính xác và liên tục trong một khoảng thời gian mà không gặp sự cố như crash, đơ máy hay mất kết nối. Thường được đánh giá qua:
+                </div>
+                <div class="char-subpoints">
+                    <div class="subpoint-item"><strong>MTBF:</strong> Tần suất và khoảng thời gian trung bình giữa các lần phát sinh lỗi.</div>
+                    <div class="subpoint-item"><strong>Fault Tolerance:</strong> Khả năng chịu lỗi và tự phục hồi khi có sự cố mạng/phần cứng.</div>
+                </div>
+            </div>
+
+            <!-- 4. Tiện dụng -->
+            <div class="char-card">
+                <div class="char-card-header">
+                    <div class="char-icon-badge badge-c4">✨</div>
+                    <div class="char-title-wrap">
+                        <h3>4. Tiện dụng</h3>
+                        <div class="char-tag">Usability</div>
+                    </div>
+                </div>
+                <div class="char-desc">
+                    Mức độ dễ tiếp cận, dễ học và dễ thao tác của phần mềm đối với người dùng. Một phần mềm tiện dụng sẽ giảm thiểu thao tác thừa, hạn chế lỗi do người dùng nhập sai, và phản hồi trạng thái rõ ràng để người dùng biết hệ thống đang làm gì.
+                </div>
+                <div class="char-subpoints">
+                    <div class="subpoint-item"><strong>Trải nghiệm:</strong> Trực quan, dễ nắm bắt, phản hồi nhanh, hỗ trợ phục hồi sau lỗi thao tác.</div>
+                </div>
+            </div>
+
+            <!-- 5. Hiệu quả -->
+            <div class="char-card">
+                <div class="char-card-header">
+                    <div class="char-icon-badge badge-c5">🚀</div>
+                    <div class="char-title-wrap">
+                        <h3>5. Hiệu quả</h3>
+                        <div class="char-tag">Efficiency</div>
+                    </div>
+                </div>
+                <div class="char-desc">
+                    Mức độ tối ưu trong việc sử dụng tài nguyên phần cứng — CPU, RAM, băng thông, pin — để hoàn thành tác vụ trong thời gian phản hồi chấp nhận được. Mục tiêu là đạt hiệu năng tốt với chi phí tài nguyên thấp nhất có thể, chứ không nhất thiết phải nhanh tuyệt đối bằng mọi giá.
+                </div>
+                <div class="char-subpoints">
+                    <div class="subpoint-item"><strong>Tối ưu hóa:</strong> Tiết kiệm tài nguyên server/client, giảm độ trễ (latency), tăng thông lượng (throughput).</div>
+                </div>
+            </div>
+
+            <!-- 6. Dễ bảo trì -->
+            <div class="char-card">
+                <div class="char-card-header">
+                    <div class="char-icon-badge badge-c6">🔧</div>
+                    <div class="char-title-wrap">
+                        <h3>6. Dễ bảo trì</h3>
+                        <div class="char-tag">Maintainability</div>
+                    </div>
+                </div>
+                <div class="char-desc">
+                    Mức độ thuận tiện khi lập trình viên cần đọc hiểu, sửa lỗi, cải tiến hoặc thích ứng mã nguồn với môi trường mới. Điều này phụ thuộc nhiều vào chất lượng code nội bộ:
+                </div>
+                <div class="char-subpoints">
+                    <div class="subpoint-item"><strong>Thiết kế tốt:</strong> Tính mô-đun hóa cao, độ kết dính cao (High Cohesion), độ phụ thuộc thấp (Loose Coupling).</div>
+                    <div class="subpoint-item"><strong>Khả năng kiểm thử:</strong> Khả năng viết unit test/integration test tự động bao phủ mã nguồn.</div>
+                </div>
+            </div>
+
+            <!-- 7. Tiến hoá / Thích ứng -->
+            <div class="char-card" style="grid-column: 1 / -1;">
+                <div class="char-card-header">
+                    <div class="char-icon-badge badge-c7">🌱</div>
+                    <div class="char-title-wrap">
+                        <h3>7. Tiến hoá / Thích ứng</h3>
+                        <div class="char-tag">Evolutionary & Scalability</div>
+                    </div>
+                </div>
+                <div class="char-desc">
+                    Khả năng mở rộng quy mô phục vụ khi lượng người dùng hay dữ liệu tăng lên, và khả năng phát triển lâu dài mà không phải viết lại toàn bộ kiến trúc. Đặc tính này thường được chia làm hai nhánh nhỏ:
+                </div>
+                <div class="char-subpoints" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                    <div class="subpoint-item">
+                        <strong>Uyển chuyển (Flexibility):</strong> Mức độ linh hoạt của kiến trúc khi cần thay đổi hoặc bổ sung logic nghiệp vụ, thay cổng thanh toán, đổi cơ sở dữ liệu... mà chỉ ảnh hưởng cục bộ, không kéo theo cả hệ thống.
+                    </div>
+                    <div class="subpoint-item">
+                        <strong>Tái sử dụng (Reusability):</strong> Khả năng đóng gói module, hàm, lớp hoặc thành phần giao diện để dùng lại ở tính năng khác, hoặc ở dự án khác mà không cần viết lại từ đầu.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PHẦN 2: THỨ TỰ ƯU TIÊN VÀ LÝ DO -->
+    <section id="phan-2" class="section-card">
+        <div class="section-header">
+            <div class="section-title-wrap">
+                <div class="section-num">2</div>
+                <div>
+                    <h2 class="section-title">PHẦN 2: THỨ TỰ ƯU TIÊN VÀ LÝ DO</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.2rem;">
+                        Sự đánh đổi chất lượng trong công nghệ phần mềm và góc nhìn theo vòng đời sản phẩm
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trade-off Analysis & Real World Comparison -->
+        <div class="tradeoff-callout">
+            <p style="font-size: 1.02rem; font-weight: 600; color: var(--heading); margin-bottom: 0.5rem;">
+                ⚖️ Quy luật đánh đổi (Trade-off) trong Kỹ nghệ Phần mềm:
+            </p>
+            <p>
+                Trong thực tế, các thuộc tính chất lượng phần mềm luôn có sự đánh đổi lẫn nhau — tối ưu cái này thường phải hy sinh ít nhiều cái khác. Không có phần mềm nào hoàn hảo tuyệt đối trên tất cả các tiêu chí cùng một lúc. Thứ tự ưu tiên phụ thuộc mật thiết vào lĩnh vực nghiệp vụ của hệ thống:
+            </p>
+
+            <div class="tradeoff-comparison-grid">
+                <div class="case-card case-medical">
+                    <div class="case-header">
+                        <span>🏥 Phần mềm Y tế / Thiết bị sinh mệnh</span>
+                    </div>
+                    <p style="font-size: 0.92rem; color: var(--text-main);">
+                        Đòi hỏi tính <strong>ổn định và đáng tin cậy tuyệt đối</strong>. Nếu sai sót trong tích tắc có thể phải đánh đổi bằng một mạng người. Do đó, tính tiện dụng của các phần mềm máy móc y tế chỉ cần màn hình hiển thị trắng đen xanh thô ráp, không màu mè, ưu tiên độ chuẩn xác và không bao giờ crash.
+                    </p>
+                </div>
+
+                <div class="case-card case-entertainment">
+                    <div class="case-header">
+                        <span>📱 Nền tảng Giải trí (TikTok / MXH)</span>
+                    </div>
+                    <p style="font-size: 0.92rem; color: var(--text-main);">
+                        Có thể chấp nhận giật lag nhất định hoặc lỗi nhỏ ở một vài video, nhưng <strong>tính tiện dụng, bắt mắt và kích thích giác quan</strong> phải được đặt lên hàng đầu để thu hút và giữ chân người dùng trong môi trường cạnh tranh khốc liệt.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- KIM TỰ THÁP CHẤT LƯỢNG PHẦN MỀM -->
+        <div class="pyramid-wrapper">
+            <div class="pyramid-header">
+                <h3>🏛️ Kim Tự Tháp Phân Cấp Chất Lượng Phần Mềm</h3>
+                <p style="font-size: 0.88rem; color: var(--text-muted);">
+                    Mô hình cấp bậc từ nền tảng sinh tồn (dưới cùng) đến tầng mở rộng quy mô (đỉnh chóp)
+                </p>
+            </div>
+
+            <div class="pyramid-container">
+                <div class="pyramid-tier tier-7">
+                    <span class="tier-title"><span class="tier-rank">7</span> 7. Tiến hoá / Thích ứng</span>
+                    <span class="tier-tag">Quy mô tương lai</span>
+                </div>
+                <div class="pyramid-tier tier-6">
+                    <span class="tier-title"><span class="tier-rank">6</span> 6. Dễ bảo trì</span>
+                    <span class="tier-tag">Chi phí lâu dài</span>
+                </div>
+                <div class="pyramid-tier tier-5">
+                    <span class="tier-title"><span class="tier-rank">5</span> 5. Hiệu quả</span>
+                    <span class="tier-tag">Tối ưu vận hành</span>
+                </div>
+                <div class="pyramid-tier tier-4">
+                    <span class="tier-title"><span class="tier-rank">4</span> 4. Tiện dụng</span>
+                    <span class="tier-tag">Chấp nhận người dùng</span>
+                </div>
+                <div class="pyramid-tier tier-3">
+                    <span class="tier-title"><span class="tier-rank">3</span> 3. Ổn định, tin cậy</span>
+                    <span class="tier-tag">Sẵn sàng vận hành</span>
+                </div>
+                <div class="pyramid-tier tier-2">
+                    <span class="tier-title"><span class="tier-rank">2</span> 2. Bảo mật</span>
+                    <span class="tier-tag">Bảo vệ & niềm tin</span>
+                </div>
+                <div class="pyramid-tier tier-1">
+                    <span class="tier-title"><span class="tier-rank">1</span> 1. Đúng đắn</span>
+                    <span class="tier-tag">Nền tảng sống còn</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BẢNG TỔNG HỢP THỨ TỰ ƯU TIÊN -->
+        <div class="table-responsive">
+            <table class="priority-table">
+                <thead>
+                    <tr>
+                        <th style="width: 90px; text-align: center;">Hạng</th>
+                        <th style="width: 250px;">Đặc tính</th>
+                        <th>Vì sao ở mức đó</th>
+                        <th style="width: 170px;">Ý nghĩa chiến lược</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: center;"><span class="rank-badge rank-gold">1</span></td>
+                        <td><strong>Đúng đắn (Correctness)</strong></td>
+                        <td>Điều kiện sống còn — sai là vô giá trị hoàn toàn.</td>
+                        <td><span class="badge-pill" style="background:#dbeafe; color:#1e40af; border:none;">Tiên quyết #1</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;"><span class="rank-badge rank-silver">2</span></td>
+                        <td><strong>Bảo mật (Security)</strong></td>
+                        <td>Không thể "chắp vá" sau, phải tích hợp ngay từ kiến trúc ban đầu.</td>
+                        <td><span class="badge-pill" style="background:#fee2e2; color:#b91c1c; border:none;">An toàn sống còn</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;"><span class="rank-badge rank-bronze">3</span></td>
+                        <td><strong>Ổn định, đáng tin cậy</strong></td>
+                        <td>Người dùng cần chạy được liên tục mới có thể tin dùng mỗi ngày.</td>
+                        <td><span class="badge-pill" style="background:#fef3c7; color:#b45309; border:none;">Giữ vững dịch vụ</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;"><span class="rank-badge rank-normal">4</span></td>
+                        <td><strong>Tiện dụng (Usability)</strong></td>
+                        <td>Quyết định người dùng có chấp nhận và tiếp tục dùng sản phẩm hay không.</td>
+                        <td><span class="badge-pill" style="background:#e0e7ff; color:#4338ca; border:none;">Chấp nhận thị trường</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;"><span class="rank-badge rank-normal">5</span></td>
+                        <td><strong>Hiệu quả (Efficiency)</strong></td>
+                        <td>Tối ưu tốc độ phản hồi và chi phí tài nguyên phần cứng vận hành.</td>
+                        <td><span class="badge-pill" style="background:#dcfce7; color:#15803d; border:none;">Tối ưu tài nguyên</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;"><span class="rank-badge rank-normal">6</span></td>
+                        <td><strong>Dễ bảo trì (Maintainability)</strong></td>
+                        <td>Ảnh hưởng trực tiếp đến chi phí nội bộ và tuổi thọ sản phẩm về lâu dài.</td>
+                        <td><span class="badge-pill" style="background:#f3e8ff; color:#7e22ce; border:none;">Chi phí vòng đời</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;"><span class="rank-badge rank-normal">7</span></td>
+                        <td><strong>Tiến hoá / Thích ứng</strong></td>
+                        <td>Giá trị chỉ phát huy rõ khi sản phẩm đã ổn định và có lượng người dùng thực.</td>
+                        <td><span class="badge-pill" style="background:#ffedd5; color:#c2410c; border:none;">Tăng trưởng quy mô</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- CHI TIẾT LÝ GIẢI TỪNG VỊ TRÍ -->
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--heading);">
+            📝 Biện luận chi tiết cho từng vị trí ưu tiên:
+        </h3>
+
+        <div class="reasoning-list">
+            <!-- 1. Đúng đắn -->
+            <div class="reason-card" style="border-left-color: #2563eb;">
+                <h4><span>🎯 Hạng 1: Đúng đắn (Correctness)</span></h4>
+                <p>
+                    <strong>Đúng đắn luôn đứng đầu</strong> vì đây là điều kiện tiên quyết. Một phần mềm dù giao diện đẹp, tải nhanh, bảo mật tốt đến đâu nhưng chuyển khoản 100.000 VNĐ lại trừ nhầm 1.000.000 VNĐ, hay ứng dụng y tế tính sai liều thuốc, thì toàn bộ giá trị của nó sụp đổ ngay lập tức, thậm chí gây hại nghiêm trọng cho người dùng.
+                </p>
+            </div>
+
+            <!-- 2. Bảo mật -->
+            <div class="reason-card" style="border-left-color: #dc2626;">
+                <h4><span>🛡️ Hạng 2: Bảo mật (Security)</span></h4>
+                <p>
+                    <strong>Bảo mật đứng ngay sau</strong> vì tính chất "không thể sửa sau" của nó. Phần mềm dù tính đúng tuyệt đối nhưng để lộ dữ liệu khách hàng hay bị chiếm quyền điều khiển thì thiệt hại về tài chính và uy tín có thể còn nặng nề hơn một lỗi tính toán đơn lẻ. Bảo mật cần được thiết kế ngay từ kiến trúc ban đầu, chứ vá vào sau thường không triệt để. Thực tế những năm đầu của công nghệ phần mềm các kỹ sư không chú trọng bảo mật, đến những năm phần mềm và công nghệ thông tin phát triển và nhiều cuộc tấn công trên phần mềm diễn ra thì các doanh nghiệp mới bắt đầu tập trung vào việc bảo vệ dữ liệu.
+                </p>
+            </div>
+
+            <!-- 3. Ổn định -->
+            <div class="reason-card" style="border-left-color: #d97706;">
+                <h4><span>⚡ Hạng 3: Ổn định, đáng tin cậy (Reliability)</span></h4>
+                <p>
+                    <strong>Ổn định xếp thứ ba</strong> bởi vì tính đúng và bảo mật sẽ vô nghĩa nếu hệ thống cứ vài phút lại sập một lần. Người dùng cần một dịch vụ họ có thể tin tưởng để dựa vào hằng ngày, không phải hồi hộp mỗi lần thao tác.
+                </p>
+            </div>
+
+            <!-- 4. Tiện dụng -->
+            <div class="reason-card" style="border-left-color: #4f46e5;">
+                <h4><span>✨ Hạng 4: Tiện dụng (Usability)</span></h4>
+                <p>
+                    <strong>Tiện dụng được xếp trên hiệu quả</strong> vì phần lớn người dùng cuối không quan tâm thuật toán chạy nhanh cỡ nào, họ chỉ quan tâm có dễ dùng hay không. Một hệ thống siêu nhanh nhưng giao diện rối rắm vẫn dễ bị người dùng bỏ đi ngay từ những lần dùng đầu tiên.
+                </p>
+            </div>
+
+            <!-- 5. Hiệu quả -->
+            <div class="reason-card" style="border-left-color: #16a34a;">
+                <h4><span>🚀 Hạng 5: Hiệu quả (Efficiency)</span></h4>
+                <p>
+                    <strong>Hiệu quả xếp sau tiện dụng</strong> vì tối ưu hóa quá sớm, khi sản phẩm còn chưa ổn định về chức năng, thường là lãng phí công sức không cần thiết — nên ưu tiên làm đúng và dễ dùng trước, tối ưu hiệu năng sau khi đã rõ đâu là điểm nghẽn thật sự.
+                </p>
+            </div>
+
+            <!-- 6. Dễ bảo trì -->
+            <div class="reason-card" style="border-left-color: #9333ea;">
+                <h4><span>🔧 Hạng 6: Dễ bảo trì (Maintainability)</span></h4>
+                <p>
+                    <strong>Khả năng bảo trì đứng ở vị trí thứ sáu</strong> vì phần lớn chi phí của một phần mềm không nằm ở lúc viết ra ban đầu mà nằm ở giai đoạn sửa lỗi, cập nhật sau này. Người dùng không nhìn thấy code, nhưng nếu code viết ẩu thì mỗi lần sửa một lỗi nhỏ có nguy cơ kéo theo lỗi mới, làm chậm cả quá trình phát triển.
+                </p>
+            </div>
+
+            <!-- 7. Tiến hoá / Thích ứng -->
+            <div class="reason-card" style="border-left-color: #ea580c;">
+                <h4><span>🌱 Hạng 7: Tiến hoá / Thích ứng (Evolutionary, Scalability)</span></h4>
+                <p>
+                    <strong>Cuối cùng, khả năng tiến hoá và tái sử dụng</strong> nằm ở vị trí thấp nhất trong danh sách này không phải vì nó kém quan trọng, mà vì ở giai đoạn đầu của một dự án, cố gắng thiết kế mọi thứ thật "tổng quát" ngay từ đầu dễ dẫn đến <em>over-engineering</em> — tốn công sức cho những khả năng mở rộng mà chưa chắc dự án sẽ cần đến. Khi sản phẩm đã có chỗ đứng và lượng người dùng ổn định, đặc tính này mới thật sự phát huy giá trị.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PHẦN 3: VÍ DỤ VÀ PHẢN VÍ DỤ -->
+    <section id="phan-3" class="section-card">
+        <div class="section-header">
+            <div class="section-title-wrap">
+                <div class="section-num">3</div>
+                <div>
+                    <h2 class="section-title">PHẦN 3: VÍ DỤ VÀ PHẢN VÍ DỤ</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.2rem;">
+                        Đối chiếu thực tiễn phát triển phần mềm: Thiết kế chuẩn mực (Do's) vs Sai lầm phổ biến (Don'ts)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="filter-bar">
+            <span class="filter-label">Lọc theo mục:</span>
+            <button class="filter-btn active" data-filter="all">Tất cả (7)</button>
+            <button class="filter-btn" data-filter="ex-1">1. Đúng đắn</button>
+            <button class="filter-btn" data-filter="ex-2">2. Bảo mật</button>
+            <button class="filter-btn" data-filter="ex-3">3. Ổn định</button>
+            <button class="filter-btn" data-filter="ex-4">4. Tiện dụng</button>
+            <button class="filter-btn" data-filter="ex-5">5. Hiệu quả</button>
+            <button class="filter-btn" data-filter="ex-6">6. Dễ bảo trì</button>
+            <button class="filter-btn" data-filter="ex-7">7. Tiến hoá</button>
+        </div>
+
+        <!-- 1. Đúng đắn -->
+        <div class="example-section" id="ex-1">
+            <div class="example-header">
+                <span class="rank-badge rank-gold">1</span>
+                <h3 class="example-title">Đúng đắn (Correctness)</h3>
+            </div>
+            <div class="comparison-deck">
+                <div class="comp-card comp-good">
+                    <div class="comp-badge">✅ Ví dụ (Best Practice)</div>
+                    <div class="comp-text">
+                        Hệ thống tính tiền hóa đơn dùng kiểu dữ liệu số học chính xác cao (như <span class="code-tag">BigDecimal</span> trong Java, <span class="code-tag">Decimal</span> trong Python/C#) để xử lý tiền tệ, giảm giá, thuế — thay vì kiểu số thực thông thường.
+                    </div>
+                </div>
+                <div class="comp-card comp-bad">
+                    <div class="comp-badge">❌ Phản ví dụ (Anti-pattern)</div>
+                    <div class="comp-text">
+                        Lập trình viên dùng <span class="code-tag">float</span> hoặc <span class="code-tag">double</span> để cộng dồn tiền trong giỏ hàng. Do sai số biểu diễn nhị phân, phép tính <span class="code-tag">0.1 + 0.2</span> không ra đúng <span class="code-tag">0.3</span> mà lệch một chút. Cộng dồn qua nhiều giao dịch, sai số này tích lũy dần và có thể dẫn đến chênh lệch khi đối soát sổ sách kế toán.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Bảo mật -->
+        <div class="example-section" id="ex-2">
+            <div class="example-header">
+                <span class="rank-badge rank-silver">2</span>
+                <h3 class="example-title">Bảo mật (Security)</h3>
+            </div>
+            <div class="comparison-deck">
+                <div class="comp-card comp-good">
+                    <div class="comp-badge">✅ Ví dụ (Best Practice)</div>
+                    <div class="comp-text">
+                        Mật khẩu được băm bằng thuật toán chuyên dụng kèm salt ngẫu nhiên (<span class="code-tag">bcrypt</span>, <span class="code-tag">Argon2id</span>) thay vì lưu trực tiếp; các câu truy vấn cơ sở dữ liệu dùng <span class="code-tag">Prepared Statements</span> hoặc <span class="code-tag">ORM</span> có tham số hóa để ngăn chặn hoàn toàn SQL Injection.
+                    </div>
+                </div>
+                <div class="comp-card comp-bad">
+                    <div class="comp-badge">❌ Phản ví dụ (Anti-pattern)</div>
+                    <div class="comp-text">
+                        Hệ thống lưu mật khẩu dạng văn bản thuần (<span class="code-tag">plaintext</span>), và API xem đơn hàng thiết kế dạng <span class="code-tag">GET /api/order?id=1024</span> mà không kiểm tra quyền sở hữu của người yêu cầu — người dùng chỉ cần đổi số ID trên thanh địa chỉ là xem được thông tin nhạy cảm của người khác (lỗ hổng <span class="code-tag">IDOR</span>).
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Ổn định, đáng tin cậy -->
+        <div class="example-section" id="ex-3">
+            <div class="example-header">
+                <span class="rank-badge rank-bronze">3</span>
+                <h3 class="example-title">Ổn định, đáng tin cậy (Reliability)</h3>
+            </div>
+            <div class="comparison-deck">
+                <div class="comp-card comp-good">
+                    <div class="comp-badge">✅ Ví dụ (Best Practice)</div>
+                    <div class="comp-text">
+                        Một ứng dụng giao đồ ăn gọi dịch vụ SMS bên thứ ba để gửi OTP. Khi dịch vụ đó lỗi, hệ thống tự động thử lại vài lần với độ trễ tăng dần (<span class="code-tag">exponential backoff</span>), và nếu vẫn thất bại thì chuyển hướng thông minh sang gửi qua Email thay vì để người dùng bị kẹt giữa chừng.
+                    </div>
+                </div>
+                <div class="comp-card comp-bad">
+                    <div class="comp-badge">❌ Phản ví dụ (Anti-pattern)</div>
+                    <div class="comp-text">
+                        Một ứng dụng đọc báo không kiểm tra giá trị <span class="code-tag">null</span> trả về khi thiết bị mất kết nối mạng đột ngột, dẫn đến ngoại lệ <span class="code-tag">NullPointerException</span> và ứng dụng bị crash ngay lập tức khi người dùng đang đọc dở tin tức.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Tiện dụng -->
+        <div class="example-section" id="ex-4">
+            <div class="example-header">
+                <span class="rank-badge rank-normal">4</span>
+                <h3 class="example-title">Tiện dụng (Usability)</h3>
+            </div>
+            <div class="comparison-deck">
+                <div class="comp-card comp-good">
+                    <div class="comp-badge">✅ Ví dụ (Best Practice)</div>
+                    <div class="comp-text">
+                        Form đăng ký kiểm tra độ mạnh mật khẩu theo thời gian thực (inline validation), thông báo lỗi rõ ràng ngay tại chỗ (<em>"cần ít nhất 1 chữ in hoa"</em>) thay vì để người dùng đoán mò, và giữ lại toàn bộ dữ liệu đã nhập đúng nếu lỡ có lỗi ở ô khác.
+                    </div>
+                </div>
+                <div class="comp-card comp-bad">
+                    <div class="comp-badge">❌ Phản ví dụ (Anti-pattern)</div>
+                    <div class="comp-text">
+                        Một biểu mẫu dài khi bấm gửi bị lỗi thì tải lại toàn bộ trang, xóa sạch mọi dữ liệu người dùng vừa mất công nhập, chỉ hiện vỏn vẹn một dòng thông báo kiểu mã số khó hiểu như <span class="code-tag">Error: 0x8004100E</span> mà không chỉ dẫn lỗi nằm ở đâu để khắc phục.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Hiệu quả -->
+        <div class="example-section" id="ex-5">
+            <div class="example-header">
+                <span class="rank-badge rank-normal">5</span>
+                <h3 class="example-title">Hiệu quả (Efficiency)</h3>
+            </div>
+            <div class="comparison-deck">
+                <div class="comp-card comp-good">
+                    <div class="comp-badge">✅ Ví dụ (Best Practice)</div>
+                    <div class="comp-text">
+                        Trang danh sách bài viết dùng phân trang (<span class="code-tag">pagination</span>), đánh chỉ mục (<span class="code-tag">index</span>) cho cột ngày tạo trong cơ sở dữ liệu, và cache kết quả tạm thời trong bộ nhớ đệm (Redis) để giảm tải cho database khi có lượng lớn người truy cập đồng thời.
+                    </div>
+                </div>
+                <div class="comp-card comp-bad">
+                    <div class="comp-badge">❌ Phản ví dụ (Anti-pattern)</div>
+                    <div class="comp-text">
+                        Để hiển thị danh sách sinh viên kèm tên lớp, code viết một vòng lặp gửi riêng một câu truy vấn SQL cho từng sinh viên thay vì dùng <span class="code-tag">JOIN</span> một lần (lỗi kinh điển <span class="code-tag">N+1 query</span>) — đồng thời server trả nguyên ảnh gốc độ phân giải cao 5MB cho một khung avatar kích thước chỉ 40x40 pixel, làm ứng dụng cạn kiệt băng thông và tải cực chậm.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Dễ bảo trì -->
+        <div class="example-section" id="ex-6">
+            <div class="example-header">
+                <span class="rank-badge rank-normal">6</span>
+                <h3 class="example-title">Dễ bảo trì (Maintainability)</h3>
+            </div>
+            <div class="comparison-deck">
+                <div class="comp-card comp-good">
+                    <div class="comp-badge">✅ Ví dụ (Best Practice)</div>
+                    <div class="comp-text">
+                        Dự án kiến trúc phân tầng rõ ràng <span class="code-tag">Controller – Service – Repository</span>, mỗi hàm chỉ đảm nhận một trách nhiệm duy nhất (Single Responsibility), đặt tên biến rõ nghĩa, có bộ test tự động (Unit Test) đi kèm để khi refactor hay sửa logic không lo làm hỏng tính năng khác.
+                    </div>
+                </div>
+                <div class="comp-card comp-bad">
+                    <div class="comp-badge">❌ Phản ví dụ (Anti-pattern)</div>
+                    <div class="comp-text">
+                        Toàn bộ hệ thống dồn vào một file mã nguồn khổng lồ hàng nghìn dòng, biến đặt tên tùy tiện (<span class="code-tag">x</span>, <span class="code-tag">y</span>, <span class="code-tag">temp1</span>), logic nghiệp vụ bị trộn lẫn với mã HTML và câu lệnh SQL, không có bất kỳ tài liệu hay test nào — sửa một lỗi nhỏ có thể vô tình kích hoạt chuỗi lỗi mới ở tính năng hoàn toàn khác.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. Tiến hoá / Thích ứng -->
+        <div class="example-section" id="ex-7">
+            <div class="example-header">
+                <span class="rank-badge rank-normal">7</span>
+                <h3 class="example-title">Tiến hoá / Thích ứng (Evolutionary & Scalability)</h3>
+            </div>
+
+            <!-- Uyển chuyển -->
+            <div class="sub-category-title">
+                <span>🔄 7.1. Uyển chuyển (Flexibility)</span>
+            </div>
+            <div class="comparison-deck" style="margin-bottom: 1.5rem;">
+                <div class="comp-card comp-good">
+                    <div class="comp-badge">✅ Ví dụ (Best Practice)</div>
+                    <div class="comp-text">
+                        Hệ thống định nghĩa một <span class="code-tag">interface PaymentGateway</span> chung, mỗi cổng thanh toán cụ thể (<span class="code-tag">Momo</span>, <span class="code-tag">VNPay</span>, <span class="code-tag">Stripe</span>...) hiện thực (implement) interface đó. Khi cần tích hợp thêm cổng thanh toán mới, chỉ cần viết thêm một lớp triển khai mới mà không cần sửa đổi luồng xử lý đơn hàng đang vận hành.
+                    </div>
+                </div>
+                <div class="comp-card comp-bad">
+                    <div class="comp-badge">❌ Phản ví dụ (Anti-pattern)</div>
+                    <div class="comp-text">
+                        Toàn bộ logic thanh toán viết bằng chuỗi <span class="code-tag">if-else</span> lồng nhau theo từng loại cổng, URL API và khóa bí mật gán cứng (<span class="code-tag">hardcoded</span>) trong mã nguồn — khi đối tác đổi địa chỉ API hay cơ chế xác thực, buộc phải sửa và build lại toàn bộ dự án, dễ làm ảnh hưởng luôn các luồng thanh toán khác.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tái sử dụng -->
+            <div class="sub-category-title">
+                <span>📦 7.2. Tái sử dụng (Reusability)</span>
+            </div>
+            <div class="comparison-deck">
+                <div class="comp-card comp-good">
+                    <div class="comp-badge">✅ Ví dụ (Best Practice)</div>
+                    <div class="comp-text">
+                        Các thành phần dùng chung như logic xác thực dữ liệu (validation), hộp thoại thông báo (modal), bảng dữ liệu có sắp xếp (data table) được đóng gói thành các thư viện nội bộ hoặc UI Component dùng chung, giúp các dự án sau chỉ cần import vào sử dụng lại mà không mất công viết mới.
+                    </div>
+                </div>
+                <div class="comp-card comp-bad">
+                    <div class="comp-badge">❌ Phản ví dụ (Anti-pattern)</div>
+                    <div class="comp-text">
+                        Khi cần tính năng xuất file Excel, lập trình viên copy nguyên đoạn code xử lý từ báo cáo doanh thu dán sang báo cáo tồn kho, rồi lại copy tiếp sang báo cáo nhân sự. Sau này khi đoạn code đó phát hiện có lỗi rò rỉ bộ nhớ, người bảo trì phải lùng sục tìm và sửa lại ở hàng chục file khác nhau trong hệ thống.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <p>Báo cáo môn học: <strong>Nhập môn Công nghệ Phần mềm</strong></p>
+        <p style="margin-top: 0.35rem;">
+            Sinh viên: <strong>Lê Tấn Phát</strong> • MSSV: <strong>24120115</strong> • Giảng viên: <strong>Th.S Ngô Ngọc Đăng Khoa</strong>
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
+            Trường Đại học Khoa học Tự nhiên — ĐHQG TP.HCM
+        </p>
+    </footer>
+
+</div>
+
+<!-- BACK TO TOP BUTTON -->
+<button id="scroll-top" title="Cuộn lên đầu trang">↑</button>
+
+<script>
+    // Reading Progress Indicator
+    window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById('progress-bar').style.width = scrolled + '%';
+        
+        // Back to top button visibility
+        const scrollBtn = document.getElementById('scroll-top');
+        if (winScroll > 300) {
+            scrollBtn.style.display = 'flex';
+        } else {
+            scrollBtn.style.display = 'none';
+        }
+    });
+
+    // Scroll to Top action
+    document.getElementById('scroll-top').addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Theme Toggle (Dark / Light)
+    const themeBtn = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeText = document.getElementById('theme-text');
+
+    // Check system preference or saved preference
+    const savedTheme = localStorage.getItem('report-theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeIcon.textContent = '☀️';
+        themeText.textContent = 'Sáng';
+    }
+
+    themeBtn.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        if (currentTheme === 'dark') {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('report-theme', 'light');
+            themeIcon.textContent = '🌙';
+            themeText.textContent = 'Tối';
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('report-theme', 'dark');
+            themeIcon.textContent = '☀️';
+            themeText.textContent = 'Sáng';
+        }
+    });
+
+    // Interactive Filtering for Examples
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const exampleSections = document.querySelectorAll('.example-section');
+
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const filter = btn.getAttribute('data-filter');
+            exampleSections.forEach(section => {
+                if (filter === 'all' || section.id === filter) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Interactive highlight on Pyramid click
+    const pyramidTiers = document.querySelectorAll('.pyramid-tier');
+    pyramidTiers.forEach((tier, index) => {
+        tier.addEventListener('click', () => {
+            const rank = 7 - index;
+            const targetSection = document.getElementById(`ex-${rank}`);
+            if (targetSection) {
+                // Set filter to that or scroll
+                const matchingBtn = document.querySelector(`.filter-btn[data-filter="ex-${rank}"]`);
+                if (matchingBtn) {
+                    matchingBtn.click();
+                }
+                targetSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
