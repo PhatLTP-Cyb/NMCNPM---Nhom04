@@ -1,0 +1,44 @@
+Hãy trình bày trang HTML (một file duy nhất, CSS và JS nhúng sẵn, không dùng thư viện ngoài ngoài Google Fonts) theo phong cách "học thuật sáng, tiết chế" sau đây.
+
+1. TỔNG QUAN
+- Giao diện sáng, chuyên nghiệp, ít màu. Chỉ dùng MỘT màu chủ đạo là xanh navy, kèm một màu nhấn phụ rất tiết chế (vàng đồng) và hai màu ngữ nghĩa (xanh ngọc cho đúng/thành công, đỏ gạch cho lỗi/cảnh báo).
+- Không dùng hình trang trí (hình tròn, hình vuông màu), không dùng lưới chấm, không dùng gradient sặc sỡ, không dùng viền đậm hay bóng đổ cứng. Cảm giác sạch, phẳng, dễ đọc lâu.
+
+2. BẢNG MÀU (CSS variables ở :root)
+- Nền trang #f7f8fa; nền thẻ/bảng #ffffff; nền phụ #eef1f5 và #e1e6ee.
+- Chữ chính #1f2937; chữ phụ #5b6472; đường viền #d8dde5.
+- Màu chủ đạo (navy) #2f4b7c, đậm hơn khi hover #243a61; nền tiêu đề mục xanh nhạt #e8eef9; nền hàng tiêu đề bảng #dde6f5 với chữ #1f2f52.
+- Màu nhấn phụ (vàng đồng) #b9852f, chỉ dùng cho viền tiêu đề phụ và vài chi tiết nhỏ.
+- Xanh ngọc #3f7d6b (nền nhạt #e3f0ec); đỏ gạch #b4474f (nền nhạt #f6e4e5).
+
+3. CHỮ
+- Một font duy nhất: "Be Vietnam Pro" (hỗ trợ tiếng Việt), fallback Noto Sans, system-ui. Tiêu đề đậm 700-800, nội dung 400-600, line-height 1.7.
+- Nhãn nhỏ (eyebrow, tiêu đề cột bảng) viết hoa, letter-spacing 0.05-0.09em, cỡ chữ nhỏ.
+
+4. BỐ CỤC
+- Thanh điều hướng dọc cố định bên trái (rộng 230px, nền trắng, viền phải 1px): logo tròn navy chứa chữ viết tắt, tên môn, nhãn tuần, rồi danh sách mục có số thứ tự (03, 04, …). Mục đang xem có nền xanh nhạt #e8eef9, chữ navy. Thanh tiến độ cuộn trang mỏng 3px màu navy ở mép trên.
+- Dưới 960px, thanh điều hướng chuyển thành thanh ngang dính ở trên.
+- Nội dung nằm bên phải, rộng tối đa khoảng 1380px, lề phải 32px.
+
+5. TIÊU ĐỀ VÀ ĐIỂM NHẤN (rất quan trọng, để phân biệt các phần)
+- Hero đầu trang: nền navy chuyển sắc nhẹ (#2b4373 → #37588f), chữ trắng, bo góc 12px. Nhãn nhỏ phía trên màu vàng nhạt #ffd98e trên nền trắng mờ. Chip điều hướng nền trong suốt viền trắng mờ.
+- Trong hero: khối "Thành viên nhóm" gồm thẻ trắng (avatar tròn navy chứa chữ cái đầu, họ tên, MSSV) và khối "Giảng viên" gồm chip trắng có học vị "ThS." phía trước, mỗi tên là liên kết.
+- Tiêu đề mỗi mục lớn: một dải nền xanh nhạt #e8eef9, viền trái 6px màu navy, bo góc 10px, số mục lớn màu navy mờ, kèm một câu dẫn (lead) chữ xám.
+- Tiêu đề phụ: nền xám nhạt #eef1f5, viền trái 4px màu vàng đồng.
+- Tiêu đề trong thẻ: có đường kẻ dưới 2px màu xanh nhạt.
+
+6. THÀNH PHẦN
+- Thẻ: nền trắng, viền 1px #d8dde5, bo góc 10px, bóng rất nhẹ (0 1px 3px rgba(31,41,55,.06)).
+- Nút: nền navy, chữ trắng, bo 8px, không bóng; nút phụ (ghost) nền trắng viền xám.
+- Bảng: bọc trong khung bo góc có viền mảnh, hàng tiêu đề nền xanh nhạt chữ hoa nhỏ, dòng kẻ ngang mảnh, cho cuộn ngang khi hẹp.
+- Sơ đồ SVG: nền trắng trong khung thẻ, nét mực #1f2937 hoặc navy, làn (swimlane) nền xanh nhạt xen xanh ngọc nhạt, nút quyết định tô vàng nhạt.
+
+7. TƯƠNG TÁC
+- Mỗi sơ đồ có bộ bước (stepper) bấm từng bước, bấm vào phần tử để hiện giải thích, và mô phỏng nhỏ (token chạy qua sơ đồ).
+- Bảng tìm nhanh bấm Ctrl+K (nút nổi ở góc phải dưới): tìm không dấu, chọn bằng mũi tên, Enter để cuộn tới mục và làm nó nhấp nháy nền vàng nhạt.
+- Mọi hiệu ứng chuyển động ngắn (0.2-0.35s), không rườm rà.
+
+8. NGÔN NGỮ
+- Toàn bộ nội dung bằng tiếng Việt; thuật ngữ tiếng Anh giữ nguyên.
+
+Nội dung cần trình bày: [dán nội dung hoặc mô tả đề bài ở đây]
