@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bài tập tuần 4: Sàn đấu giá trực tuyến</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/"><link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&family=Lora:wght@600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+      --paper: #f7f8fa; --paper-strong: #ffffff; --surface: #eef1f5; --surface-deep: #e1e6ee;
+      --ink: #1f2937; --ink-soft: #5b6472;
+      --coffee: #2f4b7c; --coffee-dark: #1f2937; --caramel: #b9852f;
+      --sage: #3f7d6b; --sage-soft: #e3f0ec; --rose: #b4474f; --rose-soft: #f6e4e5;
+      --line: #d8dde5; --shadow: 0 2px 10px rgba(31,41,55,.07); --radius: 10px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 84px; font-size: clamp(17px, 0.6vw + 9px, 21px); }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: radial-gradient(circle at 7% 0%, rgba(185, 133, 47, 0.11), transparent 28rem), linear-gradient(180deg, #f5ede2, var(--paper) 32rem);
+      font-family: "Be Vietnam Pro", "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    .shell { width: min(1520px, calc(100% - 48px)); margin: 0 auto; }
+    h1, h2, h3 { font-family: "Lora", serif; color: var(--coffee-dark); line-height: 1.25; margin: 0; }
+    h3 { font-size: 1.08rem; margin-bottom: 8px; }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 0 0 12px; padding-left: 22px; }
+    li { margin-bottom: 4px; }
+    code { background: var(--surface); padding: 1px 6px; border-radius: 6px; font-size: 0.9em; }
+
+    /* điều hướng */
+    .nav {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(255, 253, 248, 0.92); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-in { width: min(1520px, calc(100% - 48px)); margin: 0 auto; display: flex; align-items: center; gap: 24px; height: 64px; }
+    .nav .brand { display: flex; align-items: center; gap: 10px; flex: none; color: var(--coffee-dark); font-weight: 800; font-size: 0.9rem; text-decoration: none; }
+    .nav .mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--coffee-dark); color: #fffaf3; font-family: "Lora", serif; font-size: 0.85rem; }
+    .nav .week { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--caramel); border: 1px solid var(--caramel); border-radius: 999px; padding: 1px 9px; }
+    .nav ul { list-style: none; display: flex; gap: 2px; margin: 0 0 0 auto; padding: 0; overflow-x: auto; scrollbar-width: none; }
+    .nav li { margin: 0; }
+    .nav a.lnk { position: relative; display: block; padding: 18px 12px; white-space: nowrap; color: var(--ink-soft); text-decoration: none; font-size: 0.86rem; font-weight: 600; }
+    .nav a.lnk i { font-style: normal; font-size: 0.7rem; font-weight: 800; color: var(--caramel); margin-right: 6px; }
+    .nav a.lnk:hover { color: var(--coffee-dark); }
+    .nav a.lnk.on { color: var(--coffee-dark); }
+    .nav a.lnk.on::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: var(--caramel); }
+    .nav .progress { position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--coffee); }
+    @media (max-width: 760px) { .nav .week, .nav .brand span.t { display: none; } .nav-in { gap: 10px; } }
+
+    .hero {
+      margin-top: 16px; padding: clamp(36px, 6vw, 64px);
+      border-radius: 28px; color: #fffaf3;
+      background: linear-gradient(120deg, #2f261f, #4d3022); box-shadow: var(--shadow);
+    }
+    .hero .eyebrow { color: #e5b784; }
+    .hero h1 { color: #fffaf3; font-size: clamp(2rem, 5vw, 3.4rem); margin: 8px 0 14px; }
+    .hero p { max-width: 720px; color: #eadccb; font-size: 1.05rem; margin: 0; }
+    .eyebrow { font-size: 0.76rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: var(--caramel); margin: 0 0 6px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+    .chip { padding: 5px 13px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.3); font-size: 0.84rem; font-weight: 600; color: #fffaf3; text-decoration: none; }
+    .chip:hover { background: rgba(255, 255, 255, 0.12); }
+
+    /* khối bài học */
+    .lesson { margin: 56px 0; }
+    .lh { display: grid; grid-template-columns: auto 1fr; gap: 4px 18px; align-items: baseline; margin-bottom: 22px; }
+    .lh .num { grid-row: 1 / span 2; font-family: "Lora", serif; font-size: 3.2rem; line-height: 1; color: var(--caramel); font-weight: 700; }
+    .lh h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); }
+    .lh .lead { grid-column: 2; color: var(--ink-soft); margin: 0; max-width: 820px; }
+
+    .card { background: var(--paper-strong); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; box-shadow: 0 6px 20px rgba(64, 40, 29, 0.05); }
+    .card.sage { background: var(--sage-soft); border-color: #c7d1bd; }
+    .card.rose { background: var(--rose-soft); border-color: #e4bfb5; }
+    .card h3 { margin-top: 0; }
+    .card :last-child { margin-bottom: 0; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .mt { margin-top: 18px; }
+
+    .btn {
+      border: 1px solid var(--coffee); background: var(--coffee); color: #fff; font: inherit; font-weight: 700; font-size: 0.88rem;
+      padding: 7px 16px; border-radius: 999px; cursor: pointer;
+    }
+    .ic { width: 1.1em; height: 1.1em; flex: none; vertical-align: -0.18em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; }
+    h3 .ic, .eyebrow .ic, .hint .ic { color: var(--caramel); margin-right: 0.4em; }
+    .card.sage h3 .ic { color: var(--sage); }
+    .card.rose h3 .ic { color: var(--rose); }
+    b > .ic, .fb > .ic { margin-right: 0.4em; }
+    .btn:hover:not(:disabled) { background: var(--coffee-dark); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn.ghost { background: var(--paper-strong); color: var(--coffee-dark); border-color: var(--line); }
+    .btn.ghost:hover:not(:disabled) { background: var(--surface); }
+
+    /* bước */
+    .steps-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .step-btn {
+      display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--paper-strong);
+      border-radius: 999px; padding: 5px 14px 5px 6px; font: inherit; font-size: 0.86rem; font-weight: 600; color: var(--ink-soft); cursor: pointer;
+    }
+    .step-btn b { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--surface); color: var(--coffee-dark); font-size: 0.78rem; }
+    .step-btn.done b { background: var(--sage); color: #fff; }
+    .step-btn.on { border-color: var(--coffee); color: var(--coffee-dark); background: var(--surface); }
+    .step-btn.on b { background: var(--coffee); color: #fff; }
+    .steps-nav { display: flex; gap: 8px; margin-bottom: 14px; }
+
+    .viz { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(340px, 1fr); gap: 22px; align-items: start; }
+    .canvas { background: var(--paper-strong); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; overflow: auto; box-shadow: 0 6px 20px rgba(64, 40, 29, 0.05); }
+    .canvas svg { display: block; width: 100%; height: auto; }
+    .viz.wide .canvas svg { max-height: calc(100vh - 130px); margin: 0 auto; }
+    .viz.wide .canvas { grid-column: 1 / -1; }
+    .viz.wide { grid-template-columns: 1fr 1fr; }
+    .viz.wide .side { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; align-items: start; position: static; }
+    .side { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 64px; }
+    .side .card { padding: 16px 18px; }
+    .side h3 { font-size: 1rem; }
+    .side ul { padding-left: 18px; font-size: 0.92rem; }
+    .side p { font-size: 0.93rem; }
+    .info { min-height: 96px; background: var(--surface); border-style: dashed; font-size: 0.92rem; }
+    .info .hint { color: var(--ink-soft); }
+    .tag { display: inline-block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 9px; border-radius: 999px; background: var(--coffee); color: #fff; margin-bottom: 6px; }
+
+    /* SVG */
+    svg text { font-family: "Be Vietnam Pro", "Noto Sans", sans-serif; font-size: 15px; fill: var(--ink); }
+    svg .small { font-size: 13px; }
+    svg .tiny { font-size: 12.5px; fill: var(--ink-soft); }
+    svg .ital { font-style: italic; fill: var(--ink-soft); }
+    svg .halo { paint-order: stroke; stroke: var(--paper-strong); stroke-width: 4px; stroke-linejoin: round; }
+    svg .bold { font-weight: 700; }
+    #ad-svg text { font-size: 16px; }
+    #ad-svg .small { font-size: 15px; }
+    #ad-svg .lane-head { font-size: 15px; }
+    .off { opacity: 0; pointer-events: none; }
+    [data-step], [data-kind] { transition: opacity 0.35s; }
+    .clickable { cursor: pointer; }
+    .clickable:hover .shape { fill: var(--surface); }
+    .clickable.sel .shape { stroke: var(--caramel); stroke-width: 3; }
+    @keyframes pulse { 0% { filter: drop-shadow(0 0 0 rgba(185, 133, 47, 0)); } 40% { filter: drop-shadow(0 0 7px rgba(185, 133, 47, 0.95)); } 100% { filter: drop-shadow(0 0 0 rgba(185, 133, 47, 0)); } }
+    .fresh { animation: pulse 1.2s ease-out 1; }
+    .uc-oval { fill: var(--paper-strong); stroke: var(--coffee); stroke-width: 1.6; }
+    .uc-boundary { fill: rgba(238, 241, 245, 0.6); stroke: var(--sage); stroke-width: 2; }
+    .actor-line { stroke: var(--ink); stroke-width: 2; fill: none; stroke-linecap: round; }
+    .actor-head { fill: var(--paper-strong); stroke: var(--ink); stroke-width: 2; }
+    .actor-ext .actor-line, .actor-ext .actor-head { stroke: var(--sage); }
+    .assoc { stroke: var(--ink-soft); stroke-width: 1.4; fill: none; }
+    .dep { stroke: var(--rose); stroke-width: 1.5; stroke-dasharray: 6 4; fill: none; }
+    .dep-label { fill: var(--rose); font-style: italic; font-size: 13px; }
+
+    .lane-band { fill: rgba(238, 241, 245, 0.55); stroke: var(--line); }
+    .lane-band.alt { fill: rgba(227, 240, 236, 0.45); }
+    .lane-head { fill: var(--coffee-dark); font-weight: 800; font-size: 14px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .act-box { fill: var(--paper-strong); stroke: var(--coffee); stroke-width: 1.6; }
+    .dec-box { fill: #fbf3e1; stroke: var(--caramel); stroke-width: 1.8; }
+    .ctl-dot { fill: var(--coffee-dark); }
+    .bar { fill: var(--coffee-dark); }
+    .flow { fill: none; stroke: var(--coffee-dark); stroke-width: 1.6; }
+    .flow.used { stroke: var(--sage); stroke-width: 3.2; }
+    .node-active .shape { fill: #f3e2bd !important; stroke: var(--caramel); stroke-width: 3; }
+    .trace .shape, .trace.flow, .trace .bar { stroke: var(--rose) !important; stroke-width: 3.4 !important; }
+    .trace .bar { fill: var(--rose); }
+    .token { fill: var(--rose); stroke: #fff; stroke-width: 2; }
+
+    .st-box { fill: var(--paper-strong); stroke: var(--coffee); stroke-width: 1.8; }
+    .st-cur .st-box { fill: #cfe6de; stroke: var(--sage); stroke-width: 3.4; }
+    .st-edge { fill: none; stroke: var(--coffee-dark); stroke-width: 1.6; }
+    .st-edge.fired { stroke: var(--rose); stroke-width: 3.6; }
+    .st-fin-ring { fill: none; stroke: var(--coffee-dark); stroke-width: 2; }
+    .ga { fill: var(--ink-soft); }
+
+    /* bảng */
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-strong); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { background: var(--surface); color: var(--coffee-dark); font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+
+    /* đặc tả */
+    .spec th { width: 190px; text-transform: none; font-size: 0.9rem; letter-spacing: 0; cursor: pointer; background: var(--surface); }
+    .spec tr:hover th { background: var(--surface-deep); }
+    .spec tr.sel th { background: var(--coffee); color: #fff; }
+    .spec tr.sel td { background: #f3f6fb; }
+    .spec ol { margin: 0; }
+    .spec li.hl, .spec .alt.hl { background: #f6e6bd; border-radius: 6px; }
+    .spec .alt { padding: 4px 8px; margin-bottom: 6px; border-left: 3px solid var(--caramel); border-radius: 0 6px 6px 0; cursor: pointer; }
+    .spec .alt b { color: var(--coffee-dark); }
+    .spec li { padding: 2px 6px; }
+
+    /* sai và đúng */
+    .fix { display: grid; grid-template-columns: 1fr auto; gap: 10px 16px; align-items: center; padding: 14px 18px; background: var(--paper-strong); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 10px; }
+    .fix .bad { color: var(--rose); font-weight: 600; }
+    .fix .good { grid-column: 1 / -1; display: none; background: var(--sage-soft); border-radius: 10px; padding: 10px 14px; font-size: 0.93rem; }
+    .fix.open .good { display: block; }
+
+    /* ý nghĩa */
+    .hot { background: #f6e9c8; border-bottom: 2px solid var(--caramel); border-radius: 4px; padding: 0 3px; cursor: pointer; font-weight: 600; }
+    .hot.on { background: var(--caramel); color: #fff; }
+    .req-text { font-size: 1.12rem; line-height: 1.95; }
+    .pipeline { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; margin-top: 18px; }
+    .pipe { flex: 1 1 200px; padding: 14px 16px; border-radius: 14px; background: var(--paper-strong); border: 1px solid var(--line); text-decoration: none; color: inherit; }
+    .pipe:hover { background: var(--surface); }
+    .pipe b { display: block; color: var(--coffee-dark); }
+    .pipe span { font-size: 0.86rem; color: var(--ink-soft); }
+    .pipe .q { font-style: italic; }
+
+    /* mô phỏng */
+    .sim { display: grid; gap: 12px; }
+    .sim-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .log { list-style: none; padding: 0; margin: 0; font-size: 0.88rem; max-height: 220px; overflow: auto; }
+    .log li { padding: 4px 8px; border-bottom: 1px dashed var(--line); margin: 0; }
+    .log li.err { color: var(--rose); font-weight: 600; }
+    .log li.ok { color: var(--sage); font-weight: 600; }
+    .evt-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .evt-grid .btn { text-align: left; border-radius: 12px; font-size: 0.82rem; padding: 6px 10px; }
+    .cur-state { font-family: "Lora", serif; font-size: 1.25rem; color: var(--coffee-dark); font-weight: 700; }
+    label.chk { display: flex; gap: 8px; align-items: flex-start; font-size: 0.88rem; cursor: pointer; }
+    tr.fired td { background: #f6e6bd; }
+
+    /* câu hỏi */
+    .quiz-q { padding: 16px 20px; background: var(--paper-strong); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 12px; }
+    .quiz-q p { font-weight: 600; }
+    .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+    .opt.right { background: var(--sage); border-color: var(--sage); color: #fff; }
+    .opt.wrong { background: var(--rose); border-color: var(--rose); color: #fff; }
+    .fb { margin-top: 10px; font-size: 0.9rem; display: none; }
+    .quiz-q.done .fb { display: block; }
+    .score { font-weight: 700; color: var(--coffee-dark); }
+
+    footer { margin: 60px 0 40px; color: var(--ink-soft); font-size: 0.85rem; text-align: center; }
+
+    @media (max-width: 960px) {
+      .viz, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .grid-5 { grid-template-columns: 1fr 1fr; }
+      .side, .viz.wide .side { position: static; }
+      .viz.wide .side { grid-template-columns: 1fr; }
+      .spec th { width: 120px; }
+    }
+    @media print {
+      .nav, .steps-nav, .btn { display: none; }
+      .side { position: static; }
+    }
+  
+    .uc-legend { font-size: .88rem; color: var(--ink-soft); }
+    .spec td p:last-child { margin-bottom: 0; }
+    .spec .alt[data-step] { cursor: default; }
+    .spec-title { margin-top: 48px; font-size: 1.3rem; scroll-margin-top: 80px; }
+    #uc-svg { max-height: none !important; max-width: 1180px; } .table-wrap td:first-child { white-space: nowrap; }
+    #uc-svg text { font-size: 15px; } #uc-svg .small { font-size: 14px; } #uc-svg .dep-label { font-size: 13.5px; }
+
+    #ad-viz { grid-template-columns: minmax(0, 2.3fr) minmax(320px, 1fr); }
+    #ad-svg { max-width: 1080px; }
+    #st-svg { max-height: none !important; max-width: 1400px; }
+    #st-svg text { font-size: 14px; } #st-svg .small { font-size: 13.5px; }
+    #st-svg:not(.s4) .ga4 { display: none; }
+    #ad-trace tbody tr:hover td { background: var(--surface); }
+    .log li.err { color: var(--rose); font-weight: 600; }
+
+.team{margin-top:26px;padding-top:20px;border-top:1px solid var(--line,rgba(74,48,34,.18))}
+.team h2{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--caramel);margin:0 0 12px;font-weight:700}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.member{background:#ffffff;border:1px solid rgba(74,48,34,.16);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.member .av{flex:none;width:38px;height:38px;border-radius:50%;background:var(--coffee);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+.member b{display:block;font-size:15px;color:var(--coffee)}
+.member span{font-size:13px;color:var(--caramel);font-variant-numeric:tabular-nums}
+
+.teachers{margin-top:18px}
+.teacher-list{display:flex;flex-wrap:wrap;gap:10px}
+.teacher{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.28);color:#fff;text-decoration:none;font-size:14px;font-weight:600;transition:background .2s}
+.teacher:hover{background:rgba(255,255,255,.12)}
+.teacher i{font-style:normal;font-size:11px;letter-spacing:.08em;color:var(--caramel);font-weight:700}
+
+/* ===== giao diện sáng, tiết chế ===== */
+body{background:#f7f8fa;color:var(--ink)}
+h1,h2,h3,.lh .num,.cur-state{font-family:"Be Vietnam Pro","Noto Sans",sans-serif;font-weight:700;color:var(--ink)}
+.lh .num{color:#9aa5b8;font-weight:600;font-size:2.6rem}
+.card,.canvas,.table-wrap,.quiz-q,.fix,.pipe{box-shadow:0 1px 3px rgba(31,41,55,.06);border:1px solid var(--line);background:#fff}
+.card.sage{background:var(--sage-soft);border-color:#c8ddd6}.card.rose{background:var(--rose-soft);border-color:#e7c9cc}
+.info{background:#f3f5f9;border:1px dashed var(--line)}
+.btn{background:var(--coffee);border:1px solid var(--coffee);border-radius:8px}
+.btn:hover:not(:disabled){background:#243a61}
+.btn.ghost{background:#fff;color:var(--ink);border-color:var(--line)}.btn.ghost:hover:not(:disabled){background:var(--surface)}
+.step-btn{border-radius:8px}.step-btn b{border-radius:6px}.step-btn.on{background:#e8eef9;border-color:var(--coffee)}
+.tag{background:var(--coffee);border-radius:6px}
+th{background:#f0f3f8}
+code{background:var(--surface)}
+.hero{background:#fff;color:var(--ink);border:1px solid var(--line);border-left:5px solid var(--coffee);border-radius:12px;box-shadow:0 1px 3px rgba(31,41,55,.06)}
+.hero .eyebrow{color:var(--coffee)}.hero h1{color:var(--ink)}.hero p{color:#475063}
+.chip{border:1px solid var(--line);color:var(--ink);background:#fff}.chip:hover{background:#eef2fa;border-color:var(--coffee)}
+.team{border-top:1px solid var(--line)}.team h2,.teachers h2{color:var(--ink-soft)!important;font-weight:700}
+.member{background:#f7f8fa;border:1px solid var(--line);border-radius:10px}
+.member .av{background:var(--coffee);color:#fff}.member b{color:var(--ink)}.member span{color:var(--ink-soft)}
+.teacher{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:8px}.teacher:hover{background:#eef2fa;border-color:var(--coffee)}
+.teacher i{color:var(--coffee)}
+.nav{background:#fff}.nav .mark{background:var(--coffee)}.nav .week{color:var(--ink-soft);border-color:var(--line)}
+.uc-boundary{stroke:#8793a8}.act-box,.st-box,.uc-oval{stroke:#2f4b7c}
+.lane-head{fill:var(--ink)}
+@media(min-width:961px){
+html{scroll-padding-top:24px}
+.nav{position:fixed;left:0;top:0;bottom:0;width:230px;backdrop-filter:none;border-bottom:0;border-right:1px solid var(--line);z-index:40;overflow-y:auto}
+.nav-in{width:auto;margin:0;height:100%;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:22px;padding:24px 14px}
+.nav .brand{flex-direction:column;align-items:flex-start;gap:10px;line-height:1.25;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.nav .week{align-self:flex-start}
+.nav ul{flex-direction:column;margin:0;gap:2px;overflow:visible}
+.nav a.lnk{padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px}
+.nav a.lnk i{margin:0;min-width:1.6em;color:#9aa5b8}
+.nav a.lnk:hover{background:var(--surface)}
+.nav a.lnk.on{background:#e8eef9;color:var(--coffee)}.nav a.lnk.on i{color:var(--coffee)}
+.nav a.lnk.on::after{display:none}
+.nav .progress{position:fixed;left:230px;top:0;bottom:auto;height:3px;background:var(--coffee);z-index:50}
+.shell{width:auto;max-width:1380px;margin:0 32px 0 262px}
+.hero{margin-top:28px}.side{top:24px}
+}
+@media(max-width:960px){.nav{position:sticky}}
+/* tìm nhanh */
+.kbtn{position:fixed;right:20px;bottom:20px;z-index:30;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font:inherit;font-weight:600;font-size:.84rem;padding:8px 12px;border-radius:8px;box-shadow:0 2px 8px rgba(31,41,55,.12);cursor:pointer}
+.kbtn kbd{font-family:inherit;font-size:.72rem;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--ink-soft)}
+.kbtn:hover{border-color:var(--coffee)}
+.pal{position:fixed;inset:0;z-index:60;background:rgba(31,41,55,.35);display:none;align-items:flex-start;justify-content:center;padding-top:12vh}
+.pal.open{display:flex}
+.pal-box{width:min(640px,92vw);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 50px rgba(31,41,55,.25);overflow:hidden}
+.pal-box input{width:100%;border:0;border-bottom:1px solid var(--line);padding:16px 18px;font:inherit;font-size:1.02rem;outline:none;color:var(--ink)}
+.pal-list{list-style:none;margin:0;padding:6px;max-height:50vh;overflow:auto}
+.pal-list li{margin:0;padding:8px 12px;border-radius:8px;cursor:pointer;display:flex;gap:10px;align-items:baseline}
+.pal-list li.sel{background:#e8eef9}
+.pal-list li em{font-style:normal;flex:none;font-size:.7rem;font-weight:700;padding:1px 7px;border-radius:5px;background:var(--surface);color:var(--ink-soft)}
+.pal-list li span{font-size:.9rem;line-height:1.4}
+.pal-foot{font-size:.74rem;color:var(--ink-soft);padding:8px 14px;border-top:1px solid var(--line);display:flex;gap:14px}
+.flash{animation:flash 1.6s ease-out 1}
+@keyframes flash{0%,40%{background-color:#fff3c7}100%{}}
+
+/* ===== điểm nhấn cho tiêu đề ===== */
+.hero{background:linear-gradient(120deg,#2b4373 0%,#37588f 100%);border:0;border-left:0;color:#fff;box-shadow:0 6px 18px rgba(47,75,124,.25)}
+.hero .eyebrow{color:#ffd98e;background:rgba(255,255,255,.12);display:inline-block;padding:2px 10px;border-radius:6px}
+.hero h1{color:#fff}.hero p{color:#dbe5f6}
+.hero .chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.35);color:#fff}
+.hero .chip:hover{background:rgba(255,255,255,.22);border-color:#fff}
+.team{border-top:1px solid rgba(255,255,255,.25)}
+.team h2,.teachers h2{color:#ffd98e!important}
+.member{background:#fff;border:0}.member .av{background:#2f4b7c}
+.teacher{border:0}
+.lh{background:#e8eef9;border-left:6px solid var(--coffee);border-radius:10px;padding:18px 24px;margin-bottom:24px}
+.lh .num{color:var(--coffee);opacity:.55}
+.lh h2{color:#1f2f52}
+.lh .lead{color:#4a5670}
+.spec-title{background:#eef1f5;border-left:4px solid var(--caramel);border-radius:6px;padding:8px 14px}
+.card h3{padding-bottom:6px;border-bottom:2px solid #dbe4f3}
+.card.sage h3{border-bottom-color:#bfdcd2}.card.rose h3{border-bottom-color:#e8c6ca}
+th{background:#dde6f5;color:#1f2f52}
+.nav .brand{color:#1f2f52}
+</style></head><body>
+<nav class="nav" id="nav"><div class="nav-in">
+  <a class="brand" href="#top"><span class="mark">SE</span><span class="t">Công nghệ phần mềm</span><span class="week">Tuần 4</span></a>
+  <ul><li><a class="lnk on" href="#gia-dinh"><i>03</i>Giả định</a></li><li><a class="lnk" href="#usecase"><i>04</i>Use case</a></li><li><a class="lnk" href="#dac-ta"><i>05</i>Đặc tả</a></li><li><a class="lnk" href="#activity"><i>06</i>Activity</a></li><li><a class="lnk" href="#state"><i>07</i>State chart</a></li></ul>
+</div><div class="progress" id="progress"></div></nav>
+<div class="shell" id="top">
+  <header class="hero">
+    <p class="eyebrow">Bài tập tuần 4</p>
+    <h1>Mô hình hoá yêu cầu cho sàn đấu giá trực tuyến</h1>
+    <p>Từ đề bài của khách hàng, bài làm dựng bảng giả định, sơ đồ use case cho toàn bộ sàn và đặc tả đủ 13 use case, trong đó hai use case quan trọng là Ra giá sản phẩm và Kết thúc phiên đấu giá. Hai mô hình còn lại là activity diagram cho UC-09 Kết thúc phiên đấu giá và state chart cho Sản phẩm đấu giá. Ký pháp theo bài giảng tuần 4.</p>
+    <div class="chips"><a class="chip" href="#gia-dinh">Bảng giả định</a><a class="chip" href="#usecase">Sơ đồ use case</a><a class="chip" href="#dac-ta">Đặc tả 13 use case</a><a class="chip" href="#uc-08">UC-08 Ra giá</a><a class="chip" href="#uc-09">UC-09 Kết thúc phiên</a><a class="chip" href="#activity">Activity diagram</a><a class="chip" href="#state">State chart</a></div>
+<div class="team"><h2>Thành viên nhóm</h2><div class="team-grid"><div class="member"><div class="av">K</div><div><b>Vương Hữu Khang</b><span>MSSV 24120070</span></div></div><div class="member"><div class="av">M</div><div><b>Tạ Quang Mạnh</b><span>MSSV 24120089</span></div></div><div class="member"><div class="av">M</div><div><b>Lâm Duy Minh</b><span>MSSV 24120091</span></div></div><div class="member"><div class="av">P</div><div><b>Lê Tấn Phát</b><span>MSSV 24120115</span></div></div></div><div class="teachers"><h2 style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--caramel);margin:0 0 12px;font-weight:700">Giảng viên</h2><div class="teacher-list"><a class="teacher" href="https://courses.fit.hcmus.edu.vn/user/profile.php?id=17" target="_blank" rel="noopener"><i>ThS.</i>Ngô Ngọc Đăng Khoa</a><a class="teacher" href="https://courses.fit.hcmus.edu.vn/user/profile.php?id=46" target="_blank" rel="noopener"><i>ThS.</i>Trương Phước Lộc</a><a class="teacher" href="https://courses.fit.hcmus.edu.vn/user/profile.php?id=7529" target="_blank" rel="noopener"><i>ThS.</i>Trần Văn Quý</a><a class="teacher" href="https://courses.fit.hcmus.edu.vn/user/profile.php?id=92" target="_blank" rel="noopener"><i>ThS.</i>Hồ Tuấn Thanh</a></div></div></div>
+  </header>
+  <main>
+
+    <!-- 03 GIẢ ĐỊNH -->
+    <section class="lesson" id="gia-dinh">
+      <div class="lh"><span class="num">03</span><h2>Bảng giả định</h2>
+        <p class="lead">Đề có chỗ chưa nói rõ. Mỗi giả định ghi chỗ chưa rõ, cách bài làm xử lý và phần của mô hình dùng giả định đó.</p></div>
+      <div class="table-wrap"><table class=""><thead><tr><th>Mã</th><th>Chỗ đề chưa rõ</th><th>Giả định của bài làm</th><th>Ảnh hưởng đến</th></tr></thead><tbody><tr><td>GĐ-01</td><td>Giá kết thúc đúng bằng giá bán tối thiểu. Đề chỉ nêu trường hợp “thấp hơn”.</td><td>Giao dịch được thực hiện khi giá kết thúc lớn hơn hoặc bằng giá bán tối thiểu.</td><td>UC-09: BR-02, luồng chính bước 3–4</td></tr><tr><td>GĐ-02</td><td>Hết thời hạn mà không có lượt ra giá nào. Đề không nêu.</td><td>Giao dịch không được thực hiện, sản phẩm chuyển sang “Không giao dịch”, người bán không phải trả chi phí nào.</td><td>UC-09: luồng thay thế 2a, BR-02</td></tr><tr><td>GĐ-03</td><td>Giá hiện tại khi chưa có ai ra giá. Đề chỉ nói người mua “bắt đầu đấu giá từ mức giá khởi điểm”.</td><td>Khi chưa có lượt ra giá, giá hiện tại bằng giá khởi điểm; vì vậy lượt đầu tiên cũng phải lớn hơn giá khởi điểm.</td><td>UC-03: BR-07; UC-07: BR-03; UC-08: bước 1, BR-03</td></tr><tr><td>GĐ-04</td><td>Phí giao hàng qua công ty chuyển phát. Đề nói sàn lấy “các gói chuyển phát” nhưng không nói gói nào được tính vào tiền mua.</td><td>Khi đăng sản phẩm, người bán chọn một gói chuyển phát; phí của gói được lưu cùng sản phẩm, hiển thị cho người mua và là chi phí giao nhận trong hóa đơn. Phương thức “miễn phí giao hàng” và “người mua đến lấy” có chi phí giao nhận 0 đồng.</td><td>Sơ đồ use case: extend UC-04 → UC-03; UC-04: BR-02; UC-07: BR-02, luồng 4a; UC-09: BR-05</td></tr><tr><td>GĐ-05</td><td>Thời điểm và đơn vị gia hạn. Đề chỉ nêu phí 5.000 đồng/ngày.</td><td>Gia hạn theo số ngày nguyên n ≥ 1, thực hiện khi đăng hoặc khi sản phẩm còn “Đang đấu giá”. Phụ phí n × 5.000 đồng được cộng vào chi phí đăng và chỉ thu khi giao dịch được thực hiện (theo công thức chi phí đăng của đề).</td><td>UC-03: BR-03, luồng 4a; UC-05: BR-02, BR-03, BR-04; UC-08: BR-05; UC-09: BR-01, BR-04</td></tr><tr><td>GĐ-06</td><td>Người bán có được ra giá cho sản phẩm của chính mình không. Đề không nêu.</td><td>Không được, để tránh tự đẩy giá.</td><td>UC-07: luồng 5a; UC-08: bước 5, luồng ngoại lệ 5a, BR-06</td></tr><tr><td>GĐ-07</td><td>Hai lượt ra giá đến gần như cùng lúc, hoặc lượt ra giá đến đúng lúc hết hạn.</td><td>Lượt ra giá được xử lý tuần tự theo thời điểm hệ thống nhận. Lượt nhận sau thời điểm kết thúc bị từ chối. Hai lượt bằng giá thì lượt đến trước được ghi nhận, lượt sau không còn lớn hơn giá hiện tại.</td><td>UC-08: luồng thay thế 8a, luồng ngoại lệ 4a, BR-05, BR-07</td></tr><tr><td>GĐ-08</td><td>Người mua không trả tiền. Đề chỉ nói người mua “nhận một hóa đơn để trả tiền”.</td><td>Hóa đơn có hạn thanh toán 3 ngày kể từ khi lập. Quá hạn, hóa đơn và chi phí đăng của người bán bị hủy, người mua bị ghi nhận không trả tiền đúng hạn.</td><td>UC-09: BR-06; UC-11: BR-03, luồng ngoại lệ 3a; UC-12: luồng ngoại lệ 3a</td></tr><tr><td>GĐ-09</td><td>Cách thanh toán trực tuyến. Đề nói “đến lúc thanh toán đều được thực hiện trực tuyến” nhưng không nêu phương tiện.</td><td>Sàn dùng một cổng thanh toán bên ngoài (hệ thống ngoài) cho cả hóa đơn của người mua và chi phí đăng của người bán.</td><td>Sơ đồ use case: actor «hệ thống» Cổng thanh toán nối UC-11, UC-12; UC-11: BR-02, BR-04; UC-12: BR-04</td></tr><tr><td>GĐ-10</td><td>Xử lý khi kết thúc phiên bị lỗi; ngưỡng hiệu năng. Đề không nêu.</td><td>Nếu không ghi được chi phí hoặc hóa đơn, hệ thống hoàn tác, giữ sản phẩm ở “Đang đấu giá” và chạy lại sau 5 phút. Ngưỡng hiệu năng: mỗi thao tác của người dùng (đăng nhập, tìm kiếm, xem, ra giá) phản hồi trong 2 giây với 95% yêu cầu; phiên được kết thúc và thông báo trong 60 giây sau thời điểm kết thúc với 99% phiên.</td><td>UC-09: luồng ngoại lệ 6a, NFR-03; NFR của UC-02, UC-06, UC-07, UC-08, UC-10</td></tr><tr><td>GĐ-11</td><td>Ai khởi động việc kết thúc đấu giá. Đề chỉ nói “khi hết thời hạn”.</td><td>Việc kết thúc do thời gian kích hoạt; trên sơ đồ dùng actor “Thời gian” (bộ định thời của sàn).</td><td>Sơ đồ use case: actor Thời gian nối UC-09; UC-09: actor chính, kích hoạt</td></tr><tr><td>GĐ-12</td><td>Thông tin tài khoản và quy tắc đăng nhập. Đề chỉ nói người bán, người mua “cần phải đăng ký tài khoản và đăng nhập”.</td><td>Đăng ký bằng email, mỗi email một tài khoản; mật khẩu ít nhất 8 ký tự, có chữ và số. Sai mật khẩu 5 lần liên tiếp thì khóa 15 phút; phiên hết hạn sau 30 phút không thao tác.</td><td>UC-01: BR-01, BR-02; UC-02: BR-01, BR-02, luồng 4a, 3a, 4b</td></tr><tr><td>GĐ-13</td><td>Người bán và người mua có phải hai loại tài khoản khác nhau không. Đề không nêu.</td><td>Một tài khoản dùng được cho cả hai vai trò.</td><td>Sơ đồ use case: actor Thành viên tổng quát hóa Người bán, Người mua; UC-01: BR-03</td></tr><tr><td>GĐ-14</td><td>Ràng buộc của giá khởi điểm và giá bán tối thiểu. Đề chỉ nêu bước giá cho lượt ra giá.</td><td>Giá khởi điểm và giá bán tối thiểu là số dương, bội số của 5.000 đồng; giá bán tối thiểu lớn hơn giá khởi điểm.</td><td>UC-03: BR-02, luồng 7a</td></tr><tr><td>GĐ-15</td><td>Thế nào là “giao dịch hoàn tất”, và hạn phản hồi. Đề không nêu.</td><td>Giao dịch hoàn tất khi người mua đã thanh toán hóa đơn (giao nhận diễn ra ngoài sàn). Mỗi bên phản hồi một lần trong 14 ngày, điểm 1 đến 5, không sửa sau khi gửi.</td><td>UC-11: BR-05; UC-13: BR-03, BR-04, luồng ngoại lệ 2a, 3a</td></tr><tr><td>GĐ-16</td><td>Người bán trả chi phí đăng khi nào. Đề chỉ nói người bán “bị tính chi phí đăng sản phẩm”.</td><td>Hạn thanh toán chi phí đăng là 7 ngày kể từ khi phát sinh; quá hạn, người bán bị tạm khóa chức năng đăng sản phẩm mới đến khi thanh toán.</td><td>UC-12: BR-03</td></tr><tr><td>GĐ-17</td><td>Kết quả đấu giá được báo cho ai, bằng cách nào. Đề không nêu.</td><td>Người bán luôn được báo; người ra giá cao nhất được báo cả khi giao dịch không thực hiện. Thông báo lưu trong hộp thư trên sàn và gửi email; email lỗi được gửi lại tối đa 3 lần, cách nhau 5 phút.</td><td>UC-10: BR-01, BR-02, luồng 2a, luồng ngoại lệ 4a</td></tr><tr><td>GĐ-18</td><td>Hệ thống tính phí của công ty chuyển phát không phản hồi. Đề không nêu.</td><td>Sàn chờ tối đa 10 giây; quá thời gian thì báo lỗi và người bán chọn phương thức giao nhận khác.</td><td>UC-04: luồng ngoại lệ 2b, NFR-01</td></tr><tr><td>GĐ-19</td><td>Cách kết hợp các tiêu chí tìm kiếm. Đề chỉ liệt kê tiêu chí.</td><td>Các tiêu chí kết hợp theo điều kiện “và”; tên tìm theo chuỗi con, không phân biệt hoa thường; kết quả sắp theo thời điểm kết thúc gần nhất.</td><td>UC-06: BR-03</td></tr><tr><td>GĐ-20</td><td>Trạng thái của sản phẩm khi người mua không trả tiền đúng hạn. Đề không nêu.</td><td>Hóa đơn quá hạn 3 ngày thì sản phẩm chuyển sang trạng thái cuối “Đã hủy do quá hạn”; hóa đơn và chi phí đăng bị hủy theo GĐ-08.</td><td>State chart: chuyển trạng thái “hết hạn thanh toán”; UC-11: BR-03</td></tr><tr><td>GĐ-21</td><td>Trạng thái của sản phẩm khi hết hạn phản hồi mà một hoặc cả hai bên chưa phản hồi. Đề không nêu.</td><td>Hết 14 ngày kể từ khi người mua thanh toán, hệ thống không nhận phản hồi nữa và sản phẩm chuyển sang “Đã hoàn tất”.</td><td>State chart: chuyển trạng thái “hết hạn phản hồi”; UC-13: BR-03, luồng ngoại lệ 2a</td></tr></tbody></table></div>
+      <div class="grid-2 mt">
+        <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>Cách tìm chỗ chưa rõ</h3><ul>
+          <li>Giá trị biên: giá kết thúc bằng giá tối thiểu (GĐ-01), lượt ra giá đúng lúc hết hạn (GĐ-07).</li>
+          <li>Không có dữ liệu: không ai ra giá (GĐ-02), chưa có lượt ra giá nào (GĐ-03).</li>
+          <li>Quá hạn hoặc không làm: người mua không trả tiền (GĐ-08), kết thúc phiên bị lỗi (GĐ-10).</li>
+          <li>Thông tin đề không nêu: ai kích hoạt kết thúc (GĐ-11), thanh toán bằng gì (GĐ-09).</li></ul></div>
+        <div class="card rose"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Ràng buộc khi đặt giả định</h3><ul>
+          <li>Không mâu thuẫn với câu chữ của đề, không bỏ bớt yêu cầu đã có.</li>
+          <li>Mỗi giả định xuất hiện cụ thể trong sơ đồ use case hoặc trong đặc tả: một actor, một bước, một luồng hoặc một quy tắc BR.</li></ul></div>
+      </div>
+    </section>
+
+    <!-- 04 USE CASE -->
+    <section class="lesson" id="usecase">
+      <div class="lh"><span class="num">04</span><h2>Sơ đồ use case</h2>
+        <p class="lead">Một sơ đồ cho toàn bộ sàn đấu giá, từ đăng ký tài khoản đến phản hồi giao dịch. Sơ đồ cho biết ai dùng hệ thống để làm gì, không mô tả thứ tự các bước.</p></div>
+      <div id="uc-stepper"><div class="steps-row"><button class="step-btn done" data-s="1"><b>1</b><span>Actor</span></button><button class="step-btn done" data-s="2"><b>2</b><span>Use case</span></button><button class="step-btn done" data-s="3"><b>3</b><span>Ranh giới</span></button><button class="step-btn done" data-s="4"><b>4</b><span>Association</span></button><button class="step-btn on" data-s="5"><b>5</b><span>Include, extend</span></button></div>
+        <div class="steps-nav"><button class="btn ghost" data-d="-1"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Bước trước</button><button class="btn" data-d="1" disabled>Bước sau<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
+      <div class="viz wide">
+        <div class="canvas"><svg id="uc-svg" viewBox="0 0 1180 1010" role="img" aria-label="Sơ đồ use case sàn đấu giá trực tuyến"><defs><marker id="uc-open" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#b4474f" stroke-width="1.4"/></marker><marker id="uc-gen" markerUnits="userSpaceOnUse" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="16" markerHeight="16" orient="auto"><path d="M1 1L11 6L1 11z" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/></marker></defs><g data-step="3" class="clickable" data-k="boundary"><rect x="320" y="20" width="620" height="975" rx="14" class="uc-boundary shape"/><text x="340" y="50" class="bold">Sàn đấu giá trực tuyến</text></g><g data-step="4" class="clickable" data-k="assoc"><line x1="174" y1="78" x2="353.6" y2="85.0" class="assoc"/><line x1="174" y1="78" x2="353.6" y2="85.0" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="84" y1="198" x2="356.5" y2="180.1" class="assoc"/><line x1="84" y1="198" x2="356.5" y2="180.1" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="84" y1="198" x2="366.5" y2="233.7" class="assoc"/><line x1="84" y1="198" x2="366.5" y2="233.7" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="199" y1="413" x2="389.5" y2="366.9" class="assoc"/><line x1="199" y1="413" x2="389.5" y2="366.9" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="199" y1="413" x2="353.9" y2="419.6" class="assoc"/><line x1="199" y1="413" x2="353.9" y2="419.6" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="199" y1="413" x2="403.9" y2="480.1" class="assoc"/><line x1="199" y1="413" x2="403.9" y2="480.1" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="199" y1="700" x2="408.0" y2="625.6" class="assoc"/><line x1="199" y1="700" x2="408.0" y2="625.6" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="199" y1="700" x2="359.9" y2="685.7" class="assoc"/><line x1="199" y1="700" x2="359.9" y2="685.7" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="199" y1="700" x2="376.8" y2="731.6" class="assoc"/><line x1="199" y1="700" x2="376.8" y2="731.6" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="199" y1="700" x2="418.8" y2="797.8" class="assoc"/><line x1="199" y1="700" x2="418.8" y2="797.8" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="174" y1="923" x2="353.6" y2="930.0" class="assoc"/><line x1="174" y1="923" x2="353.6" y2="930.0" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="1056" y1="243" x2="915.8" y2="249.3" class="assoc"/><line x1="1056" y1="243" x2="915.8" y2="249.3" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="1056" y1="653" x2="560.6" y2="800.9" class="assoc"/><line x1="1056" y1="653" x2="560.6" y2="800.9" stroke="transparent" stroke-width="12"/></g><g data-step="4" class="clickable" data-k="assoc"><line x1="1056" y1="653" x2="567.8" y2="527.6" class="assoc"/><line x1="1056" y1="653" x2="567.8" y2="527.6" stroke="transparent" stroke-width="12"/></g><g data-step="1" class="clickable" data-k="gen"><line x1="161" y1="375" x2="64" y2="272" class="assoc" marker-end="url(#uc-gen)"/></g><g data-step="1" class="clickable" data-k="gen"><line x1="161" y1="662" x2="64" y2="272" class="assoc" marker-end="url(#uc-gen)"/></g><g data-step="5" class="clickable" data-k="extend"><line x1="708.0" y1="278.8" x2="562.0" y2="321.2" class="dep" marker-end="url(#uc-open)"/><line x1="708.0" y1="278.8" x2="562.0" y2="321.2" stroke="transparent" stroke-width="14"/><text x="770" y="318" text-anchor="middle" class="dep-label halo"><tspan x="770" dy="0">«extend»</tspan><tspan x="770" dy="16">[người bán chọn giao qua</tspan><tspan x="770" dy="16">công ty chuyển phát]</tspan></text></g><g data-step="5" class="clickable" data-k="include"><line x1="608.0" y1="935.0" x2="662.0" y2="935.0" class="dep" marker-end="url(#uc-open)"/><line x1="608.0" y1="935.0" x2="662.0" y2="935.0" stroke="transparent" stroke-width="14"/><text x="635" y="922" text-anchor="middle" class="dep-label halo"><tspan x="635" dy="0">«include»</tspan></text></g><g data-step="2" class="clickable" data-k="UC01"><ellipse cx="480" cy="90" rx="128" ry="31" class="uc-oval shape"/><text x="480" y="95.0" text-anchor="middle"><tspan x="480" dy="0">UC-01 Đăng ký tài khoản</tspan></text></g><g data-step="2" class="clickable" data-k="UC02"><ellipse cx="480" cy="172" rx="128" ry="31" class="uc-oval shape"/><text x="480" y="177.0" text-anchor="middle"><tspan x="480" dy="0">UC-02 Đăng nhập</tspan></text></g><g data-step="2" class="clickable" data-k="UC13"><ellipse cx="480" cy="248" rx="128" ry="31" class="uc-oval shape"/><text x="480" y="253.0" text-anchor="middle"><tspan x="480" dy="0">UC-13 Phản hồi giao dịch</tspan></text></g><g data-step="2" class="clickable" data-k="UC03"><ellipse cx="480" cy="345" rx="128" ry="31" class="uc-oval shape"/><text x="480" y="340.5" text-anchor="middle"><tspan x="480" dy="0">UC-03 Đăng sản phẩm</tspan><tspan x="480" dy="19">đấu giá</tspan></text></g><g data-step="2" class="clickable" data-k="UC05"><ellipse cx="480" cy="425" rx="128" ry="31" class="uc-oval shape"/><text x="480" y="420.5" text-anchor="middle"><tspan x="480" dy="0">UC-05 Gia hạn thời hạn</tspan><tspan x="480" dy="19">đấu giá</tspan></text></g><g data-step="2" class="clickable" data-k="UC12"><ellipse cx="480" cy="505" rx="128" ry="31" class="uc-oval shape"/><text x="480" y="500.5" text-anchor="middle"><tspan x="480" dy="0">UC-12 Thanh toán chi phí</tspan><tspan x="480" dy="19">đăng sản phẩm</tspan></text></g><g data-step="2" class="clickable" data-k="UC06"><ellipse cx="480" cy="600" rx="128" ry="31" class="uc-oval shape"/><text x="480" y="595.5" text-anchor="middle"><tspan x="480" dy="0">UC-06 Tìm kiếm sản phẩm</tspan><tspan x="480" dy="19">đấu giá</tspan></text></g><g data-step="2" class="clickable" data-k="UC07"><ellipse cx="480" cy="675" rx="128" ry="31" class="uc-oval shape"/><text x="480" y="670.5" text-anchor="middle"><tspan x="480" dy="0">UC-07 Xem thông tin</tspan><tspan x="480" dy="19">sản phẩm đấu giá</tspan></text></g><g data-step="2" class="clickable" data-k="UC08"><ellipse cx="480" cy="750" rx="128" ry="31" class="uc-oval shape"/><text x="480" y="755.0" text-anchor="middle"><tspan x="480" dy="0">UC-08 Ra giá sản phẩm</tspan></text></g><g data-step="2" class="clickable" data-k="UC11"><ellipse cx="480" cy="825" rx="128" ry="31" class="uc-oval shape"/><text x="480" y="820.5" text-anchor="middle"><tspan x="480" dy="0">UC-11 Thanh toán hóa đơn</tspan><tspan x="480" dy="19">mua hàng</tspan></text></g><g data-step="2" class="clickable" data-k="UC09"><ellipse cx="480" cy="935" rx="128" ry="31" class="uc-oval shape"/><text x="480" y="930.5" text-anchor="middle"><tspan x="480" dy="0">UC-09 Kết thúc phiên</tspan><tspan x="480" dy="19">đấu giá</tspan></text></g><g data-step="2" class="clickable" data-k="UC04"><ellipse cx="790" cy="255" rx="128" ry="31" class="uc-oval shape"/><text x="790" y="250.5" text-anchor="middle"><tspan x="790" dy="0">UC-04 Lấy gói</tspan><tspan x="790" dy="19">chuyển phát</tspan></text></g><g data-step="2" class="clickable" data-k="UC10"><ellipse cx="790" cy="935" rx="128" ry="31" class="uc-oval shape"/><text x="790" y="930.5" text-anchor="middle"><tspan x="790" dy="0">UC-10 Thông báo kết quả</tspan><tspan x="790" dy="19">đấu giá</tspan></text></g><g data-step="1" class="clickable" data-k="A:Khách"><rect x="90" y="38" width="120" height="77" fill="transparent" class="shape" stroke="none"/><circle cx="150" cy="52" r="10" class="actor-head"/><path d="M150 62V88M134 71H166M150 88L137 107M150 88L163 107" class="actor-line"/><text x="150" y="128" text-anchor="middle" class="small"><tspan x="150" dy="0">Khách</tspan></text></g><g data-step="1" class="clickable" data-k="A:Thành viên"><rect x="0" y="158" width="120" height="77" fill="transparent" class="shape" stroke="none"/><circle cx="60" cy="172" r="10" class="actor-head"/><path d="M60 182V208M44 191H76M60 208L47 227M60 208L73 227" class="actor-line"/><text x="60" y="248" text-anchor="middle" class="small"><tspan x="60" dy="0">Thành viên</tspan></text></g><g data-step="1" class="clickable" data-k="A:Người bán"><rect x="115" y="373" width="120" height="77" fill="transparent" class="shape" stroke="none"/><circle cx="175" cy="387" r="10" class="actor-head"/><path d="M175 397V423M159 406H191M175 423L162 442M175 423L188 442" class="actor-line"/><text x="175" y="463" text-anchor="middle" class="small"><tspan x="175" dy="0">Người bán</tspan></text></g><g data-step="1" class="clickable" data-k="A:Người mua"><rect x="115" y="660" width="120" height="77" fill="transparent" class="shape" stroke="none"/><circle cx="175" cy="674" r="10" class="actor-head"/><path d="M175 684V710M159 693H191M175 710L162 729M175 710L188 729" class="actor-line"/><text x="175" y="750" text-anchor="middle" class="small"><tspan x="175" dy="0">Người mua</tspan></text></g><g data-step="1" class="clickable" data-k="A:Thời gian"><rect x="90" y="883" width="120" height="77" fill="transparent" class="shape" stroke="none"/><circle cx="150" cy="897" r="10" class="actor-head"/><path d="M150 907V933M134 916H166M150 933L137 952M150 933L163 952" class="actor-line"/><text x="150" y="973" text-anchor="middle" class="small"><tspan x="150" dy="0">Thời gian</tspan></text></g><g data-step="1" class="clickable actor-ext" data-k="A:Hệ thống tính phí công ty chuyển phát"><rect x="1020" y="203" width="120" height="111" fill="transparent" class="shape" stroke="none"/><circle cx="1080" cy="217" r="10" class="actor-head"/><path d="M1080 227V253M1064 236H1096M1080 253L1067 272M1080 253L1093 272" class="actor-line"/><text x="1080" y="293" text-anchor="middle" class="small"><tspan x="1080" dy="0">«hệ thống»</tspan><tspan x="1080" dy="17">Hệ thống tính phí</tspan><tspan x="1080" dy="17">công ty chuyển phát</tspan></text></g><g data-step="1" class="clickable actor-ext" data-k="A:Cổng thanh toán"><rect x="1020" y="613" width="120" height="94" fill="transparent" class="shape" stroke="none"/><circle cx="1080" cy="627" r="10" class="actor-head"/><path d="M1080 637V663M1064 646H1096M1080 663L1067 682M1080 663L1093 682" class="actor-line"/><text x="1080" y="703" text-anchor="middle" class="small"><tspan x="1080" dy="0">«hệ thống»</tspan><tspan x="1080" dy="17">Cổng thanh toán</tspan></text></g></svg></div>
+        <aside class="side">
+          <div class="card" id="uc-step-card"><span class="tag">Bước 5</span><h3>Thêm include, extend</h3><p>Include UC-09 → UC-10: luôn chạy. Extend UC-04 → UC-03: chỉ chạy khi [người bán chọn giao qua công ty chuyển phát]. Mũi tên đứt nét, đúng chiều như bài giảng.</p></div>
+          <div class="card info" id="uc-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào actor, use case, ranh giới hoặc đường nối để xem giải thích.</p></div>
+        </aside>
+      </div>
+
+      <h3 class="mt">Ghi chú quan hệ</h3>
+      <div class="table-wrap"><table class=""><thead><tr><th>Loại</th><th>Use case gốc</th><th>Use case được bao gồm hoặc mở rộng</th><th>Lý do chọn quan hệ này; với extend, ghi điều kiện</th></tr></thead><tbody><tr><td>include</td><td>UC-09 Kết thúc phiên đấu giá</td><td>UC-10 Thông báo kết quả đấu giá</td><td>Mỗi lần một phiên kết thúc, dù giao dịch có được thực hiện hay không, người bán đều phải được báo kết quả (và người mua thắng nhận hóa đơn). UC-09 không trọn vẹn nếu thiếu bước này, nên dùng include.</td></tr><tr><td>extend</td><td>UC-03 Đăng sản phẩm đấu giá</td><td>UC-04 Lấy gói chuyển phát</td><td>Điều kiện: [người bán chọn giao qua công ty chuyển phát]. Khi chọn “miễn phí giao hàng” hoặc “người mua đến lấy”, UC-03 vẫn trọn vẹn mà không cần gọi hệ thống tính phí, nên dùng extend. Mũi tên đi từ UC-04 đến UC-03.</td></tr><tr><td>generalization (actor)</td><td>Thành viên</td><td>Người bán, Người mua</td><td>Cả người bán và người mua đều phải đăng ký và đăng nhập, đều có trách nhiệm phản hồi giao dịch; gom các use case chung về actor Thành viên.</td></tr></tbody></table></div>
+      <h3 class="mt">Danh sách use case</h3>
+      <div class="table-wrap"><table class=""><thead><tr><th>Mã</th><th>Use case</th><th>Actor</th><th>Mục tiêu của actor</th></tr></thead><tbody><tr><td>UC-01</td><td>Đăng ký tài khoản</td><td>Khách</td><td>Có tài khoản để dùng dịch vụ của sàn</td></tr><tr><td>UC-02</td><td>Đăng nhập</td><td>Thành viên</td><td>Được xác thực để mua hoặc bán</td></tr><tr><td>UC-03</td><td>Đăng sản phẩm đấu giá</td><td>Người bán</td><td>Đưa sản phẩm lên sàn với mô tả, giá khởi điểm, thời hạn, phương thức giao nhận và giá bán tối thiểu (nếu muốn)</td></tr><tr><td>UC-04</td><td>Lấy gói chuyển phát</td><td>Hệ thống tính phí công ty chuyển phát</td><td>Có danh sách gói và phí chuyển phát để người bán chọn</td></tr><tr><td>UC-05</td><td>Gia hạn thời hạn đấu giá</td><td>Người bán</td><td>Kéo dài thời gian đấu giá thêm n ngày</td></tr><tr><td>UC-06</td><td>Tìm kiếm sản phẩm đấu giá</td><td>Người mua</td><td>Tìm sản phẩm đang đấu giá theo tên, chủng loại, giá hiện tại, hình thức giao nhận…</td></tr><tr><td>UC-07</td><td>Xem thông tin sản phẩm đấu giá</td><td>Người mua</td><td>Biết mô tả, giá hiện tại, thời điểm kết thúc và chi phí giao hàng</td></tr><tr><td>UC-08</td><td>Ra giá sản phẩm</td><td>Người mua</td><td>Trở thành người trả giá cao nhất hiện tại</td></tr><tr><td>UC-09</td><td>Kết thúc phiên đấu giá</td><td>Thời gian</td><td>Chốt kết quả khi hết thời hạn, phát sinh chi phí và hóa đơn</td></tr><tr><td>UC-10</td><td>Thông báo kết quả đấu giá</td><td>(được UC-09 bao gồm)</td><td>Người bán và người mua biết kết quả phiên</td></tr><tr><td>UC-11</td><td>Thanh toán hóa đơn mua hàng</td><td>Người mua; Cổng thanh toán</td><td>Trả tiền mua sản phẩm</td></tr><tr><td>UC-12</td><td>Thanh toán chi phí đăng sản phẩm</td><td>Người bán; Cổng thanh toán</td><td>Trả chi phí đăng khi giao dịch được thực hiện</td></tr><tr><td>UC-13</td><td>Phản hồi giao dịch</td><td>Thành viên</td><td>Đánh giá chất lượng giao dịch của bên kia</td></tr></tbody></table></div>
+      <div class="card sage mt"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Trả lời câu hỏi tự kiểm tra</h3><ul><li>Chức năng do thời gian kích hoạt là kết thúc đấu giá khi hết thời hạn: vẽ actor “Thời gian” nối với UC-09 (GĐ-11). Hạn thanh toán hóa đơn (GĐ-08) chỉ là một quy tắc của UC-09, không tách thành use case riêng.</li><li>Hệ thống ngoài: Hệ thống tính phí của công ty chuyển phát (đề nêu rõ) làm việc với UC-04; Cổng thanh toán (GĐ-09) làm việc với UC-11 và UC-12.</li><li>Người quản trị sàn là stakeholder nhưng đề không giao cho họ thao tác nào, nên chưa vẽ thành actor.</li>
+        <li>Use case gốc UC-03 vẫn trọn vẹn khi bỏ phần mở rộng UC-04 (người bán chọn miễn phí giao hàng hoặc người mua đến lấy), nên quan hệ là extend. UC-09 không trọn vẹn nếu thiếu thông báo kết quả, nên quan hệ là include.</li></ul></div>
+    </section>
+
+    <!-- 05 ĐẶC TẢ -->
+    <section class="lesson" id="dac-ta">
+      <div class="lh"><span class="num">05</span><h2>Đặc tả use case</h2>
+        <p class="lead">Đặc tả đủ 13 use case trên sơ đồ, mỗi bản theo mẫu 14 mục. Hai use case quan trọng theo yêu cầu của đề là UC-08 Ra giá sản phẩm (người mua kích hoạt) và UC-09 Kết thúc phiên đấu giá (thời gian kích hoạt), có ghi lý do chọn.</p></div>
+      <div class="steps-row"><a class="step-btn" href="#uc-01" style="text-decoration:none"><b>01</b><span>Đăng ký tài khoản</span></a><a class="step-btn" href="#uc-02" style="text-decoration:none"><b>02</b><span>Đăng nhập</span></a><a class="step-btn" href="#uc-03" style="text-decoration:none"><b>03</b><span>Đăng sản phẩm đấu giá</span></a><a class="step-btn" href="#uc-04" style="text-decoration:none"><b>04</b><span>Lấy gói chuyển phát</span></a><a class="step-btn" href="#uc-05" style="text-decoration:none"><b>05</b><span>Gia hạn thời hạn đấu giá</span></a><a class="step-btn" href="#uc-06" style="text-decoration:none"><b>06</b><span>Tìm kiếm sản phẩm đấu giá</span></a><a class="step-btn" href="#uc-07" style="text-decoration:none"><b>07</b><span>Xem thông tin sản phẩm đấu giá</span></a><a class="step-btn" href="#uc-08" style="text-decoration:none"><b>08</b><span>Ra giá sản phẩm</span></a><a class="step-btn" href="#uc-09" style="text-decoration:none"><b>09</b><span>Kết thúc phiên đấu giá</span></a><a class="step-btn" href="#uc-10" style="text-decoration:none"><b>10</b><span>Thông báo kết quả đấu giá</span></a><a class="step-btn" href="#uc-11" style="text-decoration:none"><b>11</b><span>Thanh toán hóa đơn mua hàng</span></a><a class="step-btn" href="#uc-12" style="text-decoration:none"><b>12</b><span>Thanh toán chi phí đăng sản phẩm</span></a><a class="step-btn" href="#uc-13" style="text-decoration:none"><b>13</b><span>Phản hồi giao dịch</span></a></div>
+      <h3 class="spec-title" id="uc-01">UC-01 Đăng ký tài khoản</h3>
+      
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-01"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-01 Đăng ký tài khoản</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Cho phép khách tạo một tài khoản trên sàn để có thể bán và mua sản phẩm đấu giá.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Khách.</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Không có.</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>Khách yêu cầu đăng ký tài khoản.</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>Khách chưa đăng nhập vào sàn.</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Một tài khoản mới tồn tại và đang hoạt động. Khách trở thành thành viên, dùng được cả vai trò người bán và người mua.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Không có tài khoản mới nào được tạo.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Hệ thống yêu cầu thông tin đăng ký: họ tên, email, số điện thoại, mật khẩu.</li><li>Khách cung cấp thông tin đăng ký.</li><li>Khách đồng ý điều khoản sử dụng và gửi yêu cầu đăng ký.</li><li>Hệ thống kiểm tra các thông tin bắt buộc đã đủ và đúng định dạng.</li><li>Hệ thống kiểm tra email chưa được dùng cho tài khoản khác.</li><li>Hệ thống tạo tài khoản với mật khẩu đã được mã hóa.</li><li>Hệ thống thông báo đăng ký thành công. Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="3"><b>3a.</b> <i>Khách hủy đăng ký:</i> Hệ thống không tạo tài khoản. Use case kết thúc với hậu điều kiện thất bại.</div><div class="alt" data-step="4"><b>4a.</b> <i>Thông tin thiếu hoặc sai định dạng, kể cả mật khẩu không đạt quy tắc (BR-02):</i> Hệ thống chỉ ra mục chưa hợp lệ. Quay về bước 2.</div><div class="alt" data-step="5"><b>5a.</b> <i>Email đã được dùng cho tài khoản khác (BR-01):</i> Hệ thống thông báo và gợi ý đăng nhập (UC-02 Đăng nhập). Quay về bước 2.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="6"><b>6a.</b> <i>Hệ thống không tạo được tài khoản do lỗi lưu trữ:</i> Hệ thống thông báo lỗi. Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (bước 5): Mỗi email chỉ đăng ký được một tài khoản. Nguồn: GĐ-12.</p><p style="margin:0 0 6px">BR-02 (bước 4): Mật khẩu dài ít nhất 8 ký tự, có cả chữ và số. Nguồn: GĐ-12.</p><p style="margin:0 0 6px">BR-03 (bước 6): Một tài khoản dùng được cho cả vai trò người bán và người mua. Nguồn: GĐ-13.</p><p style="margin:0 0 6px">BR-04: Người bán và người mua cần đăng ký tài khoản để sử dụng dịch vụ. Nguồn: đề.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td><p style="margin:0 0 6px">NFR-01: 100% mật khẩu được lưu dạng băm có salt (bcrypt), thông tin đăng ký truyền qua TLS 1.2 trở lên. Nguồn: đề, “tất cả thông tin giao dịch trên sàn đều được mã hóa”.</p></td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Không có.</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-01-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>3a</code>, <code>6a</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+<h3 class="spec-title" id="uc-02">UC-02 Đăng nhập</h3>
+      
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-02"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-02 Đăng nhập</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Cho phép thành viên xác thực bằng email và mật khẩu để dùng các chức năng bán và mua trên sàn.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Thành viên (người bán hoặc người mua).</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Không có.</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>Thành viên yêu cầu đăng nhập, hoặc yêu cầu một chức năng cần đăng nhập khi chưa đăng nhập (BR-03).</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>Thành viên đã có tài khoản (UC-01).</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Một phiên đăng nhập mới được tạo cho thành viên. Số lần đăng nhập sai liên tiếp được đặt về 0.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Không có phiên đăng nhập. Số lần đăng nhập sai liên tiếp được cập nhật.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Hệ thống yêu cầu email và mật khẩu.</li><li>Thành viên cung cấp email và mật khẩu.</li><li>Hệ thống kiểm tra tài khoản không bị tạm khóa.</li><li>Hệ thống kiểm tra email và mật khẩu khớp với tài khoản.</li><li>Hệ thống tạo phiên đăng nhập.</li><li>Hệ thống chuyển thành viên đến chức năng đã yêu cầu. Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="2"><b>2a.</b> <i>Thành viên quên mật khẩu:</i> Hệ thống gửi liên kết đặt lại mật khẩu đến email của tài khoản. Use case kết thúc với hậu điều kiện thất bại.</div><div class="alt" data-step="4"><b>4a.</b> <i>Email hoặc mật khẩu không đúng, chưa đến lần sai thứ 5 liên tiếp (BR-01):</i> Hệ thống thông báo “Email hoặc mật khẩu không đúng” mà không nói rõ mục nào sai, tăng số lần sai. Quay về bước 2.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="3"><b>3a.</b> <i>Tài khoản đang bị tạm khóa (BR-01):</i> Hệ thống thông báo thời điểm mở khóa. Use case kết thúc thất bại.</div><div class="alt" data-step="4"><b>4b.</b> <i>Thành viên nhập sai lần thứ 5 liên tiếp (BR-01):</i> Hệ thống tạm khóa tài khoản 15 phút và thông báo. Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (bước 3, 4): Sai mật khẩu 5 lần liên tiếp thì tài khoản bị tạm khóa 15 phút. Nguồn: GĐ-12.</p><p style="margin:0 0 6px">BR-02 (bước 5): Phiên đăng nhập hết hạn sau 30 phút không thao tác. Nguồn: GĐ-12.</p><p style="margin:0 0 6px">BR-03 (kích hoạt): Người bán và người mua phải đăng nhập để sử dụng dịch vụ. Nguồn: đề.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td><p style="margin:0 0 6px">NFR-01: 100% thông tin đăng nhập truyền qua TLS 1.2 trở lên. Nguồn: đề.</p><p style="margin:0 0 6px">NFR-02: Bước 3 đến bước 5 trả kết quả trong vòng 2 giây với 95% lượt đăng nhập. Nguồn: GĐ-10.</p></td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Không có.</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-02-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>2a</code>, <code>3a</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+<h3 class="spec-title" id="uc-03">UC-03 Đăng sản phẩm đấu giá</h3>
+      
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-03"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-03 Đăng sản phẩm đấu giá</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Cho phép người bán đưa một sản phẩm lên sàn với mô tả, giá khởi điểm, thời hạn và phương thức giao nhận để người mua tham gia đấu giá.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Người bán.</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Không có. Hệ thống tính phí của công ty chuyển phát chỉ tham gia ở UC-04 Lấy gói chuyển phát.</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>Người bán yêu cầu đăng một sản phẩm đấu giá.</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>Người bán đã đăng nhập (UC-02).</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Một sản phẩm mới ở trạng thái “Đang đấu giá”: giá hiện tại bằng giá khởi điểm, thời điểm kết thúc = thời điểm đăng + 7 ngày + số ngày gia hạn. Các phụ phí người bán đã chọn được ghi lại để tính khi giao dịch được thực hiện.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Không có sản phẩm mới. Không ghi phụ phí nào.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Người bán cung cấp thông tin mô tả sản phẩm: tên gọi, chủng loại, kích cỡ, trọng lượng, tình trạng, hình ảnh.</li><li>Người bán đặt giá khởi điểm.</li><li>Người bán chọn phương thức giao nhận.</li><li>Người bán chọn thời hạn đấu giá mặc định 7 ngày.</li><li>Hệ thống hiển thị chi phí đăng dự kiến và ghi chú rằng chi phí chỉ thu khi giao dịch được thực hiện.</li><li>Người bán xác nhận đăng sản phẩm.</li><li>Hệ thống kiểm tra thông tin bắt buộc đã đủ và các mức giá hợp lệ.</li><li>Hệ thống tạo sản phẩm ở trạng thái “Đang đấu giá”, đặt giá hiện tại và thời điểm kết thúc.</li><li>Hệ thống hiển thị sản phẩm đã đăng cho người bán. Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="3"><b>3a.</b> <i>Người bán chọn giao qua công ty chuyển phát:</i> Hệ thống thực hiện UC-04 Lấy gói chuyển phát và gắn gói người bán chọn vào sản phẩm. Tiếp tục ở bước 4.</div><div class="alt" data-step="4"><b>4a.</b> <i>Người bán kéo dài thời hạn thêm n ngày (BR-03):</i> Hệ thống ghi phụ phí gia hạn n × 5.000 đồng. Tiếp tục ở bước 5.</div><div class="alt" data-step="4"><b>4b.</b> <i>Người bán đặt giá bán tối thiểu (BR-05):</i> Hệ thống ghi giá bán tối thiểu và phụ phí 10.000 đồng. Tiếp tục ở bước 5.</div><div class="alt" data-step="6"><b>6a.</b> <i>Người bán hủy đăng:</i> Hệ thống không tạo sản phẩm. Use case kết thúc với hậu điều kiện thất bại.</div><div class="alt" data-step="7"><b>7a.</b> <i>Thiếu thông tin hoặc mức giá không hợp lệ (BR-01, BR-02):</i> Hệ thống chỉ ra mục chưa hợp lệ. Quay về bước 1.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="8"><b>8a.</b> <i>Hệ thống không lưu được sản phẩm do lỗi lưu trữ:</i> Hệ thống thông báo lỗi, không ghi phụ phí. Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (bước 1): Thông tin mô tả gồm tên gọi, chủng loại, kích cỡ, trọng lượng, tình trạng và cần trung thực, rõ ràng. Nguồn: đề.</p><p style="margin:0 0 6px">BR-02 (bước 2, 7): Giá khởi điểm và giá bán tối thiểu là số dương, bội số của 5.000 đồng; giá bán tối thiểu lớn hơn giá khởi điểm. Nguồn: GĐ-14.</p><p style="margin:0 0 6px">BR-03 (bước 4): Thời hạn đấu giá tính từ lúc đăng, mặc định 7 ngày; kéo dài thì trả phụ phí 5.000 đồng/ngày. Nguồn: đề; GĐ-05.</p><p style="margin:0 0 6px">BR-04 (bước 5): Chi phí đăng = 10.000 đồng (chi phí gốc) + phí gia hạn (nếu có) + phí giá bán tối thiểu (nếu có), chỉ tính khi giao dịch được thực hiện. Nguồn: đề.</p><p style="margin:0 0 6px">BR-05 (luồng 4b): Phụ phí thiết lập giá bán tối thiểu là 10.000 đồng. Nguồn: đề.</p><p style="margin:0 0 6px">BR-06 (bước 3): Phương thức giao nhận là một trong: miễn phí giao hàng, người mua đến lấy, giao qua công ty chuyển phát. Nguồn: đề.</p><p style="margin:0 0 6px">BR-07 (bước 8): Giá hiện tại ban đầu bằng giá khởi điểm. Nguồn: GĐ-03.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td><p style="margin:0 0 6px">NFR-01: 100% thông tin sản phẩm và giá truyền qua TLS 1.2 trở lên. Nguồn: đề.</p></td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Extend: UC-04 Lấy gói chuyển phát mở rộng use case này tại bước 3, điều kiện [người bán chọn giao qua công ty chuyển phát]. Include: không có.</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-03-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>3a</code>, <code>8a</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+<h3 class="spec-title" id="uc-04">UC-04 Lấy gói chuyển phát</h3>
+      
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-04"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-04 Lấy gói chuyển phát</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Lấy danh sách gói chuyển phát và phí từ hệ thống tính phí của công ty chuyển phát để người bán chọn một gói cho sản phẩm đang đăng.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Người bán (thông qua UC-03, vì đây là phần mở rộng của UC-03).</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Hệ thống tính phí của công ty chuyển phát.</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>Người bán chọn phương thức giao qua công ty chuyển phát ở bước 3 của UC-03.</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>UC-03 đang thực hiện; người bán đã cung cấp kích cỡ và trọng lượng sản phẩm.</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Sản phẩm đang đăng được gắn một gói chuyển phát với phí xác định; phí này là chi phí giao nhận của sản phẩm.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Sản phẩm chưa được gắn gói chuyển phát nào; UC-03 quay về bước 3 để người bán chọn phương thức khác.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Hệ thống gửi kích cỡ, trọng lượng sản phẩm và địa chỉ gửi hàng của người bán đến hệ thống tính phí của công ty chuyển phát.</li><li>Hệ thống tính phí trả về danh sách gói chuyển phát và phí của từng gói.</li><li>Hệ thống hiển thị danh sách gói cho người bán.</li><li>Người bán chọn một gói.</li><li>Hệ thống gắn gói và phí đã chọn vào sản phẩm.</li><li>Hệ thống trả quyền điều khiển về bước 4 của UC-03. Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="2"><b>2a.</b> <i>Không có gói nào phù hợp với kích cỡ và trọng lượng:</i> Hệ thống thông báo cho người bán. Use case kết thúc với hậu điều kiện thất bại.</div><div class="alt" data-step="4"><b>4a.</b> <i>Người bán không chọn gói nào:</i> Hệ thống không gắn gói. Use case kết thúc với hậu điều kiện thất bại.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="2"><b>2b.</b> <i>Hệ thống tính phí không phản hồi trong 10 giây (GĐ-18):</i> Hệ thống thông báo tạm thời không lấy được gói chuyển phát. Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (bước 1, 2): Gói chuyển phát và phí được lấy từ hệ thống tính phí của công ty chuyển phát. Nguồn: đề.</p><p style="margin:0 0 6px">BR-02 (bước 5): Phí của gói đã chọn được cố định cùng sản phẩm và là chi phí giao nhận trong hóa đơn của người mua. Nguồn: GĐ-04.</p><p style="margin:0 0 6px">BR-03 (bước 5): Chi phí giao hàng này được thông báo cho người mua khi xem thông tin sản phẩm (UC-07). Nguồn: đề.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td><p style="margin:0 0 6px">NFR-01: Sàn chờ hệ thống tính phí tối đa 10 giây cho mỗi yêu cầu. Nguồn: GĐ-18.</p></td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Extend: mở rộng UC-03 Đăng sản phẩm đấu giá tại bước 3, điều kiện [người bán chọn giao qua công ty chuyển phát].</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-04-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>2a</code>, <code>2b</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+<h3 class="spec-title" id="uc-05">UC-05 Gia hạn thời hạn đấu giá</h3>
+      
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-05"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-05 Gia hạn thời hạn đấu giá</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Cho phép người bán kéo dài thời hạn đấu giá của một sản phẩm đang đấu giá thêm một số ngày, chịu phụ phí 5.000 đồng/ngày.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Người bán.</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Không có.</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>Người bán yêu cầu gia hạn thời hạn đấu giá cho một sản phẩm của mình.</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>Người bán đã đăng nhập (UC-02). Sản phẩm do chính người bán đăng (UC-03).</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Thời điểm kết thúc của sản phẩm lùi thêm n ngày; phụ phí gia hạn tăng n × 5.000 đồng. Sản phẩm vẫn ở trạng thái “Đang đấu giá”.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Thời điểm kết thúc và phụ phí gia hạn giữ nguyên.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Hệ thống hiển thị thời điểm kết thúc hiện tại và mức phụ phí 5.000 đồng/ngày.</li><li>Người bán nhập số ngày gia hạn n.</li><li>Hệ thống kiểm tra n là số nguyên lớn hơn hoặc bằng 1.</li><li>Hệ thống hiển thị thời điểm kết thúc mới và phụ phí tăng thêm n × 5.000 đồng.</li><li>Người bán xác nhận gia hạn.</li><li>Hệ thống kiểm tra sản phẩm còn trước thời điểm kết thúc.</li><li>Hệ thống cập nhật thời điểm kết thúc và ghi phụ phí gia hạn.</li><li>Hệ thống thông báo gia hạn thành công. Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="3"><b>3a.</b> <i>n không phải số nguyên lớn hơn hoặc bằng 1 (BR-02):</i> Hệ thống thông báo số ngày không hợp lệ. Quay về bước 2.</div><div class="alt" data-step="5"><b>5a.</b> <i>Người bán hủy gia hạn:</i> Hệ thống không thay đổi gì. Use case kết thúc với hậu điều kiện thất bại.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="6"><b>6a.</b> <i>Sản phẩm đã hết thời hạn, không còn “Đang đấu giá” (BR-03):</i> Hệ thống thông báo không thể gia hạn. Use case kết thúc thất bại.</div><div class="alt" data-step="7"><b>7a.</b> <i>Hệ thống không lưu được thay đổi do lỗi lưu trữ:</i> Hệ thống thông báo lỗi. Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (bước 4): Phụ phí gia hạn là 5.000 đồng/ngày. Nguồn: đề.</p><p style="margin:0 0 6px">BR-02 (bước 3): Gia hạn theo số ngày nguyên n ≥ 1. Nguồn: GĐ-05.</p><p style="margin:0 0 6px">BR-03 (bước 6): Chỉ gia hạn khi sản phẩm còn “Đang đấu giá”, trước thời điểm kết thúc. Nguồn: GĐ-05.</p><p style="margin:0 0 6px">BR-04 (bước 7): Phụ phí gia hạn được cộng vào chi phí đăng và chỉ thu khi giao dịch được thực hiện. Nguồn: đề, công thức chi phí đăng; GĐ-05.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td>Không có.</td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Không có.</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-05-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>3a</code>, <code>6a</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+<h3 class="spec-title" id="uc-06">UC-06 Tìm kiếm sản phẩm đấu giá</h3>
+      
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-06"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-06 Tìm kiếm sản phẩm đấu giá</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Cho phép người mua tìm các sản phẩm đang đấu giá theo nhiều tiêu chí để chọn sản phẩm mình quan tâm.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Người mua.</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Không có.</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>Người mua yêu cầu tìm kiếm sản phẩm đấu giá.</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>Người mua đã đăng nhập (UC-02).</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Người mua nhận được danh sách sản phẩm “Đang đấu giá” khớp với tiêu chí. Không dữ liệu nào thay đổi.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Không có danh sách kết quả. Không dữ liệu nào thay đổi.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Hệ thống hiển thị các tiêu chí tìm kiếm: tên sản phẩm, chủng loại, khoảng giá hiện tại, hình thức giao nhận.</li><li>Người mua nhập một hoặc nhiều tiêu chí.</li><li>Người mua yêu cầu tìm.</li><li>Hệ thống tìm các sản phẩm “Đang đấu giá” khớp với mọi tiêu chí đã nhập.</li><li>Hệ thống hiển thị danh sách kết quả gồm tên, giá hiện tại, thời điểm kết thúc, hình thức giao nhận. Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="2"><b>2a.</b> <i>Người mua không nhập tiêu chí nào:</i> Hệ thống tìm mọi sản phẩm “Đang đấu giá”. Tiếp tục ở bước 5.</div><div class="alt" data-step="2"><b>2b.</b> <i>Khoảng giá không hợp lệ, giá từ lớn hơn giá đến:</i> Hệ thống thông báo. Quay về bước 2.</div><div class="alt" data-step="4"><b>4a.</b> <i>Không có sản phẩm nào khớp:</i> Hệ thống thông báo không tìm thấy và gợi ý bỏ bớt tiêu chí. Quay về bước 2.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="4"><b>4b.</b> <i>Hệ thống không truy vấn được dữ liệu sản phẩm:</i> Hệ thống thông báo lỗi. Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (bước 1): Tìm theo tên sản phẩm, chủng loại, giá hiện tại, hình thức giao nhận. Nguồn: đề.</p><p style="margin:0 0 6px">BR-02 (bước 4): Chỉ trả về sản phẩm đang được đấu giá. Nguồn: đề, “tìm kiếm các sản phẩm đang được đấu giá”.</p><p style="margin:0 0 6px">BR-03 (bước 4, 5): Các tiêu chí kết hợp theo điều kiện “và”; tên tìm theo chuỗi con, không phân biệt hoa thường; kết quả sắp theo thời điểm kết thúc gần nhất. Nguồn: GĐ-19.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td><p style="margin:0 0 6px">NFR-01: Bước 4 đến bước 5 trả kết quả trong vòng 2 giây với 95% lượt tìm, khi sàn có 10.000 sản phẩm đang đấu giá. Nguồn: GĐ-10.</p></td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Không có.</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-06-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>2a</code>, <code>4b</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+<h3 class="spec-title" id="uc-07">UC-07 Xem thông tin sản phẩm đấu giá</h3>
+      
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-07"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-07 Xem thông tin sản phẩm đấu giá</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Cho phép người mua xem đầy đủ thông tin một sản phẩm, gồm giá hiện tại, thời điểm kết thúc và chi phí giao hàng, để quyết định có ra giá hay không.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Người mua.</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Không có.</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>Người mua chọn một sản phẩm, thường từ kết quả của UC-06.</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>Người mua đã đăng nhập (UC-02).</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Người mua thấy thông tin của sản phẩm. Không dữ liệu nào thay đổi.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Thông tin sản phẩm không được hiển thị. Không dữ liệu nào thay đổi.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Hệ thống lấy thông tin của sản phẩm được chọn.</li><li>Hệ thống hiển thị mô tả: tên gọi, chủng loại, kích cỡ, trọng lượng, tình trạng, hình ảnh.</li><li>Hệ thống hiển thị giá khởi điểm, giá hiện tại, số lượt ra giá và thời điểm kết thúc.</li><li>Hệ thống hiển thị phương thức giao nhận và chi phí giao hàng của gói chuyển phát đã chọn.</li><li>Hệ thống hiển thị lựa chọn ra giá (UC-08). Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="3"><b>3a.</b> <i>Sản phẩm đã kết thúc đấu giá:</i> Hệ thống hiển thị thông tin kèm kết quả phiên. Bỏ qua bước 5, use case kết thúc.</div><div class="alt" data-step="4"><b>4a.</b> <i>Phương thức là miễn phí giao hàng hoặc người mua đến lấy (GĐ-04):</i> Hệ thống hiển thị chi phí giao hàng 0 đồng. Tiếp tục ở bước 5.</div><div class="alt" data-step="5"><b>5a.</b> <i>Người xem là người bán của sản phẩm (GĐ-06):</i> Hệ thống không hiển thị lựa chọn ra giá. Use case kết thúc.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="1"><b>1a.</b> <i>Sản phẩm không tồn tại:</i> Hệ thống thông báo không tìm thấy sản phẩm. Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (bước 4): Người mua được thông báo chi phí giao hàng khi xem thông tin sản phẩm. Nguồn: đề.</p><p style="margin:0 0 6px">BR-02 (bước 4): Chi phí giao hàng là phí của gói chuyển phát người bán đã chọn; 0 đồng với miễn phí giao hàng và người mua đến lấy. Nguồn: GĐ-04.</p><p style="margin:0 0 6px">BR-03 (bước 3): Khi chưa có lượt ra giá, giá hiện tại bằng giá khởi điểm. Nguồn: GĐ-03.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td><p style="margin:0 0 6px">NFR-01: Bước 1 đến bước 5 hiển thị trong vòng 2 giây với 95% lượt xem. Nguồn: GĐ-10.</p></td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Không có.</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-07-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>3a</code>, <code>1a</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+<h3 class="spec-title" id="uc-08">UC-08 Ra giá sản phẩm <span class="tag" style="vertical-align:middle;margin-left:8px">Quan trọng</span></h3>
+      <div class="card sage mt"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>Lý do chọn là use case quan trọng</h3><p>Ra giá là cách duy nhất để người mua tham gia đấu giá; thiếu use case này thì sàn không có “phương thức đấu giá” để kết nối người mua với người bán. Đề nêu nhiều quy tắc riêng cho việc ra giá: giá mua phải lớn hơn giá hiện tại, phải là bội số của 5.000 và được ra giá nhiều lần. Use case do người mua kích hoạt, khác với UC-09 do thời gian kích hoạt.</p></div>
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-08"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-08 Ra giá sản phẩm</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Cho phép người mua đặt một mức giá mua cho sản phẩm đang đấu giá để trở thành người trả giá cao nhất hiện tại.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Người mua.</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Không có.</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>Người mua yêu cầu ra giá cho một sản phẩm đang đấu giá.</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>Người mua đã đăng nhập (UC-02). Sản phẩm đã được đăng lên sàn (UC-03).</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Một lượt ra giá mới được ghi nhận. Giá hiện tại của sản phẩm bằng giá mua vừa ra, người dẫn đầu là người mua. Sản phẩm vẫn ở trạng thái “Đang đấu giá”.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Không có lượt ra giá mới. Giá hiện tại, người dẫn đầu và trạng thái của sản phẩm giữ nguyên.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Hệ thống hiển thị giá hiện tại, quy định bước giá (bội số của 5.000 đồng) và thời điểm kết thúc của sản phẩm.</li><li>Người mua nhập giá mua.</li><li>Người mua xác nhận ra giá.</li><li>Hệ thống kiểm tra lượt ra giá được nhận trước thời điểm kết thúc của sản phẩm.</li><li>Hệ thống kiểm tra người mua không phải là người bán của sản phẩm.</li><li>Hệ thống kiểm tra giá mua lớn hơn giá hiện tại.</li><li>Hệ thống kiểm tra giá mua là bội số của 5.000 đồng.</li><li>Hệ thống ghi nhận lượt ra giá, cập nhật giá hiện tại bằng giá mua và người dẫn đầu là người mua.</li><li>Hệ thống hiển thị xác nhận ra giá thành công cùng giá hiện tại mới. Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="3"><b>3a.</b> <i>Người mua hủy thao tác ra giá:</i> Hệ thống không ghi nhận lượt ra giá. Use case kết thúc với hậu điều kiện thất bại.</div><div class="alt" data-step="6"><b>6a.</b> <i>Giá mua nhỏ hơn hoặc bằng giá hiện tại (BR-01):</i> Hệ thống thông báo “Giá mua phải lớn hơn giá hiện tại” và hiển thị giá hiện tại mới nhất. Quay về bước 2.</div><div class="alt" data-step="7"><b>7a.</b> <i>Giá mua không phải bội số của 5.000 đồng (BR-02):</i> Hệ thống thông báo và gợi ý mức giá hợp lệ nhỏ nhất (bội số của 5.000 nhỏ nhất lớn hơn giá hiện tại). Quay về bước 2.</div><div class="alt" data-step="8"><b>8a.</b> <i>Một lượt ra giá khác vừa được ghi nhận trước và giá hiện tại mới lớn hơn hoặc bằng giá mua (BR-07, GĐ-07):</i> Hệ thống thông báo giá hiện tại mới. Quay về bước 2.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="4"><b>4a.</b> <i>Lượt ra giá đến sau thời điểm kết thúc, sản phẩm không còn “Đang đấu giá” (BR-05):</i> Hệ thống thông báo phiên đấu giá đã kết thúc và từ chối lượt ra giá. Use case kết thúc thất bại.</div><div class="alt" data-step="5"><b>5a.</b> <i>Người mua là người bán của sản phẩm (BR-06, GĐ-06):</i> Hệ thống thông báo không được ra giá cho sản phẩm của chính mình. Use case kết thúc thất bại.</div><div class="alt" data-step="8"><b>8b.</b> <i>Hệ thống không ghi nhận được lượt ra giá do lỗi lưu trữ:</i> Hệ thống thông báo lỗi, giá hiện tại không đổi. Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (bước 6): Giá mua phải lớn hơn giá hiện tại của sản phẩm. Nguồn: đề, “Giá mua phải lớn hơn giá hiện tại của sản phẩm”.</p><p style="margin:0 0 6px">BR-02 (bước 7): Giá mua phải là bội số của 5.000 đồng. Nguồn: đề.</p><p style="margin:0 0 6px">BR-03 (bước 1): Khi chưa có lượt ra giá, giá hiện tại bằng giá khởi điểm. Nguồn: GĐ-03.</p><p style="margin:0 0 6px">BR-04 (bước 8): Một người mua được ra giá cho cùng một sản phẩm nhiều lần tùy thích. Nguồn: đề.</p><p style="margin:0 0 6px">BR-05 (bước 4): Chỉ nhận lượt ra giá trước thời điểm kết thúc = thời điểm đăng + 7 ngày + số ngày gia hạn. Nguồn: đề, GĐ-05, GĐ-07.</p><p style="margin:0 0 6px">BR-06 (bước 5): Người bán không được ra giá cho sản phẩm của chính mình. Nguồn: GĐ-06.</p><p style="margin:0 0 6px">BR-07 (bước 8): Các lượt ra giá được xử lý tuần tự theo thời điểm hệ thống nhận. Nguồn: GĐ-07.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td><p style="margin:0 0 6px">NFR-01: 100% dữ liệu lượt ra giá được truyền qua kênh mã hóa (HTTPS, TLS 1.2 trở lên); yêu cầu không mã hóa bị từ chối. Nguồn: đề, “tất cả thông tin giao dịch trên sàn đều được mã hóa”.</p><p style="margin:0 0 6px">NFR-02: Bước 4 đến bước 9 trả kết quả trong vòng 2 giây với 95% lượt ra giá, đo khi có 500 người dùng đồng thời. Nguồn: GĐ-10.</p></td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Không có.</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-08-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>3a</code>, <code>4a</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+<h3 class="spec-title" id="uc-09">UC-09 Kết thúc phiên đấu giá <span class="tag" style="vertical-align:middle;margin-left:8px">Quan trọng</span></h3>
+      <div class="card sage mt"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>Lý do chọn là use case quan trọng</h3><p>Đề nói “sản phẩm sẽ thuộc về người mua nào ra giá cao nhất” và chỉ khi kết thúc đấu giá thì người bán mới bị tính chi phí đăng, người mua mới nhận hóa đơn. Thiếu use case này thì không có giao dịch nào được chốt, nên sàn không đạt mục đích kết nối người mua và người bán. Use case do thời gian kích hoạt, mục tiêu là chốt kết quả và tính tiền, khác với UC-08 do người mua kích hoạt để đặt giá.</p></div>
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-09"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-09 Kết thúc phiên đấu giá</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Khi hết thời hạn đấu giá, hệ thống chốt kết quả của sản phẩm, xác định giao dịch có được thực hiện hay không, và phát sinh chi phí đăng cho người bán cùng hóa đơn cho người mua khi giao dịch được thực hiện.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Thời gian (bộ định thời của sàn, GĐ-11).</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Người bán (nhận thông báo kết quả và chi phí đăng); Người mua (người mua thắng nhận hóa đơn).</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>Đến thời điểm kết thúc đấu giá của sản phẩm.</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>Sản phẩm ở trạng thái “Đang đấu giá”.</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Trường hợp giao dịch được thực hiện: sản phẩm ở trạng thái “Chờ thanh toán”, chi phí đăng được ghi cho người bán, hóa đơn tiền mua được lập cho người mua thắng. Trường hợp giao dịch không được thực hiện: sản phẩm ở trạng thái “Không giao dịch”, không phát sinh chi phí cho bên nào. Cả hai trường hợp: người bán đã được thông báo kết quả.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Sản phẩm vẫn ở trạng thái “Đang đấu giá” nhưng không nhận thêm lượt ra giá (đã quá thời điểm kết thúc). Không có chi phí đăng, không có hóa đơn. Việc kết thúc được lên lịch chạy lại.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Hệ thống ngừng nhận lượt ra giá cho sản phẩm.</li><li>Hệ thống xác định lượt ra giá cao nhất: giá của lượt đó là giá kết thúc, người ra giá là người mua thắng.</li><li>Hệ thống so sánh giá kết thúc với giá bán tối thiểu.</li><li>Hệ thống chuyển sản phẩm sang trạng thái “Chờ thanh toán”.</li><li>Hệ thống tính chi phí đăng sản phẩm cho người bán (BR-04).</li><li>Hệ thống lập hóa đơn tiền mua cho người mua thắng (BR-05, BR-06).</li><li>Hệ thống gửi hóa đơn cho người mua thắng.</li><li>Người mua nhận hóa đơn.</li><li>Hệ thống gửi thông báo kết quả cho người bán (thực hiện UC-10 Thông báo kết quả đấu giá).</li><li>Người bán nhận thông báo kết quả. Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="2"><b>2a.</b> <i>Không có lượt ra giá nào (GĐ-02):</i> Hệ thống chuyển sản phẩm sang “Không giao dịch”, không phát sinh chi phí. Tiếp tục ở bước 9.</div><div class="alt" data-step="3"><b>3a.</b> <i>Người bán có đặt giá bán tối thiểu và giá kết thúc nhỏ hơn giá bán tối thiểu (BR-03):</i> Hệ thống chuyển sản phẩm sang “Không giao dịch”, không phát sinh chi phí cho người bán và người mua. Tiếp tục ở bước 9.</div><div class="alt" data-step="3"><b>3b.</b> <i>Người bán không đặt giá bán tối thiểu:</i> Hệ thống bỏ qua phép so sánh. Tiếp tục ở bước 4.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="6"><b>6a.</b> <i>Hệ thống không ghi được chi phí đăng hoặc hóa đơn:</i> Hệ thống hoàn tác bước 4 đến 6, giữ sản phẩm ở “Đang đấu giá”, ghi nhật ký lỗi và lên lịch chạy lại sau 5 phút (GĐ-09). Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (kích hoạt): Thời điểm kết thúc = thời điểm đăng + 7 ngày + số ngày gia hạn. Nguồn: đề, “mặc định kéo dài trong vòng 7 ngày”; GĐ-05.</p><p style="margin:0 0 6px">BR-02 (bước 3, 4): Giao dịch được thực hiện khi có ít nhất một lượt ra giá và (người bán không đặt giá bán tối thiểu hoặc giá kết thúc ≥ giá bán tối thiểu). Nguồn: đề; GĐ-01; GĐ-02.</p><p style="margin:0 0 6px">BR-03 (luồng 3a): Giá kết thúc thấp hơn giá bán tối thiểu thì giao dịch không được thực hiện; người bán và người mua không phải trả khoản chi phí nào. Nguồn: đề.</p><p style="margin:0 0 6px">BR-04 (bước 5): Chi phí đăng sản phẩm = 10.000 đồng (chi phí gốc) + 5.000 đồng/ngày × số ngày gia hạn (nếu có) + 10.000 đồng phí giá bán tối thiểu (nếu có). Nguồn: đề.</p><p style="margin:0 0 6px">BR-05 (bước 6): Tiền mua sản phẩm = giá kết thúc đấu giá + chi phí giao nhận. Chi phí giao nhận = phí gói chuyển phát đã chọn khi giao qua công ty chuyển phát; 0 đồng khi miễn phí giao hàng hoặc người mua đến lấy. Nguồn: đề; GĐ-04.</p><p style="margin:0 0 6px">BR-06 (bước 6): Hóa đơn có hạn thanh toán 3 ngày kể từ khi lập. Nguồn: GĐ-08.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td><p style="margin:0 0 6px">NFR-03: Với 99% sản phẩm, phiên được kết thúc (trạng thái mới, chi phí, hóa đơn) trong vòng 60 giây sau thời điểm kết thúc. Nguồn: GĐ-10.</p><p style="margin:0 0 6px">NFR-04: 100% chi phí đăng và hóa đơn được lưu và truyền ở dạng mã hóa (AES-256 khi lưu, TLS 1.2 trở lên khi truyền). Nguồn: đề, “tất cả thông tin giao dịch trên sàn đều được mã hóa”.</p></td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Include: UC-10 Thông báo kết quả đấu giá (bước 9). Extend: không có.</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-09-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>2a</code>, <code>6a</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+<h3 class="spec-title" id="uc-10">UC-10 Thông báo kết quả đấu giá</h3>
+      
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-10"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-10 Thông báo kết quả đấu giá</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Gửi kết quả phiên đấu giá cho người bán và cho người ra giá cao nhất, kèm chi phí đăng hoặc hóa đơn khi giao dịch được thực hiện.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Không có actor khởi động; use case được UC-09 Kết thúc phiên đấu giá bao gồm.</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Người bán (nhận thông báo); Người mua (người ra giá cao nhất nhận thông báo).</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>UC-09 đến bước 9.</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>Sản phẩm đã có kết quả phiên: ở trạng thái “Chờ thanh toán” hoặc “Không giao dịch”.</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Thông báo kết quả có trong hộp thư trên sàn của người bán và của người ra giá cao nhất (nếu có), và đã được gửi qua email.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Thông báo có trong hộp thư trên sàn nhưng email chưa gửi được; email nằm trong hàng gửi lại.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Hệ thống soạn thông báo cho người bán gồm giá kết thúc, giao dịch được thực hiện và chi phí đăng phải trả.</li><li>Hệ thống soạn thông báo cho người mua thắng gồm giá kết thúc, chi phí giao nhận và hóa đơn tiền mua.</li><li>Hệ thống lưu các thông báo vào hộp thư trên sàn của từng người nhận.</li><li>Hệ thống gửi email thông báo cho từng người nhận.</li><li>Hệ thống trả quyền điều khiển về UC-09. Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="1"><b>1a.</b> <i>Giao dịch không được thực hiện:</i> Hệ thống soạn thông báo cho người bán rằng giao dịch không được thực hiện và không phải trả chi phí nào. Tiếp tục ở bước 2.</div><div class="alt" data-step="2"><b>2a.</b> <i>Giao dịch không được thực hiện và có người ra giá cao nhất (GĐ-17):</i> Hệ thống soạn thông báo cho người đó rằng giao dịch không được thực hiện và không phải trả khoản nào. Tiếp tục ở bước 3.</div><div class="alt" data-step="2"><b>2b.</b> <i>Không có lượt ra giá nào:</i> Hệ thống không soạn thông báo cho người mua. Tiếp tục ở bước 3.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="4"><b>4a.</b> <i>Không gửi được email:</i> Hệ thống giữ thông báo trong hộp thư và xếp email vào hàng gửi lại, tối đa 3 lần, mỗi lần cách 5 phút (GĐ-17). Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (bước 1): Người bán luôn được thông báo kết quả phiên. Nguồn: GĐ-17.</p><p style="margin:0 0 6px">BR-02 (bước 3, 4): Thông báo gửi qua hộp thư trên sàn và email. Nguồn: GĐ-17.</p><p style="margin:0 0 6px">BR-03 (bước 1, 2): Số tiền trong thông báo tính theo UC-09 BR-04 (chi phí đăng) và BR-05 (tiền mua). Nguồn: đề.</p><p style="margin:0 0 6px">BR-04 (luồng 1a, 2a): Khi giao dịch không được thực hiện, người bán và người mua không phải trả khoản chi phí nào. Nguồn: đề.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td><p style="margin:0 0 6px">NFR-01: Thông báo có trong hộp thư trong vòng 60 giây sau thời điểm kết thúc với 99% phiên. Nguồn: GĐ-10.</p><p style="margin:0 0 6px">NFR-02: Nội dung thông báo có số tiền được truyền qua kênh mã hóa. Nguồn: đề.</p></td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Được UC-09 Kết thúc phiên đấu giá bao gồm (include) tại bước 9.</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-10-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>1a</code>, <code>4a</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+<h3 class="spec-title" id="uc-11">UC-11 Thanh toán hóa đơn mua hàng</h3>
+      
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-11"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-11 Thanh toán hóa đơn mua hàng</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Cho phép người mua thắng trả tiền mua sản phẩm theo hóa đơn qua cổng thanh toán, để hoàn tất giao dịch.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Người mua.</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Cổng thanh toán.</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>Người mua yêu cầu thanh toán một hóa đơn.</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>Người mua đã đăng nhập (UC-02). Người mua có hóa đơn do UC-09 lập.</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Hóa đơn được ghi nhận đã thanh toán. Sản phẩm chuyển sang trạng thái “Chờ phản hồi”. Người bán được báo đã nhận tiền.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Hóa đơn vẫn chưa thanh toán. Sản phẩm vẫn ở trạng thái “Chờ thanh toán”.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Hệ thống hiển thị hóa đơn: giá kết thúc, chi phí giao nhận, tổng tiền mua và hạn thanh toán.</li><li>Người mua xác nhận thanh toán.</li><li>Hệ thống kiểm tra hóa đơn còn trong hạn và chưa được thanh toán.</li><li>Hệ thống gửi yêu cầu thanh toán với số tiền bằng tổng tiền mua đến cổng thanh toán.</li><li>Người mua hoàn tất thanh toán trên cổng thanh toán.</li><li>Cổng thanh toán báo thanh toán thành công.</li><li>Hệ thống ghi nhận hóa đơn đã thanh toán và chuyển sản phẩm sang “Chờ phản hồi”.</li><li>Hệ thống thông báo cho người mua và người bán. Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="2"><b>2a.</b> <i>Người mua hủy thanh toán:</i> Hệ thống không gửi yêu cầu đến cổng. Use case kết thúc với hậu điều kiện thất bại.</div><div class="alt" data-step="6"><b>6a.</b> <i>Cổng thanh toán từ chối giao dịch, ví dụ số dư không đủ:</i> Hệ thống thông báo lý do. Quay về bước 2.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="3"><b>3a.</b> <i>Hóa đơn đã quá hạn 3 ngày và bị hủy (BR-03):</i> Hệ thống thông báo hóa đơn đã bị hủy. Use case kết thúc thất bại.</div><div class="alt" data-step="6"><b>6b.</b> <i>Cổng thanh toán không phản hồi trong 60 giây:</i> Hệ thống ghi yêu cầu ở trạng thái chờ đối soát và thông báo cho người mua. Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (bước 1): Tiền mua sản phẩm = giá kết thúc đấu giá + chi phí giao nhận (nếu có). Nguồn: đề.</p><p style="margin:0 0 6px">BR-02 (bước 4): Thanh toán thực hiện trực tuyến qua cổng thanh toán, số tiền đúng bằng tổng tiền mua trên hóa đơn. Nguồn: đề; GĐ-09.</p><p style="margin:0 0 6px">BR-03 (bước 3): Hóa đơn có hạn thanh toán 3 ngày; quá hạn thì hóa đơn và chi phí đăng bị hủy, người mua bị ghi nhận không trả tiền đúng hạn. Nguồn: GĐ-08.</p><p style="margin:0 0 6px">BR-04 (bước 3, 7): Mỗi hóa đơn chỉ được thanh toán thành công một lần. Nguồn: GĐ-09.</p><p style="margin:0 0 6px">BR-05 (bước 7): Giao dịch hoàn tất khi người mua đã thanh toán hóa đơn. Nguồn: GĐ-15.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td><p style="margin:0 0 6px">NFR-01: 100% dữ liệu thanh toán truyền qua TLS 1.2 trở lên; sàn không lưu số thẻ của người mua. Nguồn: đề; GĐ-09.</p></td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Không có.</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-11-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>2a</code>, <code>3a</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+<h3 class="spec-title" id="uc-12">UC-12 Thanh toán chi phí đăng sản phẩm</h3>
+      
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-12"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-12 Thanh toán chi phí đăng sản phẩm</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Cho phép người bán trả chi phí đăng sản phẩm phát sinh khi giao dịch được thực hiện, qua cổng thanh toán.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Người bán.</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Cổng thanh toán.</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>Người bán yêu cầu thanh toán chi phí đăng của một sản phẩm.</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>Người bán đã đăng nhập (UC-02). Sản phẩm có chi phí đăng do UC-09 ghi.</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Chi phí đăng được ghi nhận đã thanh toán; người bán nhận biên nhận.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Chi phí đăng vẫn chưa thanh toán.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Hệ thống hiển thị chi tiết chi phí đăng: chi phí gốc, phí gia hạn, phí giá bán tối thiểu, tổng tiền và hạn thanh toán.</li><li>Người bán xác nhận thanh toán.</li><li>Hệ thống kiểm tra chi phí đăng chưa bị hủy và chưa được thanh toán.</li><li>Hệ thống gửi yêu cầu thanh toán với số tiền bằng tổng chi phí đăng đến cổng thanh toán.</li><li>Người bán hoàn tất thanh toán trên cổng thanh toán.</li><li>Cổng thanh toán báo thanh toán thành công.</li><li>Hệ thống ghi nhận chi phí đăng đã thanh toán và gửi biên nhận cho người bán. Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="2"><b>2a.</b> <i>Người bán hủy thanh toán:</i> Hệ thống không gửi yêu cầu đến cổng. Use case kết thúc với hậu điều kiện thất bại.</div><div class="alt" data-step="6"><b>6a.</b> <i>Cổng thanh toán từ chối giao dịch:</i> Hệ thống thông báo lý do. Quay về bước 2.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="3"><b>3a.</b> <i>Chi phí đăng đã bị hủy do người mua quá hạn thanh toán (GĐ-08):</i> Hệ thống thông báo người bán không cần thanh toán. Use case kết thúc thất bại.</div><div class="alt" data-step="6"><b>6b.</b> <i>Cổng thanh toán không phản hồi trong 60 giây:</i> Hệ thống ghi yêu cầu ở trạng thái chờ đối soát và thông báo cho người bán. Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (bước 1): Chi phí đăng sản phẩm = 10.000 đồng (chi phí gốc) + 5.000 đồng/ngày × số ngày gia hạn (nếu có) + 10.000 đồng phí giá bán tối thiểu (nếu có). Nguồn: đề.</p><p style="margin:0 0 6px">BR-02 (bước 3): Chi phí đăng chỉ phát sinh khi giao dịch được thực hiện; giao dịch không thực hiện thì người bán không trả khoản nào. Nguồn: đề.</p><p style="margin:0 0 6px">BR-03 (bước 1): Hạn thanh toán chi phí đăng là 7 ngày kể từ khi phát sinh; quá hạn, người bán bị tạm khóa chức năng đăng sản phẩm mới đến khi thanh toán. Nguồn: GĐ-16.</p><p style="margin:0 0 6px">BR-04 (bước 4): Thanh toán thực hiện trực tuyến qua cổng thanh toán. Nguồn: đề; GĐ-09.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td><p style="margin:0 0 6px">NFR-01: 100% dữ liệu thanh toán truyền qua TLS 1.2 trở lên. Nguồn: đề.</p></td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Không có.</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-12-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>2a</code>, <code>3a</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+<h3 class="spec-title" id="uc-13">UC-13 Phản hồi giao dịch</h3>
+      
+      <div class="viz mt">
+        <div class="table-wrap"><table class="spec" id="spec-uc-13"><tbody><tr data-k="Mã và tên"><th>Mã và tên</th><td>UC-13 Phản hồi giao dịch</td></tr><tr data-k="Mô tả tóm tắt"><th>Mô tả tóm tắt</th><td>Cho phép người bán và người mua của một giao dịch đã hoàn tất đánh giá chất lượng giao dịch của bên kia.</td></tr><tr data-k="Actor chính"><th>Actor chính</th><td>Thành viên (người bán hoặc người mua của giao dịch).</td></tr><tr data-k="Actor phụ"><th>Actor phụ</th><td>Không có.</td></tr><tr data-k="Kích hoạt"><th>Kích hoạt</th><td>Thành viên yêu cầu phản hồi cho một giao dịch.</td></tr><tr data-k="Tiền điều kiện"><th>Tiền điều kiện</th><td>Thành viên đã đăng nhập (UC-02).</td></tr><tr data-k="Hậu điều kiện (thành công)"><th>Hậu điều kiện (thành công)</th><td>Phản hồi được lưu và gắn với giao dịch. Khi cả hai bên đã phản hồi, sản phẩm chuyển sang trạng thái “Đã hoàn tất”.</td></tr><tr data-k="Hậu điều kiện (thất bại)"><th>Hậu điều kiện (thất bại)</th><td>Không có phản hồi mới; trạng thái sản phẩm giữ nguyên.</td></tr><tr data-k="Luồng chính"><th>Luồng chính</th><td><ol><li>Hệ thống kiểm tra thành viên là người bán hoặc người mua của giao dịch.</li><li>Hệ thống kiểm tra giao dịch đã hoàn tất (sản phẩm ở “Chờ phản hồi”) và còn trong hạn phản hồi.</li><li>Hệ thống kiểm tra thành viên chưa phản hồi giao dịch này.</li><li>Hệ thống hiển thị tiêu chí phản hồi theo vai trò: người mua đánh giá sản phẩm đúng mô tả và giao hàng; người bán đánh giá người mua trả tiền đúng hạn.</li><li>Thành viên chấm điểm từng tiêu chí và viết nhận xét.</li><li>Thành viên gửi phản hồi.</li><li>Hệ thống lưu phản hồi và hiển thị cho bên kia.</li><li>Hệ thống thông báo đã ghi nhận phản hồi. Use case kết thúc.</li></ol></td></tr><tr data-k="Luồng thay thế"><th>Luồng thay thế</th><td><div class="alt" data-step="6"><b>6a.</b> <i>Còn tiêu chí chưa được chấm điểm:</i> Hệ thống chỉ ra tiêu chí còn thiếu. Quay về bước 5.</div><div class="alt" data-step="7"><b>7a.</b> <i>Bên kia đã phản hồi trước:</i> Hệ thống lưu phản hồi và chuyển sản phẩm sang “Đã hoàn tất”. Tiếp tục ở bước 8.</div></td></tr><tr data-k="Luồng ngoại lệ"><th>Luồng ngoại lệ</th><td><div class="alt" data-step="1"><b>1a.</b> <i>Thành viên không tham gia giao dịch:</i> Hệ thống từ chối. Use case kết thúc thất bại.</div><div class="alt" data-step="2"><b>2a.</b> <i>Giao dịch chưa hoàn tất hoặc đã quá hạn phản hồi 14 ngày (BR-03):</i> Hệ thống thông báo không thể phản hồi. Use case kết thúc thất bại.</div><div class="alt" data-step="3"><b>3a.</b> <i>Thành viên đã phản hồi giao dịch này (BR-04):</i> Hệ thống hiển thị phản hồi đã gửi. Use case kết thúc thất bại.</div></td></tr><tr data-k="Quy tắc nghiệp vụ"><th>Quy tắc nghiệp vụ</th><td><p style="margin:0 0 6px">BR-01 (bước 1): Sau khi giao dịch hoàn tất, người bán và người mua có trách nhiệm phản hồi về chất lượng giao dịch. Nguồn: đề.</p><p style="margin:0 0 6px">BR-02 (bước 4): Tiêu chí gồm sản phẩm đúng mô tả, giao hàng tốt, người mua trả tiền đúng hạn. Nguồn: đề.</p><p style="margin:0 0 6px">BR-03 (bước 2): Giao dịch hoàn tất khi người mua đã thanh toán; hạn phản hồi là 14 ngày từ lúc đó. Nguồn: GĐ-15.</p><p style="margin:0 0 6px">BR-04 (bước 3, 5): Mỗi bên phản hồi một lần cho mỗi giao dịch, điểm từ 1 đến 5, không sửa sau khi gửi. Nguồn: GĐ-15.</p></td></tr><tr data-k="Yêu cầu phi chức năng"><th>Yêu cầu phi chức năng</th><td>Không có.</td></tr><tr data-k="Include, extend"><th>Include, extend</th><td>Không có.</td></tr></tbody></table></div>
+        <aside class="side">
+          <div class="card info" id="spec-uc-13-info"><p class="hint"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Nhấn vào tên mục ở cột trái để xem mục đó dùng làm gì. Rê chuột lên luồng thay thế hoặc ngoại lệ để thấy bước của luồng chính mà nó rẽ ra.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>Quy ước đánh số</h3><ul>
+            <li>Luồng chính đánh số 1, 2, 3.</li>
+            <li>Luồng thay thế và ngoại lệ lấy số bước rẽ nhánh cộng chữ cái: <code>6a</code>, <code>1a</code>.</li>
+            <li>Quy tắc lấy từ giả định ghi rõ mã GĐ.</li></ul></div>
+        </aside>
+      </div>
+    </section>
+    <!-- 06 ACTIVITY -->
+    <section class="lesson" id="activity">
+      <div class="lh"><span class="num">06</span><h2>Activity diagram</h2>
+        <p class="lead">Dựng từ UC-09 Kết thúc phiên đấu giá. Sơ đồ bám theo luồng chính 1 đến 10, luồng thay thế 2a, 3a, 3b và luồng ngoại lệ 6a của bản đặc tả ở mục 05.</p></div>
+      <div class="card sage"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>Lý do chọn UC-09 để dựng activity diagram</h3><p>UC-09 có nhiều bên cùng tham gia (thời gian, hệ thống, người mua, người bán) nên swimlane có ý nghĩa, và có nhiều rẽ nhánh thật: không có lượt ra giá, giá dưới mức tối thiểu, không đặt giá tối thiểu, lỗi khi ghi chi phí. UC-08 chủ yếu là chuỗi kiểm tra giữa người mua và hệ thống, ít bên tham gia hơn.</p></div>
+      <div class="mt"><div id="ad-stepper"><div class="steps-row"><button class="step-btn done"><b>1</b><span>Swimlane</span></button><button class="step-btn done"><b>2</b><span>Bắt đầu, kết thúc</span></button><button class="step-btn done"><b>3</b><span>Hành động</span></button><button class="step-btn done"><b>4</b><span>Luồng</span></button><button class="step-btn done"><b>5</b><span>Rẽ nhánh</span></button><button class="step-btn done"><b>6</b><span>Song song</span></button><button class="step-btn on"><b>7</b><span>Toàn bộ</span></button></div><div class="steps-nav"><button class="btn ghost" data-d="-1"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Bước trước</button><button class="btn" data-d="1" disabled>Bước sau<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div></div></div>
+      <div class="viz" id="ad-viz">
+        <div class="canvas"><svg id="ad-svg" viewBox="0 0 1080 1270" role="img" aria-label="Activity diagram của use case UC-09 Kết thúc phiên đấu giá"><defs><marker id="ad-fill" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1f2937"/></marker></defs><rect x="0" y="0" width="130" height="1270" class="lane-band"/><g data-kind="lane"><rect x="0" y="0" width="130" height="34" fill="#e1e6ee" stroke="#d8dde5"/><text x="65.0" y="22.0" text-anchor="middle" class="lane-head"><tspan x="65.0" dy="0">Thời gian</tspan></text></g><rect x="130" y="0" width="650" height="1270" class="lane-band alt"/><g data-kind="lane"><rect x="130" y="0" width="650" height="34" fill="#e1e6ee" stroke="#d8dde5"/><text x="455.0" y="22.0" text-anchor="middle" class="lane-head"><tspan x="455.0" dy="0">Hệ thống</tspan></text></g><rect x="780" y="0" width="150" height="1270" class="lane-band"/><g data-kind="lane"><rect x="780" y="0" width="150" height="34" fill="#e1e6ee" stroke="#d8dde5"/><text x="855.0" y="22.0" text-anchor="middle" class="lane-head"><tspan x="855.0" dy="0">Người mua</tspan></text></g><rect x="930" y="0" width="150" height="1270" class="lane-band alt"/><g data-kind="lane"><rect x="930" y="0" width="150" height="34" fill="#e1e6ee" stroke="#d8dde5"/><text x="1005.0" y="22.0" text-anchor="middle" class="lane-head"><tspan x="1005.0" dy="0">Người bán</tspan></text></g><g data-kind="edge" data-id="e1" data-from="s" data-to="a0" data-label=""><path d="M65 79 L65 108" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge" data-id="e2" data-from="a0" data-to="a1" data-label=""><path d="M120 130 L375 130" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge" data-id="e3" data-from="a1" data-to="a2" data-label=""><path d="M470 152 L470 183" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge branch" data-id="e4" data-from="a2" data-to="d1" data-label=""><path d="M470 227 L470 259" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge branch" data-id="e5" data-from="d1" data-to="a3" data-label="[không]"><path d="M378 295 L225 295 L225 471" class="flow" marker-end="url(#ad-fill)"/><text x="300" y="288" text-anchor="middle" class="small bold halo"><tspan x="300" dy="0">[không]</tspan></text></g><g data-kind="edge branch" data-id="e6" data-from="d1" data-to="d2" data-label="[có]"><path d="M470 331 L470 359" class="flow" marker-end="url(#ad-fill)"/><text x="480" y="349" text-anchor="start" class="small bold halo"><tspan x="480" dy="0">[có]</tspan></text></g><g data-kind="edge branch" data-id="e7" data-from="d2" data-to="d3" data-label="[có]"><path d="M470 431 L470 459" class="flow" marker-end="url(#ad-fill)"/><text x="480" y="449" text-anchor="start" class="small bold halo"><tspan x="480" dy="0">[có]</tspan></text></g><g data-kind="edge branch" data-id="e8" data-from="d2" data-to="m1" data-label="[không]"><path d="M562 395 L640 395 L640 570 L484 570" class="flow" marker-end="url(#ad-fill)"/><text x="601" y="388" text-anchor="middle" class="small bold halo"><tspan x="601" dy="0">[không]</tspan></text></g><g data-kind="edge branch" data-id="e9" data-from="d3" data-to="a3" data-label="[nhỏ hơn]"><path d="M378 495 L310 495" class="flow" marker-end="url(#ad-fill)"/><text x="344" y="487" text-anchor="middle" class="small bold halo"><tspan x="344" dy="0">[nhỏ hơn]</tspan></text></g><g data-kind="edge branch" data-id="e10" data-from="d3" data-to="m1" data-label="[lớn hơn hoặc bằng]"><path d="M470 531 L470 556" class="flow" marker-end="url(#ad-fill)"/><text x="480" y="547" text-anchor="start" class="small bold halo"><tspan x="480" dy="0">[lớn hơn hoặc bằng]</tspan></text></g><g data-kind="edge branch" data-id="e11" data-from="m1" data-to="a4" data-label=""><path d="M470 584 L470 613" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge" data-id="e12" data-from="a4" data-to="a5" data-label=""><path d="M470 657 L470 683" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge" data-id="e13" data-from="a5" data-to="a6" data-label=""><path d="M470 727 L470 753" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge branch" data-id="e14" data-from="a6" data-to="d4" data-label=""><path d="M470 797 L470 829" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge branch" data-id="e15" data-from="d4" data-to="a7" data-label="[lỗi]"><path d="M562 865 L605 865" class="flow" marker-end="url(#ad-fill)"/><text x="583" y="856" text-anchor="middle" class="small bold halo"><tspan x="583" dy="0">[lỗi]</tspan></text></g><g data-kind="edge" data-id="e16" data-from="a7" data-to="ef" data-label=""><path d="M685 897 L685 948" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge branch" data-id="e17" data-from="d4" data-to="a8" data-label="[được]"><path d="M470 901 L470 988" class="flow" marker-end="url(#ad-fill)"/><text x="480" y="925" text-anchor="start" class="small bold halo"><tspan x="480" dy="0">[được]</tspan></text></g><g data-kind="edge seq" data-id="e18" data-from="a8" data-to="a9" data-label=""><path d="M565 1010 L795 1010" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge branch" data-id="e19" data-from="a9" data-to="m2" data-label=""><path d="M855 1032 L855 1090 L484 1090" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge branch" data-id="e20" data-from="a3" data-to="m2" data-label=""><path d="M225 519 L225 1090 L456 1090" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge branch" data-id="e21" data-from="m2" data-to="a10" data-label=""><path d="M470 1104 L470 1138" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge seq" data-id="e22" data-from="a10" data-to="a11" data-label=""><path d="M565 1160 L940 1160" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="edge" data-id="e23" data-from="a11" data-to="e" data-label=""><path d="M1005 1182 L1005 1218" class="flow" marker-end="url(#ad-fill)"/></g><g data-kind="initfinal" data-id="s" data-type="initial" data-name="Bắt đầu"><circle cx="65" cy="70" r="9" class="ctl-dot shape"/></g><g data-kind="action" data-id="a0" data-type="action" data-name="Đến thời điểm kết thúc"><rect x="10.0" y="108.0" width="110" height="44" rx="16" class="act-box shape"/><text x="65" y="126.0" text-anchor="middle" class="small"><tspan x="65" dy="0">Đến thời điểm</tspan><tspan x="65" dy="18">kết thúc</tspan></text></g><g data-kind="action" data-id="a1" data-type="action" data-name="Ngừng nhận lượt ra giá"><rect x="375.0" y="108.0" width="190" height="44" rx="16" class="act-box shape"/><text x="470" y="126.0" text-anchor="middle" class="small"><tspan x="470" dy="0">Ngừng nhận</tspan><tspan x="470" dy="18">lượt ra giá</tspan></text></g><g data-kind="action" data-id="a2" data-type="action" data-name="Xác định lượt ra giá cao nhất"><rect x="375.0" y="183.0" width="190" height="44" rx="16" class="act-box shape"/><text x="470" y="201.0" text-anchor="middle" class="small"><tspan x="470" dy="0">Xác định lượt ra giá</tspan><tspan x="470" dy="18">cao nhất</tspan></text></g><g data-kind="branch" data-id="d1" data-type="decision" data-name="Có lượt ra giá?"><path d="M470 259L562 295L470 331L378 295Z" class="dec-box shape"/><text x="470" y="291.5" text-anchor="middle" class="small"><tspan x="470" dy="0">Có lượt</tspan><tspan x="470" dy="17">ra giá?</tspan></text></g><g data-kind="branch" data-id="d2" data-type="decision" data-name="Người bán đặt giá tối thiểu?"><path d="M470 359L562 395L470 431L378 395Z" class="dec-box shape"/><text x="470" y="391.5" text-anchor="middle" class="small"><tspan x="470" dy="0">Người bán đặt</tspan><tspan x="470" dy="17">giá tối thiểu?</tspan></text></g><g data-kind="branch" data-id="d3" data-type="decision" data-name="Giá kết thúc ≥ giá tối thiểu?"><path d="M470 459L562 495L470 531L378 495Z" class="dec-box shape"/><text x="470" y="491.5" text-anchor="middle" class="small"><tspan x="470" dy="0">Giá kết thúc ≥</tspan><tspan x="470" dy="17">giá tối thiểu?</tspan></text></g><g data-kind="action" data-id="a3" data-type="action" data-name="Chuyển sang “Không giao dịch”"><rect x="140.0" y="471.0" width="170" height="48" rx="16" class="act-box shape"/><text x="225" y="491.0" text-anchor="middle" class="small"><tspan x="225" dy="0">Chuyển sang</tspan><tspan x="225" dy="18">“Không giao dịch”</tspan></text></g><g data-kind="branch" data-id="m1" data-type="merge" data-name="Bắt đầu"><path d="M470 556L484 570L470 584L456 570Z" class="dec-box shape"/></g><g data-kind="action" data-id="a4" data-type="action" data-name="Chuyển sang “Chờ thanh toán”"><rect x="375.0" y="613.0" width="190" height="44" rx="16" class="act-box shape"/><text x="470" y="631.0" text-anchor="middle" class="small"><tspan x="470" dy="0">Chuyển sang</tspan><tspan x="470" dy="18">“Chờ thanh toán”</tspan></text></g><g data-kind="action" data-id="a5" data-type="action" data-name="Tính chi phí đăng cho người bán"><rect x="375.0" y="683.0" width="190" height="44" rx="16" class="act-box shape"/><text x="470" y="701.0" text-anchor="middle" class="small"><tspan x="470" dy="0">Tính chi phí đăng</tspan><tspan x="470" dy="18">cho người bán</tspan></text></g><g data-kind="action" data-id="a6" data-type="action" data-name="Lập hóa đơn tiền mua cho người mua thắng"><rect x="375.0" y="753.0" width="190" height="44" rx="16" class="act-box shape"/><text x="470" y="771.0" text-anchor="middle" class="small"><tspan x="470" dy="0">Lập hóa đơn tiền mua</tspan><tspan x="470" dy="18">cho người mua thắng</tspan></text></g><g data-kind="branch" data-id="d4" data-type="decision" data-name="Ghi được chi phí và hóa đơn?"><path d="M470 829L562 865L470 901L378 865Z" class="dec-box shape"/><text x="470" y="861.5" text-anchor="middle" class="small"><tspan x="470" dy="0">Ghi được chi phí</tspan><tspan x="470" dy="17">và hóa đơn?</tspan></text></g><g data-kind="action" data-id="a7" data-type="action" data-name="Hoàn tác, giữ “Đang đấu giá”, chạy lại sau 5 phút"><rect x="605.0" y="833.0" width="160" height="64" rx="16" class="act-box shape"/><text x="685" y="852.0" text-anchor="middle" class="small"><tspan x="685" dy="0">Hoàn tác, giữ</tspan><tspan x="685" dy="18">“Đang đấu giá”,</tspan><tspan x="685" dy="18">chạy lại sau 5 phút</tspan></text></g><g data-kind="initfinal" data-id="ef" data-type="final" data-name="Kết thúc thất bại" data-fail="1"><circle cx="685" cy="960" r="12" fill="#ffffff" stroke="#1f2937" stroke-width="2" class="shape"/><circle cx="685" cy="960" r="7" class="ctl-dot"/></g><g data-kind="action seq" data-id="a8" data-type="action" data-name="Gửi hóa đơn cho người mua thắng"><rect x="375.0" y="988.0" width="190" height="44" rx="16" class="act-box shape"/><text x="470" y="1006.0" text-anchor="middle" class="small"><tspan x="470" dy="0">Gửi hóa đơn</tspan><tspan x="470" dy="18">cho người mua thắng</tspan></text></g><g data-kind="action seq" data-id="a9" data-type="action" data-name="Nhận hóa đơn"><rect x="795.0" y="988.0" width="120" height="44" rx="16" class="act-box shape"/><text x="855" y="1015.0" text-anchor="middle" class="small"><tspan x="855" dy="0">Nhận hóa đơn</tspan></text></g><g data-kind="branch" data-id="m2" data-type="merge" data-name="Bắt đầu"><path d="M470 1076L484 1090L470 1104L456 1090Z" class="dec-box shape"/></g><g data-kind="action seq" data-id="a10" data-type="action" data-name="Gửi thông báo kết quả cho người bán (UC-10)"><rect x="375.0" y="1138.0" width="190" height="44" rx="16" class="act-box shape"/><text x="470" y="1156.0" text-anchor="middle" class="small"><tspan x="470" dy="0">Gửi thông báo kết quả</tspan><tspan x="470" dy="18">cho người bán (UC-10)</tspan></text></g><g data-kind="action seq" data-id="a11" data-type="action" data-name="Nhận thông báo kết quả"><rect x="940.0" y="1138.0" width="130" height="44" rx="16" class="act-box shape"/><text x="1005" y="1156.0" text-anchor="middle" class="small"><tspan x="1005" dy="0">Nhận thông báo</tspan><tspan x="1005" dy="18">kết quả</tspan></text></g><g data-kind="initfinal" data-id="e" data-type="final" data-name="Kết thúc thành công"><circle cx="1005" cy="1230" r="12" fill="#ffffff" stroke="#1f2937" stroke-width="2" class="shape"/><circle cx="1005" cy="1230" r="7" class="ctl-dot"/></g><text x="685" y="997.0" text-anchor="middle" class="tiny ital"><tspan x="685" dy="0">kết thúc thất bại (6a)</tspan></text><text x="1005" y="1263.0" text-anchor="middle" class="tiny ital"><tspan x="1005" dy="0">kết thúc thành công</tspan></text><g id="ad-tokens"></g></svg></div>
+        <aside class="side">
+          <div class="card" id="ad-text"><span class="tag">Toàn bộ</span><h3>Đọc toàn bộ sơ đồ</h3><p>Kiểm tra mọi đường đi từ điểm bắt đầu đều đến được một điểm kết thúc, rồi đối chiếu từng luồng thay thế và ngoại lệ với bảng truy vết bên dưới. Có thể chạy thử các đường đi ở phần mô phỏng.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg>Mô phỏng luồng điều khiển</h3>
+            <p>Token là bước đang được thực hiện. Bấm “Bước tiếp” và chọn nhánh tại mỗi điểm rẽ.</p>
+            <div class="sim"><div class="sim-row" id="ad-ctrl"></div><ul class="log" id="ad-log"></ul></div></div>
+        </aside>
+      </div>
+      <h3 class="mt">Bảng truy vết</h3>
+      <p>Mỗi luồng thay thế và luồng ngoại lệ của UC-09 có một dòng. Nhấn vào dòng để tô đường đi trên sơ đồ.</p>
+      <div class="table-wrap"><table id="ad-trace"><thead><tr><th>Trong đặc tả</th><th>Trong activity diagram</th></tr></thead><tbody><tr data-ids="d1 e5 a3 e20 m2"><td><b>2a. Không có lượt ra giá nào</b></td><td>Nhánh [không] của decision “Có lượt ra giá?” dẫn đến hành động “Chuyển sang “Không giao dịch””, rồi merge ở trước bước 9 (gửi thông báo cho người bán).</td></tr><tr data-ids="d3 e9 a3 e20 m2"><td><b>3a. Giá kết thúc nhỏ hơn giá bán tối thiểu</b></td><td>Nhánh [nhỏ hơn] của decision “Giá kết thúc ≥ giá tối thiểu?” dẫn đến cùng hành động “Chuyển sang “Không giao dịch””, rồi merge ở trước bước 9.</td></tr><tr data-ids="d2 e8 m1 e11 a4"><td><b>3b. Người bán không đặt giá bán tối thiểu</b></td><td>Nhánh [không] của decision “Người bán đặt giá tối thiểu?” bỏ qua phép so sánh và đến merge, rồi tiếp tục ở bước 4 “Chuyển sang “Chờ thanh toán””.</td></tr><tr data-ids="d4 e15 a7 e16 ef"><td><b>6a. Không ghi được chi phí đăng hoặc hóa đơn</b></td><td>Nhánh [lỗi] của decision “Ghi được chi phí và hóa đơn?” dẫn đến “Hoàn tác, giữ “Đang đấu giá”, chạy lại sau 5 phút”, rồi điểm kết thúc thất bại.</td></tr><tr data-ids="d4 e17 a8 e18 a9 e19 m2"><td><b>Bước 7, 8. Gửi hóa đơn, người mua nhận hóa đơn</b></td><td>Nhánh [được] của decision “Ghi được chi phí và hóa đơn?” dẫn đến “Gửi hóa đơn cho người mua thắng” (làn Hệ thống) rồi “Nhận hóa đơn” (làn Người mua).</td></tr><tr data-ids="m2 e21 a10 e22 a11 e23 e"><td><b>Bước 9, 10. Thông báo kết quả (UC-10), người bán nhận</b></td><td>Sau merge, “Gửi thông báo kết quả cho người bán (UC-10)” rồi “Nhận thông báo kết quả” (làn Người bán), kết thúc thành công.</td></tr></tbody></table></div>
+      <div class="grid-2 mt">
+        <div class="card sage"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>Vì sao không dùng fork và join</h3><p>Việc gửi hóa đơn cho người mua (bước 7, 8) và thông báo cho người bán (bước 9, 10) có thể chạy cùng lúc về kỹ thuật, nhưng đặc tả xếp chúng tuần tự. Hai nhánh “không giao dịch” (2a, 3a) cũng đi thẳng đến bước 9 mà không có hóa đơn, nên hai việc không độc lập hoàn toàn. Vì vậy sơ đồ không vẽ fork và join.</p></div>
+        <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>Kiểm tra nhanh</h3><ul>
+          <li>Mỗi hành động “Chuyển sang …” dùng tên trạng thái trùng với state chart ở mục 07.</li>
+          <li>Hai merge: một trước bước 4 (gom 3b và nhánh ≥), một trước bước 9 (gom nhánh thành công và nhánh “Không giao dịch”).</li>
+          <li>Hai điểm kết thúc ứng với hậu điều kiện thành công và thất bại của UC-09.</li></ul></div>
+      </div>
+    </section>
+
+    <!-- 07 STATE -->
+    <section class="lesson" id="state">
+      <div class="lh"><span class="num">07</span><h2>State chart diagram</h2>
+        <p class="lead">Vòng đời của đối tượng Sản phẩm đấu giá, từ lúc người bán đăng đến khi không giao dịch, bị hủy do quá hạn hoặc hoàn tất. Tên trạng thái trùng với hậu điều kiện trong đặc tả ở mục 05.</p></div>
+      <div id="st-stepper"><div class="steps-row"><button class="step-btn done"><b>1</b><span>Trạng thái</span></button><button class="step-btn done"><b>2</b><span>Bắt đầu, kết thúc</span></button><button class="step-btn done"><b>3</b><span>Sự kiện</span></button><button class="step-btn on"><b>4</b><span>Guard, action</span></button></div><div class="steps-nav"><button class="btn ghost" data-d="-1"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Bước trước</button><button class="btn" data-d="1" disabled>Bước sau<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
+      <div class="viz wide">
+        <div class="canvas"><svg id="st-svg" class="s4" viewBox="0 0 1400 620" role="img" aria-label="State chart của đối tượng Sản phẩm đấu giá"><defs><marker id="st-fill" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1f2937"/></marker></defs><g data-stage="1" data-st="A"><rect x="245.0" y="162.0" width="170" height="56" rx="14" class="st-box shape"/><text x="330" y="195.0" text-anchor="middle" class="bold"><tspan x="330" dy="0">Đang đấu giá</tspan></text></g><g data-stage="1" data-st="P"><rect x="635.0" y="162.0" width="170" height="56" rx="14" class="st-box shape"/><text x="720" y="195.0" text-anchor="middle" class="bold"><tspan x="720" dy="0">Chờ thanh toán</tspan></text></g><g data-stage="1" data-st="F"><rect x="1025.0" y="162.0" width="170" height="56" rx="14" class="st-box shape"/><text x="1110" y="195.0" text-anchor="middle" class="bold"><tspan x="1110" dy="0">Chờ phản hồi</tspan></text></g><g data-stage="1" data-st="N"><rect x="245.0" y="362.0" width="170" height="56" rx="14" class="st-box shape"/><text x="330" y="395.0" text-anchor="middle" class="bold"><tspan x="330" dy="0">Không giao dịch</tspan></text></g><g data-stage="1" data-st="X"><rect x="635.0" y="362.0" width="170" height="56" rx="14" class="st-box shape"/><text x="720" y="395.0" text-anchor="middle" class="bold"><tspan x="720" dy="0">Đã hủy do quá hạn</tspan></text></g><g data-stage="1" data-st="D"><rect x="1025.0" y="362.0" width="170" height="56" rx="14" class="st-box shape"/><text x="1110" y="395.0" text-anchor="middle" class="bold"><tspan x="1110" dy="0">Đã hoàn tất</tspan></text></g><g data-stage="2" data-st="init"><circle cx="60" cy="190" r="8" class="ctl-dot st-box"/></g><g data-stage="2"><circle cx="720" cy="560" r="12" class="st-fin-ring"/><circle cx="720" cy="560" r="7" class="ctl-dot"/></g><g data-stage="2" data-edge="e0"><path d="M68 190 L245 190" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="3" data-edge="e1"><path d="M295 162 C281 90 355 90 341 162" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="3" data-edge="e2"><path d="M295 218 C281 290 355 290 341 218" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="3" data-edge="e5"><path d="M365 162 C351 90 425 90 411 162" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="3" data-edge="e3"><path d="M415 190 L635 190" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="3" data-edge="e4"><path d="M372 218 L372 362" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="3" data-edge="e6"><path d="M805 190 L1025 190" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="3" data-edge="e7"><path d="M720 218 L720 362" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="3" data-edge="e8"><path d="M1085 162 C1071 90 1145 90 1131 162" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="3" data-edge="e9"><path d="M1075 218 L1075 362" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="3" data-edge="e10"><path d="M1145 218 L1145 362" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="2" data-edge="f1"><path d="M330 418 L330 560 L708 560" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="2" data-edge="f2"><path d="M720 418 L720 548" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="2" data-edge="f3"><path d="M1110 418 L1110 560 L732 560" class="st-edge" marker-end="url(#st-fill)"/></g><g data-stage="3"><text x="156" y="140" text-anchor="middle" class="halo"><tspan x="156" dy="0" class="small bold ev">đăng sản phẩm (UC-03)</tspan><tspan x="156" dy="14" class="small ga ga4">[thông tin hợp lệ]</tspan><tspan x="156" dy="14" class="small ga ga4">/ đặt giá hiện tại = giá</tspan><tspan x="156" dy="14" class="small ga ga4">khởi điểm</tspan></text></g><g data-stage="3"><text x="335" y="54" text-anchor="end" class="halo"><tspan x="335" dy="0" class="small bold ev">ra giá (UC-08)</tspan><tspan x="335" dy="14" class="small ga ga4">[giá mua hợp lệ]</tspan><tspan x="335" dy="14" class="small ga ga4">/ ghi lượt ra giá, cập nhật</tspan><tspan x="335" dy="14" class="small ga ga4">giá hiện tại</tspan></text></g><g data-stage="3"><text x="262" y="252" text-anchor="end" class="halo"><tspan x="262" dy="0" class="small bold ev">gia hạn (UC-05)</tspan><tspan x="262" dy="14" class="small ga ga4">[n ≥ 1, còn hạn]</tspan><tspan x="262" dy="14" class="small ga ga4">/ cộng phụ phí n × 5.000</tspan></text></g><g data-stage="3"><text x="525" y="150" text-anchor="middle" class="halo"><tspan x="525" dy="0" class="small bold ev">hết thời hạn (thời gian)</tspan><tspan x="525" dy="14" class="small ga ga4">[giao dịch thực hiện]</tspan><tspan x="525" dy="14" class="small ga ga4">/ ghi chi phí, lập hóa đơn</tspan></text></g><g data-stage="3"><text x="382" y="262" text-anchor="start" class="halo"><tspan x="382" dy="0" class="small bold ev">hết thời hạn (thời gian)</tspan><tspan x="382" dy="14" class="small ga ga4">[giao dịch không thực hiện]</tspan><tspan x="382" dy="14" class="small ga ga4">/ không thu phí, thông báo</tspan></text></g><g data-stage="3"><text x="350" y="68" text-anchor="start" class="halo"><tspan x="350" dy="0" class="small bold ev">hết thời hạn (thời gian)</tspan><tspan x="350" dy="14" class="small ga ga4">[giao dịch thực hiện, ghi lỗi]</tspan><tspan x="350" dy="14" class="small ga ga4">/ hoàn tác, chạy lại sau 5 phút</tspan></text></g><g data-stage="3"><text x="915" y="150" text-anchor="middle" class="halo"><tspan x="915" dy="0" class="small bold ev">thanh toán hóa đơn (UC-11)</tspan><tspan x="915" dy="14" class="small ga ga4">[cổng báo thành công]</tspan><tspan x="915" dy="14" class="small ga ga4">/ ghi nhận đã thanh toán</tspan></text></g><g data-stage="3"><text x="732" y="262" text-anchor="start" class="halo"><tspan x="732" dy="0" class="small bold ev">hết hạn thanh toán (thời gian)</tspan><tspan x="732" dy="14" class="small ga ga4">[quá 3 ngày chưa thanh toán]</tspan><tspan x="732" dy="14" class="small ga ga4">/ hủy hóa đơn, chi phí đăng</tspan></text></g><g data-stage="3"><text x="1108" y="68" text-anchor="middle" class="halo"><tspan x="1108" dy="0" class="small bold ev">phản hồi (UC-13)</tspan><tspan x="1108" dy="14" class="small ga ga4">[bên kia chưa phản hồi]</tspan><tspan x="1108" dy="14" class="small ga ga4">/ lưu phản hồi</tspan></text></g><g data-stage="3"><text x="1065" y="316" text-anchor="end" class="halo"><tspan x="1065" dy="0" class="small bold ev">phản hồi (UC-13)</tspan><tspan x="1065" dy="14" class="small ga ga4">[bên kia đã phản hồi]</tspan><tspan x="1065" dy="14" class="small ga ga4">/ lưu phản hồi</tspan></text></g><g data-stage="3"><text x="1157" y="262" text-anchor="start" class="halo"><tspan x="1157" dy="0" class="small bold ev">hết hạn phản hồi (thời gian)</tspan><tspan x="1157" dy="14" class="small ga ga4">[quá 14 ngày]</tspan><tspan x="1157" dy="14" class="small ga ga4">/ đóng nhận phản hồi</tspan></text></g></svg></div>
+        <aside class="side">
+          <div class="card" id="st-text"><span class="tag">Guard, action</span><h3>Bổ sung điều kiện và hành động</h3><p>Nhãn đầy đủ có dạng sự kiện [guard] / action. Sự kiện “hết thời hạn” có ba chuyển khác nhau chỉ nhờ guard: giao dịch thực hiện, giao dịch không thực hiện, giao dịch thực hiện nhưng ghi lỗi. Guard chi tiết nằm trong bảng chuyển trạng thái bên dưới.</p></div>
+          <div class="card"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg>Mô phỏng vòng đời</h3>
+            <p>Trạng thái hiện tại: <span class="cur-state" id="st-cur">Chưa có sản phẩm</span></p>
+            <p style="font-size:.86rem;color:var(--ink-soft)">Điều kiện hiện tại (guard):</p>
+            <div id="st-guards" style="margin-bottom:10px"><label class="chk"><input type="checkbox" data-g="bid" checked> Giá mua hợp lệ (&gt; giá hiện tại, bội số 5.000, còn hạn, không phải người bán)</label><label class="chk"><input type="checkbox" data-g="ext" checked> Số ngày gia hạn n là số nguyên ≥ 1</label><label class="chk"><input type="checkbox" data-g="trade" checked> Giao dịch được thực hiện (có lượt ra giá và đạt giá bán tối thiểu)</label><label class="chk"><input type="checkbox" data-g="write" checked> Ghi được chi phí đăng và hóa đơn</label><label class="chk"><input type="checkbox" data-g="pay" checked> Cổng thanh toán báo thành công</label><label class="chk"><input type="checkbox" data-g="other"> Bên kia đã phản hồi trước</label></div>
+            <div class="evt-grid" id="st-events"><button class="btn ghost" data-ev="create">Đăng sản phẩm</button><button class="btn ghost" data-ev="bid">Ra giá</button><button class="btn ghost" data-ev="extend">Gia hạn</button><button class="btn ghost" data-ev="end">Hết thời hạn đấu giá</button><button class="btn ghost" data-ev="pay">Thanh toán hóa đơn</button><button class="btn ghost" data-ev="payexp">Quá 3 ngày chưa thanh toán</button><button class="btn ghost" data-ev="fb">Phản hồi giao dịch</button><button class="btn ghost" data-ev="fbexp">Quá 14 ngày chưa phản hồi</button></div>
+            <div class="sim-row" style="margin-top:10px"><button class="btn ghost" id="st-reset">Đặt lại</button></div>
+            <ul class="log" id="st-log" style="margin-top:8px"></ul></div>
+        </aside>
+      </div>
+      <h3 class="mt">Bảng chuyển trạng thái</h3>
+      <p>Cùng thông tin với sơ đồ, thêm guard và action đầy đủ. Giao dịch được thực hiện theo quy tắc BR-02 của UC-09: có ít nhất một lượt ra giá và (không đặt giá bán tối thiểu hoặc giá kết thúc ≥ giá bán tối thiểu). Ba guard của sự kiện “hết thời hạn” loại trừ nhau và đủ trường hợp.</p>
+      <div class="table-wrap"><table id="st-table"><thead><tr><th>Từ trạng thái</th><th>Sự kiện</th><th>Điều kiện [guard]</th><th>Hành động / action</th><th>Đến trạng thái</th><th>Nguồn sự kiện</th></tr></thead><tbody><tr data-id="t0" data-from="init" data-to="A" data-ev="create" data-edge="e0"><td>Chưa có sản phẩm</td><td>đăng sản phẩm</td><td>thông tin mô tả đủ và các mức giá hợp lệ (giá khởi điểm, giá bán tối thiểu: số dương, bội số của 5.000)</td><td>đặt giá hiện tại = giá khởi điểm; thời điểm kết thúc = thời điểm đăng + 7 ngày + số ngày gia hạn; ghi các phụ phí đã chọn</td><td>Đang đấu giá</td><td>UC-03 Đăng sản phẩm đấu giá</td></tr><tr data-id="t1" data-from="A" data-to="A" data-ev="bid" data-edge="e1"><td>Đang đấu giá</td><td>ra giá</td><td>giá mua &gt; giá hiện tại; giá mua là bội số của 5.000; nhận trước thời điểm kết thúc; người ra giá không phải người bán</td><td>ghi lượt ra giá; giá hiện tại = giá mua; người dẫn đầu = người mua</td><td>Đang đấu giá</td><td>UC-08 Ra giá sản phẩm</td></tr><tr data-id="t2" data-from="A" data-to="A" data-ev="extend" data-edge="e2"><td>Đang đấu giá</td><td>gia hạn</td><td>n là số nguyên ≥ 1 và sản phẩm còn trước thời điểm kết thúc</td><td>lùi thời điểm kết thúc n ngày; cộng phụ phí n × 5.000 đồng</td><td>Đang đấu giá</td><td>UC-05 Gia hạn thời hạn đấu giá</td></tr><tr data-id="t3" data-from="A" data-to="P" data-ev="end" data-edge="e3"><td>Đang đấu giá</td><td>hết thời hạn</td><td>có lượt ra giá, giá kết thúc ≥ giá bán tối thiểu (hoặc không đặt giá bán tối thiểu) và ghi được chi phí đăng, hóa đơn</td><td>ghi chi phí đăng cho người bán; lập hóa đơn (hạn 3 ngày) cho người mua thắng; thông báo kết quả (UC-10)</td><td>Chờ thanh toán</td><td>Thời gian (kích hoạt UC-09)</td></tr><tr data-id="t4" data-from="A" data-to="N" data-ev="end" data-edge="e4"><td>Đang đấu giá</td><td>hết thời hạn</td><td>không có lượt ra giá, hoặc giá kết thúc &lt; giá bán tối thiểu</td><td>không phát sinh chi phí cho bên nào; thông báo kết quả (UC-10)</td><td>Không giao dịch</td><td>Thời gian (kích hoạt UC-09)</td></tr><tr data-id="t5" data-from="A" data-to="A" data-ev="end" data-edge="e5"><td>Đang đấu giá</td><td>hết thời hạn</td><td>giao dịch thực hiện nhưng không ghi được chi phí đăng hoặc hóa đơn</td><td>hoàn tác; ghi nhật ký lỗi; chạy lại sau 5 phút (UC-09, luồng 6a)</td><td>Đang đấu giá</td><td>Thời gian (kích hoạt UC-09)</td></tr><tr data-id="t6" data-from="P" data-to="F" data-ev="pay" data-edge="e6"><td>Chờ thanh toán</td><td>thanh toán hóa đơn</td><td>hóa đơn còn hạn 3 ngày, chưa thanh toán; cổng thanh toán báo thành công</td><td>ghi nhận hóa đơn đã thanh toán; thông báo cho người mua và người bán</td><td>Chờ phản hồi</td><td>UC-11 Thanh toán hóa đơn mua hàng</td></tr><tr data-id="t7" data-from="P" data-to="X" data-ev="payexp" data-edge="e7"><td>Chờ thanh toán</td><td>hết hạn thanh toán</td><td>quá 3 ngày kể từ khi lập hóa đơn mà chưa thanh toán</td><td>hủy hóa đơn và chi phí đăng; ghi nhận người mua không trả tiền đúng hạn</td><td>Đã hủy do quá hạn</td><td>Thời gian (GĐ-08)</td></tr><tr data-id="t8" data-from="F" data-to="F" data-ev="fb" data-edge="e8"><td>Chờ phản hồi</td><td>phản hồi</td><td>thành viên là người bán hoặc người mua của giao dịch, chưa phản hồi, còn trong 14 ngày; bên kia chưa phản hồi</td><td>lưu phản hồi; hiển thị cho bên kia</td><td>Chờ phản hồi</td><td>UC-13 Phản hồi giao dịch</td></tr><tr data-id="t9" data-from="F" data-to="D" data-ev="fb" data-edge="e9"><td>Chờ phản hồi</td><td>phản hồi</td><td>thành viên là người bán hoặc người mua của giao dịch, chưa phản hồi, còn trong 14 ngày; bên kia đã phản hồi trước</td><td>lưu phản hồi; hiển thị cho bên kia</td><td>Đã hoàn tất</td><td>UC-13 Phản hồi giao dịch (luồng 7a)</td></tr><tr data-id="t10" data-from="F" data-to="D" data-ev="fbexp" data-edge="e10"><td>Chờ phản hồi</td><td>hết hạn phản hồi</td><td>quá 14 ngày kể từ khi người mua thanh toán</td><td>đóng nhận phản hồi; giao dịch coi như đã hoàn tất</td><td>Đã hoàn tất</td><td>Thời gian (GĐ-15, GĐ-21)</td></tr></tbody></table></div>
+      <h3 class="mt">Các cặp (trạng thái, sự kiện) bị từ chối</h3>
+      <div class="table-wrap"><table id="st-reject"><thead><tr><th>Trạng thái</th><th>Sự kiện</th><th>Hệ thống xử lý</th><th>Lý do theo đề hoặc theo giả định</th></tr></thead><tbody><tr data-state="N" data-ev="bid"><td>Không giao dịch</td><td>ra giá</td><td>Báo lỗi</td><td>Phiên đã kết thúc, sản phẩm không còn “Đang đấu giá”, nên lượt ra giá bị từ chối. <span style="color:var(--ink-soft)">(UC-08 luồng 4a, BR-05; GĐ-07)</span></td></tr><tr data-state="P" data-ev="bid"><td>Chờ thanh toán</td><td>ra giá</td><td>Báo lỗi</td><td>Kết quả phiên đã chốt, chỉ còn chờ người thắng thanh toán; không nhận thêm lượt ra giá. <span style="color:var(--ink-soft)">(UC-08 luồng 4a, BR-05)</span></td></tr><tr data-state="P" data-ev="extend"><td>Chờ thanh toán</td><td>gia hạn</td><td>Báo lỗi</td><td>Chỉ gia hạn khi sản phẩm còn “Đang đấu giá”, trước thời điểm kết thúc. <span style="color:var(--ink-soft)">(UC-05 luồng 6a, BR-03; GĐ-05)</span></td></tr><tr data-state="A" data-ev="pay"><td>Đang đấu giá</td><td>thanh toán hóa đơn</td><td>Bỏ qua</td><td>Chưa có hóa đơn (hóa đơn chỉ được lập khi kết thúc phiên), nên không có gì để thanh toán. <span style="color:var(--ink-soft)">(UC-11 tiền điều kiện; UC-09 bước 6)</span></td></tr><tr data-state="F" data-ev="pay"><td>Chờ phản hồi</td><td>thanh toán hóa đơn</td><td>Báo lỗi</td><td>Hóa đơn đã thanh toán; mỗi hóa đơn chỉ được thanh toán thành công một lần. <span style="color:var(--ink-soft)">(UC-11 BR-04)</span></td></tr><tr data-state="X" data-ev="pay"><td>Đã hủy do quá hạn</td><td>thanh toán hóa đơn</td><td>Báo lỗi</td><td>Hóa đơn đã bị hủy do quá hạn 3 ngày. <span style="color:var(--ink-soft)">(UC-11 luồng 3a, BR-03; GĐ-08)</span></td></tr><tr data-state="N" data-ev="end"><td>Không giao dịch</td><td>hết thời hạn</td><td>Bỏ qua</td><td>Kết quả phiên đã được chốt; UC-09 chỉ chạy khi sản phẩm “Đang đấu giá”. <span style="color:var(--ink-soft)">(UC-09 tiền điều kiện)</span></td></tr><tr data-state="A" data-ev="fb"><td>Đang đấu giá</td><td>phản hồi</td><td>Báo lỗi</td><td>Giao dịch chưa hoàn tất (người mua chưa thanh toán) nên chưa được phản hồi. <span style="color:var(--ink-soft)">(UC-13 luồng 2a, BR-03; GĐ-15)</span></td></tr><tr data-state="D" data-ev="fb"><td>Đã hoàn tất</td><td>phản hồi</td><td>Báo lỗi</td><td>Giao dịch đã “Đã hoàn tất”: hai bên đã phản hồi hoặc đã hết hạn phản hồi 14 ngày. <span style="color:var(--ink-soft)">(UC-13 luồng 2a, 3a, BR-03, BR-04; GĐ-15)</span></td></tr></tbody></table></div>
+      <div class="grid-2 mt">
+        <div class="card sage"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>Trạng thái và sự kiện bổ sung</h3><ul>
+          <li>“Đã hủy do quá hạn” (GĐ-20): đề chỉ nói người mua nhận hóa đơn; UC-11 BR-03 hủy hóa đơn khi quá 3 ngày nên sản phẩm cần một trạng thái cuối cho trường hợp này.</li>
+          <li>Sự kiện “hết hạn phản hồi” (GĐ-21): UC-13 đã cấm phản hồi sau 14 ngày, nên sản phẩm chuyển “Đã hoàn tất” để vòng đời kết thúc.</li></ul></div>
+        <div class="card rose"><h3><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Khi guard sai</h3><ul>
+          <li>Ra giá không hợp lệ: bị từ chối, giá hiện tại và người dẫn đầu giữ nguyên (UC-08 6a, 7a).</li>
+          <li>Thanh toán bị cổng từ chối: sản phẩm vẫn “Chờ thanh toán”, người mua thanh toán lại (UC-11 6a).</li>
+          <li>Kết thúc bị lỗi ghi: sản phẩm vẫn “Đang đấu giá”, chạy lại sau 5 phút (UC-09 6a).</li></ul></div>
+      </div>
+    </section>
+
+  </main>
+  <footer>Bài tập tuần 4 · Sàn đấu giá trực tuyến · Đề bài lấy từ tài liệu thực hành CNPM-Lab.</footer>
+</div>
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const INFO = {"UC01": {"tag": "Use case", "title": "UC-01 Đăng ký tài khoản", "body": ["Actor: Khách.", "Mục tiêu: Có tài khoản để dùng dịch vụ của sàn."]}, "UC02": {"tag": "Use case", "title": "UC-02 Đăng nhập", "body": ["Actor: Thành viên.", "Mục tiêu: Được xác thực để mua hoặc bán."]}, "UC03": {"tag": "Use case", "title": "UC-03 Đăng sản phẩm đấu giá", "body": ["Actor: Người bán.", "Mục tiêu: Đưa sản phẩm lên sàn với mô tả, giá khởi điểm, thời hạn, phương thức giao nhận và giá bán tối thiểu (nếu muốn)."]}, "UC04": {"tag": "Use case", "title": "UC-04 Lấy gói chuyển phát", "body": ["Actor: Hệ thống tính phí công ty chuyển phát.", "Mục tiêu: Có danh sách gói và phí chuyển phát để người bán chọn."]}, "UC05": {"tag": "Use case", "title": "UC-05 Gia hạn thời hạn đấu giá", "body": ["Actor: Người bán.", "Mục tiêu: Kéo dài thời gian đấu giá thêm n ngày."]}, "UC06": {"tag": "Use case", "title": "UC-06 Tìm kiếm sản phẩm đấu giá", "body": ["Actor: Người mua.", "Mục tiêu: Tìm sản phẩm đang đấu giá theo tên, chủng loại, giá hiện tại, hình thức giao nhận…."]}, "UC07": {"tag": "Use case", "title": "UC-07 Xem thông tin sản phẩm đấu giá", "body": ["Actor: Người mua.", "Mục tiêu: Biết mô tả, giá hiện tại, thời điểm kết thúc và chi phí giao hàng."]}, "UC08": {"tag": "Use case", "title": "UC-08 Ra giá sản phẩm", "body": ["Actor: Người mua.", "Mục tiêu: Trở thành người trả giá cao nhất hiện tại."]}, "UC09": {"tag": "Use case", "title": "UC-09 Kết thúc phiên đấu giá", "body": ["Actor: Thời gian.", "Mục tiêu: Chốt kết quả khi hết thời hạn, phát sinh chi phí và hóa đơn."]}, "UC10": {"tag": "Use case", "title": "UC-10 Thông báo kết quả đấu giá", "body": ["Actor: (được UC-09 bao gồm).", "Mục tiêu: Người bán và người mua biết kết quả phiên."]}, "UC11": {"tag": "Use case", "title": "UC-11 Thanh toán hóa đơn mua hàng", "body": ["Actor: Người mua; Cổng thanh toán.", "Mục tiêu: Trả tiền mua sản phẩm."]}, "UC12": {"tag": "Use case", "title": "UC-12 Thanh toán chi phí đăng sản phẩm", "body": ["Actor: Người bán; Cổng thanh toán.", "Mục tiêu: Trả chi phí đăng khi giao dịch được thực hiện."]}, "UC13": {"tag": "Use case", "title": "UC-13 Phản hồi giao dịch", "body": ["Actor: Thành viên.", "Mục tiêu: Đánh giá chất lượng giao dịch của bên kia."]}, "A:Khách": {"tag": "Actor", "title": "Khách", "body": ["Loại: Người.", "Người chưa có tài khoản.", "Use case: UC-01."]}, "A:Thành viên": {"tag": "Actor", "title": "Thành viên", "body": ["Loại: Người (trừu tượng).", "Người đã có tài khoản; tổng quát hóa của Người bán và Người mua.", "Use case: UC-02, UC-13."]}, "A:Người bán": {"tag": "Actor", "title": "Người bán", "body": ["Loại: Người.", "Đăng sản phẩm đấu giá, chịu chi phí đăng.", "Use case: UC-03, UC-05, UC-12; nhận thông báo ở UC-10."]}, "A:Người mua": {"tag": "Actor", "title": "Người mua", "body": ["Loại: Người.", "Tìm kiếm, ra giá, trả tiền mua.", "Use case: UC-06, UC-07, UC-08, UC-11; nhận hóa đơn ở UC-09."]}, "A:Thời gian": {"tag": "Actor", "title": "Thời gian", "body": ["Loại: Sự kiện thời gian.", "Bộ định thời kích hoạt việc kết thúc phiên (GĐ-11).", "Use case: UC-09."]}, "A:Cổng thanh toán": {"tag": "Actor", "title": "Cổng thanh toán", "body": ["Loại: Hệ thống ngoài.", "Thực hiện thanh toán trực tuyến (GĐ-09).", "Use case: UC-11, UC-12."]}, "A:Hệ thống tính phí công ty chuyển phát": {"tag": "Actor", "title": "Hệ thống tính phí công ty chuyển phát", "body": ["Loại: Hệ thống ngoài.", "Cung cấp gói và phí chuyển phát.", "Use case: UC-04."]}, "boundary": {"tag": "Ranh giới", "title": "Sàn đấu giá trực tuyến", "body": ["Bao 13 use case mà sàn phải xây dựng. Actor, kể cả hai hệ thống ngoài, nằm ngoài ranh giới."]}, "assoc": {"tag": "Association", "title": "Đường nối actor và use case", "body": ["Actor tham gia trực tiếp vào use case. Đường thẳng, không mũi tên.", "Mỗi actor nối ít nhất một use case; mỗi use case có actor nối hoặc là đích của include/extend (UC-10)."]}, "gen": {"tag": "Tổng quát hoá", "title": "Người bán, Người mua → Thành viên", "body": ["Cả người bán và người mua đều phải đăng ký và đăng nhập, đều có trách nhiệm phản hồi giao dịch; gom các use case chung về actor Thành viên."]}, "include": {"tag": "«include»", "title": "UC-09 → UC-10", "body": ["Mỗi lần một phiên kết thúc, dù giao dịch có được thực hiện hay không, người bán đều phải được báo kết quả (và người mua thắng nhận hóa đơn). UC-09 không trọn vẹn nếu thiếu bước này, nên dùng include."]}, "extend": {"tag": "«extend»", "title": "UC-04 → UC-03", "body": ["Điều kiện: [người bán chọn giao qua công ty chuyển phát]. Khi chọn “miễn phí giao hàng” hoặc “người mua đến lấy”, UC-03 vẫn trọn vẹn mà không cần gọi hệ thống tính phí, nên dùng extend. Mũi tên đi từ UC-04 đến UC-03."]}};
+const HELP = {"Mã và tên": "Mã dạng UC-01. Tên giống với tên trên sơ đồ use case.", "Mô tả tóm tắt": "1 đến 2 câu: use case làm gì, cho ai, đạt mục tiêu gì. Không chép lại luồng sự kiện.", "Actor chính": "Khớp với actor nối với use case trong sơ đồ.", "Actor phụ": "Hệ thống hoặc vai trò giúp use case hoàn thành nhưng không khởi động nó. Nếu không có thì ghi “Không có”.", "Kích hoạt": "Sự kiện làm use case bắt đầu. Ghi sự kiện, không ghi giao diện.", "Tiền điều kiện": "Điều phải đúng trước khi use case bắt đầu. Điều có thể sai và cần xử lý thì chuyển thành luồng thay thế.", "Hậu điều kiện (thành công)": "Thay đổi dữ liệu quan sát được khi use case kết thúc thành công.", "Hậu điều kiện (thất bại)": "Trạng thái hệ thống khi use case thất bại. Bắt buộc ghi, kể cả khi giống trạng thái ban đầu.", "Luồng chính": "Đánh số 1, 2, 3. Mỗi bước có một chủ thể và một hành động. Không chứa câu “nếu”. Không nêu cách lưu dữ liệu hoặc mô tả giao diện.", "Luồng thay thế": "Đánh số theo bước rẽ nhánh, ví dụ 3a, 5a. Mỗi luồng ghi điều kiện, hành động và bước quay về hoặc cách kết thúc.", "Luồng ngoại lệ": "Lỗi khiến use case không đạt mục tiêu. Mỗi ngoại lệ dẫn đến hậu điều kiện thất bại.", "Quy tắc nghiệp vụ": "Mã BR-01, BR-02, … dẫn vào bước liên quan, kèm nguồn (câu trong đề hoặc mã giả định).", "Yêu cầu phi chức năng": "Lấy từ đề hoặc từ giả định, viết thành đại lượng kiểm chứng được (đối tượng, ngưỡng, điều kiện đo).", "Include, extend": "Khớp với mũi tên trên sơ đồ use case."};
+const STEPS = [["Xác định actor", "Gạch chân danh từ chỉ người và hệ thống ngoài trong đề: người bán, người mua, hệ thống tính phí của công ty chuyển phát. Thêm Khách (chưa có tài khoản), Thành viên (phần chung của người bán và người mua), Thời gian (kích hoạt kết thúc đấu giá, GĐ-11) và Cổng thanh toán (GĐ-09)."], ["Xác định use case", "Gạch chân động từ chỉ mục tiêu: đăng sản phẩm, gia hạn, tìm kiếm, xem, ra giá, kết thúc đấu giá, thanh toán, phản hồi. Mỗi use case là một mục tiêu trọn vẹn, không đặt tên Thêm, Sửa, Xoá."], ["Vẽ ranh giới", "Hình chữ nhật “Sàn đấu giá trực tuyến” bao 13 use case. Hệ thống tính phí chuyển phát và cổng thanh toán đã có sẵn nên nằm ngoài."], ["Nối association", "Mỗi actor nối với ít nhất một use case. UC-10 không có actor khởi động vì luôn chạy trong UC-09 (include)."], ["Thêm include, extend", "Include UC-09 → UC-10: luôn chạy. Extend UC-04 → UC-03: chỉ chạy khi [người bán chọn giao qua công ty chuyển phát]. Mũi tên đứt nét, đúng chiều như bài giảng."]];
+const escH = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[c]);
+
+/* điều hướng: tô mục đang xem và thanh tiến độ */
+const links = $$('.nav a.lnk');
+const secs = links.map(a => $(a.getAttribute('href')));
+function onScroll() {
+  const y = window.scrollY + 120; let cur = 0;
+  secs.forEach((s, i) => { if (s && s.offsetTop <= y) cur = i; });
+  links.forEach((a, i) => a.classList.toggle('on', i === cur));
+  const h = document.documentElement.scrollHeight - innerHeight;
+  $('#progress').style.width = (h > 0 ? scrollY / h * 100 : 0) + '%';
+}
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+/* sơ đồ use case: dựng theo bước */
+let step = 5;
+function setStep(s) {
+  step = Math.max(1, Math.min(5, s));
+  $$('#uc-svg [data-step]').forEach(g => g.classList.toggle('off', +g.dataset.step > step));
+  $$('#uc-stepper .step-btn').forEach((b, i) => { b.classList.toggle('on', i + 1 === step); b.classList.toggle('done', i + 1 < step); });
+  $('#uc-stepper [data-d="-1"]').disabled = step === 1;
+  $('#uc-stepper [data-d="1"]').disabled = step === 5;
+  const [t, p] = STEPS[step - 1];
+  $('#uc-step-card').innerHTML = `<span class="tag">Bước ${step}</span><h3>${t}</h3><p>${p}</p>`;
+}
+$$('#uc-stepper .step-btn').forEach(b => b.onclick = () => setStep(+b.dataset.s));
+$$('#uc-stepper [data-d]').forEach(b => b.onclick = () => setStep(step + +b.dataset.d));
+$$('#uc-svg .clickable').forEach(g => g.addEventListener('click', () => {
+  const d = INFO[g.dataset.k]; if (!d) return;
+  $$('#uc-svg .sel').forEach(x => x.classList.remove('sel')); g.classList.add('sel');
+  const box = $('#uc-info');
+  box.innerHTML = `<span class="tag">${escH(d.tag)}</span><h3>${escH(d.title)}</h3>` + d.body.map(x => `<p>${escH(x)}</p>`).join('');
+  box.classList.remove('fresh'); void box.offsetWidth; box.classList.add('fresh');
+}));
+
+/* đặc tả: nhấn tên mục, rê chuột lên luồng rẽ nhánh */
+["spec-uc-01", "spec-uc-02", "spec-uc-03", "spec-uc-04", "spec-uc-05", "spec-uc-06", "spec-uc-07", "spec-uc-08", "spec-uc-09", "spec-uc-10", "spec-uc-11", "spec-uc-12", "spec-uc-13"].forEach(id => {
+  const tb = $('#' + id), info = $('#' + id + '-info');
+  $$('tr', tb).forEach(tr => tr.querySelector('th').addEventListener('click', () => {
+    $$('tr.sel', tb).forEach(x => x.classList.remove('sel')); tr.classList.add('sel');
+    info.innerHTML = `<span class="tag">Mục của mẫu</span><h3>${escH(tr.dataset.k)}</h3><p>${escH(HELP[tr.dataset.k])}</p>`;
+  }));
+  const steps = $$('tr[data-k="Luồng chính"] li', tb);
+  $$('.alt[data-step]', tb).forEach(a => {
+    const li = steps[+a.dataset.step - 1];
+    a.addEventListener('mouseenter', () => { a.classList.add('hl'); li && li.classList.add('hl'); });
+    a.addEventListener('mouseleave', () => { a.classList.remove('hl'); li && li.classList.remove('hl'); });
+  });
+});
+</script>
+<script>
+(function () {
+  const q = (s, r = document) => r.querySelector(s);
+  const qa = (s, r = document) => [...r.querySelectorAll(s)];
+  const ICONS = {
+    'circle-help': '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+    'step-forward': '<path d="M10.029 4.285A2 2 0 0 0 7 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z"/><path d="M3 4v16"/>',
+    'rotate-ccw': '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>'
+  };
+  const icon = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
+  const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+
+  function makeStepper(rootSel, steps, cb) {
+    const root = q(rootSel);
+    const btns = qa('.step-btn', root);
+    const prev = q('[data-d="-1"]', root), next = q('[data-d="1"]', root);
+    const api = {
+      cur: steps.length - 1,
+      go(i) {
+        i = Math.max(0, Math.min(steps.length - 1, i));
+        api.cur = i;
+        btns.forEach((b, j) => { b.classList.toggle('on', j === i); b.classList.toggle('done', j < i); });
+        prev.disabled = i === 0;
+        next.disabled = i === steps.length - 1;
+        cb(i, steps[i]);
+      }
+    };
+    btns.forEach((b, i) => b.onclick = () => api.go(i));
+    prev.onclick = () => api.go(api.cur - 1);
+    next.onclick = () => api.go(api.cur + 1);
+    return api;
+  }
+  function stepCard(el, s) {
+    el.innerHTML = `<span class="tag">${esc(s.tag)}</span><h3>${esc(s.title)}</h3><p>${esc(s.text)}</p>` +
+      (s.check ? `<p style="margin-bottom:4px"><b>${icon('circle-help')}Tự hỏi ở bước này</b></p><ul>${s.check.map(c => `<li>${esc(c)}</li>`).join('')}</ul>` : '');
+  }
+
+  /* ================= 06 ACTIVITY ================= */
+  (function () {
+    const STEPS = [
+      { kinds: ['lane'], tag: 'Swimlane', title: 'Chia làn trách nhiệm',
+        text: 'Bốn làn: Thời gian (actor chính, kích hoạt use case), Hệ thống, Người mua (người mua thắng) và Người bán. Hành động nằm ở làn nào thì bên đó thực hiện.',
+        check: ['Hành động này do ai làm?', 'Actor phụ nào tham gia use case thì có làn riêng?'] },
+      { kinds: ['initfinal'], tag: 'Bắt đầu, kết thúc', title: 'Đặt điểm bắt đầu và các điểm kết thúc',
+        text: 'Điểm bắt đầu ứng với kích hoạt “đến thời điểm kết thúc đấu giá”. Có hai điểm kết thúc: thành công (người bán đã được thông báo kết quả) và thất bại (luồng ngoại lệ 6a: sản phẩm giữ “Đang đấu giá”, chạy lại sau 5 phút).',
+        check: ['Use case bắt đầu khi nào?', 'Mỗi hậu điều kiện (thành công, thất bại) ứng với điểm kết thúc nào?'] },
+      { kinds: ['action'], tag: 'Hành động', title: 'Chuyển các bước thành hành động',
+        text: 'Mỗi bước của luồng chính 1 đến 10 thành một hành động, đặt đúng làn. Hành động “Chuyển sang …” dùng đúng tên trạng thái trong hậu điều kiện của đặc tả, để khớp với state chart ở mục 07.',
+        check: ['Mỗi bước của đặc tả đã có hành động chưa?', 'Tên trạng thái có trùng với state chart không?'] },
+      { kinds: ['edge'], tag: 'Luồng', title: 'Nối bằng luồng điều khiển',
+        text: 'Mũi tên chỉ thứ tự. Khi mũi tên sang làn khác là việc bàn giao: hệ thống gửi hóa đơn thì người mua nhận, hệ thống gửi thông báo thì người bán nhận.',
+        check: ['Hành động nào chưa có mũi tên ra?', 'Có vòng lặp nào không thoát ra được không?'] },
+      { kinds: ['branch'], tag: 'Rẽ nhánh', title: 'Thêm decision và merge từ luồng thay thế',
+        text: 'Luồng 2a, 3a, 3b, 6a thành bốn decision có guard. Merge thứ nhất gom nhánh “không đặt giá tối thiểu” (3b) và nhánh “≥ giá tối thiểu” để đi tiếp bước 4. Merge thứ hai gom nhánh thành công và nhánh “Không giao dịch” (2a, 3a) để cùng đến bước 9.',
+        check: ['Các guard của một decision có loại trừ nhau và đủ trường hợp không?', 'Nhánh nào dẫn đến điểm kết thúc thất bại?'] },
+      { kinds: ['seq'], tag: 'Song song', title: 'Có cần fork và join không?',
+        text: 'Không vẽ. Việc gửi hóa đơn cho người mua (bước 7, 8) và thông báo cho người bán (bước 9, 10) có thể làm cùng lúc về mặt kỹ thuật, nhưng đặc tả xếp tuần tự và các luồng 2a, 3a cũng vào thẳng bước 9 mà không có hóa đơn. Hai việc này không độc lập hoàn toàn nên không dùng fork và join.',
+        check: ['Hai việc định đặt song song có thật sự không phụ thuộc nhau không?'] },
+      { kinds: null, tag: 'Toàn bộ', title: 'Đọc toàn bộ sơ đồ',
+        text: 'Kiểm tra mọi đường đi từ điểm bắt đầu đều đến được một điểm kết thúc, rồi đối chiếu từng luồng thay thế và ngoại lệ với bảng truy vết bên dưới. Có thể chạy thử các đường đi ở phần mô phỏng.',
+        check: ['Đường đi nào đến điểm kết thúc thất bại?', 'Sơ đồ có khớp từng bước của UC-09 không?'] }
+    ];
+    const card = q('#ad-text');
+    const stepper = makeStepper('#ad-stepper', STEPS, (i, s) => {
+      qa('#ad-svg [data-kind]').forEach(e => {
+        const ks = e.dataset.kind.split(' ');
+        e.style.opacity = (!s.kinds || ks.some(k => s.kinds.includes(k))) ? 1 : 0.13;
+      });
+      stepCard(card, s);
+    });
+    stepper.go(STEPS.length - 1);
+
+    /* truy vết */
+    qa('#ad-trace tbody tr').forEach(r => {
+      r.style.cursor = 'pointer';
+      r.onclick = () => {
+        qa('#ad-svg .trace').forEach(e => e.classList.remove('trace'));
+        qa('#ad-trace tr.fired').forEach(e => e.classList.remove('fired'));
+        r.classList.add('fired');
+        const ids = (r.dataset.ids || '').split(' ').filter(Boolean);
+        ids.forEach(id => {
+          const g = q(`#ad-svg [data-id="${id}"]`);
+          if (g) { g.classList.add('trace'); qa('path.flow', g).forEach(p => p.classList.add('trace')); }
+        });
+        stepper.go(STEPS.length - 1);
+        const first = ids.length && q(`#ad-svg [data-id="${ids[0]}"]`);
+        if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+    });
+
+    /* mô phỏng luồng điều khiển */
+    const nodes = {}, edges = [];
+    qa('#ad-svg g[data-id]').forEach(g => {
+      if (g.dataset.from) edges.push({ id: g.dataset.id, from: g.dataset.from, to: g.dataset.to, label: g.dataset.label || '', g });
+      else nodes[g.dataset.id] = { id: g.dataset.id, type: g.dataset.type, name: g.dataset.name || g.dataset.id, fail: g.dataset.fail === '1', g };
+    });
+    const outs = id => edges.filter(e => e.from === id);
+    const ctrl = q('#ad-ctrl'), log = q('#ad-log'), tokens = q('#ad-tokens');
+    let sim;
+    const say = (m, c) => { const li = document.createElement('li'); li.textContent = m; if (c) li.className = c; log.prepend(li); };
+    function reset() {
+      sim = { cur: 's', used: new Set(), done: false };
+      log.innerHTML = '';
+      say('Bắt đầu: token ở nút bắt đầu.');
+      render();
+    }
+    function go(edge) {
+      sim.used.add(edge.id);
+      sim.cur = edge.to;
+      const n = nodes[sim.cur];
+      if (n.type === 'action') say('Thực hiện: ' + n.name);
+      if (n.type === 'final') {
+        sim.done = true;
+        say(n.fail ? 'Kết thúc thất bại (luồng 6a): sản phẩm vẫn “Đang đấu giá”, chạy lại sau 5 phút.' : 'Kết thúc thành công: người bán đã được thông báo kết quả.', n.fail ? 'err' : 'ok');
+      }
+    }
+    function render() {
+      qa('#ad-svg path.flow.used').forEach(p => p.classList.remove('used'));
+      sim.used.forEach(id => { const e = edges.find(x => x.id === id); if (e) q('path.flow', e.g).classList.add('used'); });
+      Object.values(nodes).forEach(n => n.g.classList.remove('node-active'));
+      const cur = nodes[sim.cur];
+      cur.g.classList.add('node-active');
+      tokens.innerHTML = '';
+      const bb = cur.g.getBBox();
+      let cx, cy;
+      if (cur.type === 'action') { cx = bb.x + 10; cy = bb.y; }
+      else if (cur.type === 'decision') { cx = bb.x; cy = bb.y + bb.height / 2; }
+      else { cx = bb.x + bb.width + 12; cy = bb.y + bb.height / 2; }
+      const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', 8); c.setAttribute('class', 'token');
+      tokens.appendChild(c);
+      ctrl.innerHTML = '';
+      const pending = cur.type === 'decision';
+      const nx = document.createElement('button'); nx.className = 'btn'; nx.innerHTML = icon('step-forward') + 'Bước tiếp'; nx.disabled = pending || sim.done;
+      nx.onclick = () => { go(outs(sim.cur)[0]); render(); };
+      const rs = document.createElement('button'); rs.className = 'btn ghost'; rs.innerHTML = icon('rotate-ccw') + 'Đặt lại'; rs.onclick = reset;
+      ctrl.append(nx, rs);
+      if (pending) {
+        const lab = document.createElement('div'); lab.style.cssText = 'width:100%;font-size:.88rem;font-weight:600';
+        lab.textContent = 'Chọn nhánh tại “' + cur.name + '”:'; ctrl.appendChild(lab);
+        outs(sim.cur).forEach(e => {
+          const b = document.createElement('button'); b.className = 'btn ghost'; b.textContent = e.label;
+          b.onclick = () => { say('Rẽ nhánh tại “' + cur.name + '”: ' + e.label); go(e); render(); };
+          ctrl.appendChild(b);
+        });
+      }
+    }
+    reset();
+  })();
+
+  /* ================= 07 STATE CHART ================= */
+  (function () {
+    const STEPS = [
+      { stage: 1, tag: 'Trạng thái', title: 'Liệt kê các trạng thái',
+        text: 'Đối tượng là Sản phẩm đấu giá. Lấy tên trạng thái từ hậu điều kiện của các đặc tả: “Đang đấu giá” (UC-03, UC-08), “Chờ thanh toán” và “Không giao dịch” (UC-09), “Chờ phản hồi” (UC-11), “Đã hoàn tất” (UC-13). Thêm “Đã hủy do quá hạn” cho trường hợp người mua không trả tiền đúng hạn (GĐ-08, GĐ-20).',
+        check: ['Hai trạng thái có cho phép các sự kiện khác nhau không?', 'Trạng thái nào là cuối?'] },
+      { stage: 2, tag: 'Bắt đầu, kết thúc', title: 'Thêm điểm bắt đầu và điểm kết thúc',
+        text: 'Sản phẩm sinh ra ở “Đang đấu giá” khi người bán đăng. Ba trạng thái “Không giao dịch”, “Đã hủy do quá hạn” và “Đã hoàn tất” không đổi nữa nên dẫn đến điểm kết thúc.',
+        check: ['Sản phẩm được tạo ra ở trạng thái nào?', 'Từ mỗi trạng thái có đường đến điểm kết thúc không?'] },
+      { stage: 3, tag: 'Sự kiện', title: 'Nối bằng chuyển trạng thái và sự kiện',
+        text: 'Mỗi sự kiện ghi nguồn: một use case của sơ đồ ở mục 04, hoặc thời gian. Ra giá, gia hạn và việc kết thúc bị lỗi không đổi trạng thái nên vẽ mũi tên vòng về “Đang đấu giá”. Phản hồi của một bên chưa đủ hai bên cũng vòng về “Chờ phản hồi”.',
+        check: ['Sự kiện đến từ người dùng hay từ thời gian?', 'Sự kiện nào của đặc tả chưa được vẽ?'] },
+      { stage: 4, tag: 'Guard, action', title: 'Bổ sung điều kiện và hành động',
+        text: 'Nhãn đầy đủ có dạng sự kiện [guard] / action. Sự kiện “hết thời hạn” có ba chuyển khác nhau chỉ nhờ guard: giao dịch thực hiện, giao dịch không thực hiện, giao dịch thực hiện nhưng ghi lỗi. Guard chi tiết nằm trong bảng chuyển trạng thái bên dưới.',
+        check: ['Khi guard sai, sự kiện bị bỏ qua hay xử lý khác?', 'Các guard của cùng một sự kiện có loại trừ nhau không?'] }
+    ];
+    const svg = q('#st-svg'), card = q('#st-text');
+    const stepper = makeStepper('#st-stepper', STEPS, (i, s) => {
+      qa('#st-svg [data-stage]').forEach(e => e.classList.toggle('off', +e.dataset.stage > s.stage));
+      svg.classList.toggle('s4', s.stage >= 4);
+      stepCard(card, s);
+    });
+    stepper.go(STEPS.length - 1);
+
+    const STN = { init: 'Chưa có sản phẩm', A: 'Đang đấu giá', P: 'Chờ thanh toán', F: 'Chờ phản hồi', N: 'Không giao dịch', X: 'Đã hủy do quá hạn', D: 'Đã hoàn tất' };
+    const EVT = { create: 'đăng sản phẩm', bid: 'ra giá', extend: 'gia hạn', end: 'hết thời hạn', pay: 'thanh toán hóa đơn', payexp: 'hết hạn thanh toán', fb: 'phản hồi', fbexp: 'hết hạn phản hồi' };
+    const env = { bid: true, ext: true, trade: true, write: true, pay: true, other: false };
+    const GRD = {
+      t0: () => true, t1: e => e.bid, t2: e => e.ext,
+      t3: e => e.trade && e.write, t4: e => !e.trade, t5: e => e.trade && !e.write,
+      t6: e => e.pay, t7: () => true, t8: e => !e.other, t9: e => e.other, t10: () => true
+    };
+    const TR = qa('#st-table tbody tr').map(r => ({ id: r.dataset.id, f: r.dataset.from, t: r.dataset.to, ev: r.dataset.ev, edge: r.dataset.edge, row: r, guard: r.cells[2].textContent, action: r.cells[3].textContent }));
+    const REJ = {};
+    qa('#st-reject tbody tr').forEach(r => { REJ[r.dataset.state + '|' + r.dataset.ev] = { how: r.cells[2].textContent, why: r.cells[3].textContent }; });
+    const gs = {};
+    qa('#st-svg g[data-st]').forEach(g => gs[g.dataset.st] = g);
+    const log = q('#st-log'), curEl = q('#st-cur');
+    let cur = 'init';
+    const say = (m, c) => { const li = document.createElement('li'); li.textContent = m; if (c) li.className = c; log.prepend(li); };
+    function paint(fired) {
+      curEl.textContent = STN[cur];
+      qa('#st-svg .st-cur').forEach(e => e.classList.remove('st-cur'));
+      if (cur !== 'init' && gs[cur]) gs[cur].classList.add('st-cur');
+      qa('#st-svg .st-edge.fired').forEach(e => e.classList.remove('fired'));
+      qa('#st-table tr.fired').forEach(e => e.classList.remove('fired'));
+      if (fired) {
+        const eg = q(`#st-svg [data-edge="${fired.edge}"] path`);
+        if (eg) eg.classList.add('fired');
+        fired.row.classList.add('fired');
+      }
+    }
+    function fire(ev) {
+      const cands = TR.filter(t => t.f === cur && t.ev === ev);
+      if (!cands.length) {
+        const r = REJ[cur + '|' + ev];
+        if (r) say(`${r.how}: “${EVT[ev]}” ở trạng thái “${STN[cur]}”. ${r.why}`, 'err');
+        else if (cur === 'init') say(`Bỏ qua: sản phẩm chưa được đăng nên chưa có sự kiện “${EVT[ev]}”.`, 'err');
+        else say(`Bỏ qua: “${EVT[ev]}” không có chuyển trạng thái nào từ “${STN[cur]}”.`, 'err');
+        return;
+      }
+      const t = cands.find(c => GRD[c.id](env));
+      if (!t) {
+        say(`Không chuyển: “${EVT[ev]}” có chuyển từ “${STN[cur]}” nhưng guard đang sai (${cands.map(c => '[' + c.guard + ']').join(' hoặc ')}).`, 'err');
+        return;
+      }
+      const same = t.f === t.t;
+      say(`${same ? 'Giữ nguyên' : 'Chuyển từ “' + STN[t.f] + '” sang'} “${STN[t.t]}” (${EVT[ev]}${t.action ? ' / ' + t.action : ''})`, 'ok');
+      cur = t.t;
+      paint(t);
+      if (['N', 'X', 'D'].includes(cur)) say('Trạng thái cuối: vòng đời của sản phẩm kết thúc.');
+    }
+    function reset() { cur = 'init'; log.innerHTML = ''; say('Sản phẩm chưa tồn tại. Thử sự kiện “Đăng sản phẩm”.'); paint(null); }
+    qa('#st-events .btn').forEach(b => b.onclick = () => { if (stepper.cur < 3) stepper.go(3); fire(b.dataset.ev); });
+    qa('#st-guards input').forEach(c => { env[c.dataset.g] = c.checked; c.onchange = () => { env[c.dataset.g] = c.checked; }; });
+    q('#st-reset').onclick = reset;
+    reset();
+  })();
+})();
+</script>
+<script>
+(function(){
+const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>[...r.querySelectorAll(s)];
+let toastT;
+function toast(m){let t=q('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t);}t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
+function flash(el){if(!el)return;el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
+
+/* ---------- bảng tìm nhanh Ctrl+K ---------- */
+const idx=[];
+qa('.nav a.lnk').forEach(a=>idx.push({k:'Mục',t:a.textContent.trim(),el:()=>q(a.getAttribute('href'))}));
+qa('#gia-dinh tbody tr').forEach(r=>{const c=r.cells;idx.push({k:c[0].textContent.trim(),t:c[1].textContent.trim()+' — '+c[2].textContent.trim().slice(0,90),el:()=>r});});
+qa('.spec-title').forEach(h=>idx.push({k:'UC',t:h.textContent.trim(),el:()=>h}));
+['ad-trace','st-table','st-reject'].forEach(id=>{const t=q('#'+id);if(t)idx.push({k:'Bảng',t:id==='ad-trace'?'Bảng truy vết Activity':id==='st-table'?'Bảng chuyển trạng thái':'Bảng cặp (trạng thái, sự kiện) bị từ chối',el:()=>t});});
+const pal=document.createElement('div');pal.className='pal';pal.innerHTML='<div class="pal-box"><input placeholder="Tìm giả định, use case, bảng… (ví dụ: hết hạn, GĐ-08, UC-09)" aria-label="Tìm nhanh"><ul class="pal-list"></ul><div class="pal-foot"><span>↑↓ chọn</span><span>Enter mở</span><span>Esc đóng</span></div></div>';
+document.body.appendChild(pal);
+const kb=document.createElement('button');kb.className='kbtn';kb.innerHTML='Tìm nhanh <kbd>Ctrl K</kbd>';document.body.appendChild(kb);
+const pin=q('input',pal),pl=q('.pal-list',pal);let res=[],sel=0;
+const norm=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase();
+function filt(){const t=norm(pin.value.trim());res=(t?idx.filter(i=>norm(i.k+' '+i.t).includes(t)):idx.slice(0,40)).slice(0,40);sel=0;paint();}
+function paint(){pl.innerHTML=res.length?res.map((r,i)=>'<li class="'+(i===sel?'sel':'')+'" data-i="'+i+'"><em>'+r.k+'</em><span>'+r.t.replace(/</g,'&lt;')+'</span></li>').join(''):'<li><span>Không có kết quả</span></li>';const s=q('.sel',pl);if(s)s.scrollIntoView({block:'nearest'});}
+function openP(){pal.classList.add('open');pin.value='';filt();setTimeout(()=>pin.focus(),10);}
+function closeP(){pal.classList.remove('open');}
+function go(i){const r=res[i];if(!r)return;closeP();const el=r.el();if(el){el.scrollIntoView({behavior:'smooth',block:'center'});flash(el);}}
+kb.addEventListener('click',openP);
+pin.addEventListener('input',filt);
+pl.addEventListener('click',e=>{const li=e.target.closest('li[data-i]');if(li)go(+li.dataset.i);});
+pal.addEventListener('mousedown',e=>{if(e.target===pal)closeP();});
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();pal.classList.contains('open')?closeP():openP();return;}
+  if(!pal.classList.contains('open'))return;
+  if(e.key==='Escape')closeP();
+  else if(e.key==='ArrowDown'){e.preventDefault();sel=Math.min(res.length-1,sel+1);paint();}
+  else if(e.key==='ArrowUp'){e.preventDefault();sel=Math.max(0,sel-1);paint();}
+  else if(e.key==='Enter'){e.preventDefault();go(sel);}
+});
+})();
+</script></body></html>
