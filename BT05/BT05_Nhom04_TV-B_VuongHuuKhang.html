@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BT05 · Phân hệ Smartwatch &amp; Sơ đồ hệ thống – Vương Hữu Khang (TV-B)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f7f8fa;
+      --paper-strong: #ffffff;
+      --surface: #eef1f5;
+      --surface-deep: #e1e6ee;
+      --ink: #1f2937;
+      --ink-soft: #5b6472;
+      --line: #d8dde5;
+      --coffee: #2f4b7c;
+      --coffee-dark: #1f2f52;
+      --caramel: #b9852f;
+      --sage: #3f7d6b;
+      --sage-soft: #e3f0ec;
+      --rose: #b4474f;
+      --rose-soft: #f6e4e5;
+      --shadow: 0 2px 10px rgba(31, 41, 55, 0.06);
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 28px; font-size: 16px; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
+      font-size: 1rem;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    .shell {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px 32px 80px;
+    }
+
+    /* TIÊU ĐỀ */
+    h1, h2, h3, h4 { color: var(--coffee-dark); line-height: 1.3; margin: 0; font-weight: 700; }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 0 0 14px; padding-left: 22px; }
+    li { margin-bottom: 5px; }
+    code { background: var(--surface); padding: 2px 7px; border-radius: 6px; font-size: 0.9em; color: var(--coffee); }
+
+    /* HERO */
+    .hero {
+      margin-top: 12px;
+      padding: 36px 40px;
+      border-radius: var(--radius);
+      color: #ffffff;
+      background: linear-gradient(120deg, #2b4373 0%, #37588f 100%);
+      box-shadow: 0 6px 18px rgba(47, 75, 124, 0.22);
+    }
+    .hero .eyebrow {
+      color: #ffd98e;
+      background: rgba(255, 255, 255, 0.12);
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .hero h1 { color: #ffffff; font-size: clamp(1.8rem, 3.5vw, 2.5rem); margin: 6px 0 12px; }
+    .hero p.lead { color: #dbe5f6; font-size: 1.05rem; max-width: 860px; margin: 0; }
+
+    .team-badge {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.22);
+    }
+    .member-card {
+      background: #ffffff;
+      color: var(--ink);
+      border-radius: 10px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .member-card .av {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--coffee); color: #fff;
+      display: grid; place-items: center; font-weight: 800; font-size: 15px;
+    }
+    .member-card b { display: block; font-size: 1rem; color: var(--coffee-dark); }
+    .member-card span { font-size: 0.85rem; color: var(--ink-soft); }
+    .role-tag {
+      background: var(--surface); color: var(--coffee);
+      padding: 4px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 700;
+    }
+
+    /* NAVIGATION */
+    .quick-nav {
+      position: sticky; top: 0; z-index: 30;
+      background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0; margin-bottom: 30px;
+    }
+    .quick-nav ul {
+      display: flex; gap: 8px; list-style: none; margin: 0; padding: 0;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .quick-nav a {
+      display: inline-flex; align-items: center; gap: 6px;
+      text-decoration: none; font-size: 0.86rem; font-weight: 600;
+      color: var(--ink-soft); padding: 7px 14px; border-radius: 8px;
+      background: var(--surface); transition: all 0.2s;
+    }
+    .quick-nav a:hover { background: #e8eef9; color: var(--coffee); }
+
+    /* SECTION KHỐI */
+    .lesson { margin: 48px 0; }
+    .lh {
+      background: #e8eef9;
+      border-left: 6px solid var(--coffee);
+      border-radius: 10px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 16px;
+      align-items: baseline;
+    }
+    .lh .num {
+      grid-row: 1 / span 2;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--coffee);
+      opacity: 0.65;
+      line-height: 1;
+    }
+    .lh h2 { font-size: 1.45rem; color: #1f2f52; margin: 0; }
+    .lh .lead { color: #4a5670; margin: 0; font-size: 0.95rem; grid-column: 2; }
+
+    /* CARDS */
+    .card {
+      background: var(--paper-strong);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #dbe4f3;
+    }
+    .card.sage { background: var(--sage-soft); border-color: #bfdcd2; }
+    .card.sage h3 { border-bottom-color: #bfdcd2; }
+    .card.rose { background: var(--rose-soft); border-color: #e8c6ca; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* TABLES */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      margin: 16px 0 24px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { padding: 11px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+    th {
+      background: #dde6f5; color: #1f2f52;
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    tr:last-child td { border-bottom: 0; }
+    tr:hover td { background: #fafbfc; }
+
+    /* ĐẶC TẢ */
+    .spec-table th { width: 200px; background: #eef1f5; color: var(--coffee-dark); text-transform: none; font-size: 0.92rem; font-weight: 700; }
+    .spec-table td { background: #ffffff; line-height: 1.7; }
+    .spec-table tr:hover th { background: #e3e8f1; }
+
+    /* SƠ ĐỒ CANVAS */
+    .canvas-box {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin: 16px 0 24px;
+      overflow-x: auto;
+    }
+    .canvas-box svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-width: 760px;
+    }
+
+    .badge-sub {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+    }
+    .badge-watch { background: #e8eef9; color: var(--coffee); }
+    .badge-phone { background: #fdf3e5; color: var(--caramel); }
+
+    .tag-rule {
+      display: inline-block; background: #e8eef9; color: var(--coffee);
+      padding: 1px 7px; border-radius: 4px; font-weight: 700; font-size: 0.82rem; margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- HERO HEADER -->
+  <header class="hero">
+    <span class="eyebrow">BÀI TẬP TUẦN 5 · MÔ HÌNH HOÁ YÊU CẦU PHẦN MỀM</span>
+    <h1>Phân hệ Smartwatch &amp; Sơ đồ Use Case Hệ thống</h1>
+    <p class="lead">Báo cáo phân tích yêu cầu độc lập của Thành viên TV-B cho ứng dụng theo dõi sức khoẻ trên smartwatch và smartphone. Dựng hoàn chỉnh Sơ đồ Use Case 2 phân hệ, Bản đặc tả 14 mục use case "Ghi nhận hoạt động thể chất" và State Chart Diagram vòng đời hoạt động.</p>
+
+    <div class="team-badge">
+      <div class="member-card">
+        <div class="av">KH</div>
+        <div>
+          <b>Vương Hữu Khang</b>
+          <span>MSSV: 24120070 · Vai trò: TV-B</span>
+        </div>
+      </div>
+      <div class="member-card">
+        <span class="role-tag">Phụ trách: Phân hệ Smartwatch · Sơ đồ Use Case · Đặc tả UC-01 · State Chart</span>
+      </div>
+      <div class="member-card">
+        <span class="role-tag">Ngày nộp: 15/10/2026</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- QUICK NAVIGATION -->
+  <nav class="quick-nav">
+    <ul>
+      <li><a href="#phan-he"><b>01</b> Phân hệ &amp; Use Case</a></li>
+      <li><a href="#usecase"><b>02</b> Sơ đồ Use Case hệ thống</a></li>
+      <li><a href="#dac-ta"><b>03</b> Đặc tả UC-01 (Smartwatch)</a></li>
+      <li><a href="#state"><b>04</b> State Chart "Hoạt động thể chất"</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <!-- MỤC 01: PHÂN HỆ VÀ ACTOR -->
+    <section class="lesson" id="phan-he">
+      <div class="lh">
+        <span class="num">01</span>
+        <h2>Thống nhất phân hệ, Actor và Use Case</h2>
+        <p class="lead">Xác định ranh giới trách nhiệm giữa Smartwatch và Smartphone, cùng toàn bộ vai trò tương tác.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Phân định 2 phân hệ theo đề bài</h3>
+          <ul>
+            <li><b>Phân hệ Smartwatch:</b> Thiết bị đeo thu thập tức thời (chu kỳ 1s) từ các cảm biến gia tốc, nhịp tim quang học PPG và định vị GPS. Tự động nhận biết vận động, hiển thị thông số và lưu trữ dữ liệu tạm thời vào bộ nhớ đệm Flash.</li>
+            <li><b>Phân hệ Smartphone:</b> Thiết bị cá nhân lưu trữ dữ liệu lâu dài; phân tích thống kê chuyên sâu (vẽ lộ trình GPS kết hợp Dịch vụ bản đồ, biểu đồ biến thiên tốc độ/nhịp tim, calo, độ cao); quản lý lịch biểu lặp lại, phát nhắc nhở và chia sẻ lên mạng xã hội.</li>
+          </ul>
+        </div>
+        <div class="card sage">
+          <h3>Danh sách Actor chính và Actor phụ</h3>
+          <ul>
+            <li><b>Người dùng (User):</b> Actor người duy nhất, tương tác trên đồng hồ (bắt đầu, tạm dừng, kết thúc) và trên điện thoại (xem báo cáo, đặt mục tiêu, lập lịch, chia sẻ).</li>
+            <li><b>Dịch vụ bản đồ (Map Service):</b> Actor hệ thống bên thứ ba, cung cấp dữ liệu bản đồ trực quan hiển thị lộ trình cho Smartphone.</li>
+            <li><b>Mạng xã hội (Social Networks):</b> Actor hệ thống bên thứ ba (Facebook, Twitter, Instagram...) nhận bài đăng chia sẻ kết quả từ Smartphone.</li>
+            <li><i>Nguồn kích hoạt hệ thống:</i> Cảm biến chuyển động (tự động theo dõi); Bộ hẹn giờ hệ thống (tự động nhắc lịch); Kết nối Bluetooth (tự động đồng bộ).</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Bảng tổng hợp Use Case theo 2 hộp phân hệ</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Phân hệ</th><th>Mã UC</th><th>Tên Use Case</th><th>Actor liên kết</th><th>Mô tả tóm tắt</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge-sub badge-watch">Smartwatch</span></td>
+              <td><b>UC-01</b></td>
+              <td><b>Ghi nhận hoạt động thể chất</b></td>
+              <td>Người dùng</td>
+              <td><b>Use case trọng tâm (TV-B đặc tả):</b> Thu thập và hiển thị tức thời quãng đường, thời gian, tốc độ, nhịp tim khi tập luyện.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-watch">Smartwatch</span></td>
+              <td>UC-02</td>
+              <td>Tự động nhận biết hoạt động thể chất</td>
+              <td>Cảm biến chuyển động</td>
+              <td>Phân loại vận động (đi bộ, chạy bộ, đạp xe, bơi lội) qua thuật toán gia tốc (include UC-01).</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-watch">Smartwatch</span></td>
+              <td>UC-03</td>
+              <td>Cập nhật thông số tức thời</td>
+              <td>Smartwatch</td>
+              <td>Lấy mẫu cảm biến và làm mới hiển thị chu kỳ 1s (include UC-01).</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-watch">Smartwatch</span></td>
+              <td>UC-04</td>
+              <td>Tạm dừng / Tiếp tục hoạt động thể chất</td>
+              <td>Người dùng</td>
+              <td>Tạm ngưng tính giờ và quãng đường khi dừng nghỉ (extend UC-01).</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-watch">Smartwatch</span></td>
+              <td>UC-05</td>
+              <td>Kết thúc hoạt động thể chất</td>
+              <td>Người dùng</td>
+              <td>Chốt số liệu toàn phiên và lưu tạm vào bộ nhớ Flash đồng hồ.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-watch">Smartwatch</span></td>
+              <td>UC-06</td>
+              <td>Tự động đồng bộ dữ liệu sang điện thoại</td>
+              <td>Smartwatch / Bluetooth</td>
+              <td>Phát luồng dữ liệu sang smartphone khi phát hiện kết nối Bluetooth đã ghép đôi.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-phone">Smartphone</span></td>
+              <td>UC-07</td>
+              <td>Nhận dữ liệu đồng bộ từ đồng hồ</td>
+              <td>Smartphone / Bluetooth</td>
+              <td>Tiếp nhận gói tin, lưu CSDL điện thoại và gửi phản hồi xác nhận (ACK).</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-phone">Smartphone</span></td>
+              <td>UC-08</td>
+              <td>Xem danh sách hoạt động thể chất</td>
+              <td>Người dùng</td>
+              <td>Hiển thị lịch sử tập luyện sắp xếp theo trình tự thời gian.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-phone">Smartphone</span></td>
+              <td>UC-09</td>
+              <td>Xem thống kê tổng hợp</td>
+              <td>Người dùng</td>
+              <td>Thống kê tổng số bài tập, tổng quãng đường theo tuần, tháng, năm.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-phone">Smartphone</span></td>
+              <td>UC-10</td>
+              <td>Xem phân tích chi tiết hoạt động</td>
+              <td>Người dùng, Dịch vụ bản đồ</td>
+              <td>Xem lộ trình bản đồ, lượng calo tiêu thụ, độ cao thay đổi.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-phone">Smartphone</span></td>
+              <td>UC-11</td>
+              <td>Xem biểu đồ phân tích tốc độ và nhịp tim</td>
+              <td>Người dùng</td>
+              <td>Xem chi tiết từng km và biểu đồ biến thiên theo thời gian (extend UC-10).</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-phone">Smartphone</span></td>
+              <td>UC-12</td>
+              <td>Chia sẻ kết quả lên mạng xã hội</td>
+              <td>Người dùng, Mạng xã hội</td>
+              <td>Chia sẻ hình ảnh và thành tích lên Facebook, Twitter, Instagram...</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-phone">Smartphone</span></td>
+              <td>UC-13</td>
+              <td>Quản lý lịch biểu hoạt động</td>
+              <td>Người dùng</td>
+              <td>Tạo, cập nhật lịch lặp lại (hàng ngày, ngày trong tuần).</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-phone">Smartphone</span></td>
+              <td>UC-14</td>
+              <td>Nhắc nhở theo lịch biểu</td>
+              <td>Thời gian (Timer)</td>
+              <td>Hệ thống tự động phát thông báo nhắc nhở trước giờ tập.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-phone">Smartphone</span></td>
+              <td>UC-15</td>
+              <td>Đặt mục tiêu hoạt động</td>
+              <td>Người dùng</td>
+              <td>Cài đặt chỉ tiêu quãng đường, thời gian, tốc độ trung bình.</td>
+            </tr>
+            <tr>
+              <td><span class="badge-sub badge-phone">Smartphone</span></td>
+              <td>UC-16</td>
+              <td>Đánh giá mục tiêu và đưa ra lời khuyên</td>
+              <td>Smartphone</td>
+              <td>So sánh kết quả với chỉ tiêu, đưa ra lời khuyên khi không đạt (extend UC-15).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MỤC 02: SƠ ĐỒ USE CASE -->
+    <section class="lesson" id="usecase">
+      <div class="lh">
+        <span class="num">02</span>
+        <h2>Yêu cầu 1: Sơ đồ Use Case toàn hệ thống</h2>
+        <p class="lead">Sơ đồ 2 hộp phân hệ bao phủ toàn bộ chức năng từ lúc khởi động trên Smartwatch đến phân tích trên Smartphone.</p>
+      </div>
+
+      <div class="canvas-box">
+        <svg id="uc-svg" viewBox="0 0 1140 760" xmlns="http://www.w3.org/2000/svg" font-family="'Be Vietnam Pro', system-ui, sans-serif">
+          <defs>
+            <marker id="uc-open" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" orient="auto">
+              <path d="M1 1L9 5L1 9" fill="none" stroke="#2f4b7c" stroke-width="1.6"/>
+            </marker>
+            <style>
+              .sys-box { fill: #ffffff; stroke: #2f4b7c; stroke-width: 2; rx: 14; }
+              .box-head { fill: #e8eef9; stroke: #2f4b7c; stroke-width: 1.5; }
+              .uc-oval { fill: #fbfcfe; stroke: #2f4b7c; stroke-width: 1.6; }
+              .uc-oval.core { fill: #e8f0fc; stroke: #2f4b7c; stroke-width: 2.2; }
+              .uc-text { font-size: 13.5px; fill: #1f2937; text-anchor: middle; font-weight: 500; }
+              .uc-text.bold { font-weight: 700; fill: #1f2f52; }
+              .actor-line { stroke: #1f2937; stroke-width: 1.8; fill: none; stroke-linecap: round; }
+              .actor-head { fill: #f7f8fa; stroke: #1f2937; stroke-width: 1.8; }
+              .actor-label { font-size: 14px; font-weight: 700; fill: #1f2937; text-anchor: middle; }
+              .assoc { stroke: #475569; stroke-width: 1.4; fill: none; }
+              .dep-inc { stroke: #2f4b7c; stroke-width: 1.5; stroke-dasharray: 6 4; fill: none; }
+              .dep-ext { stroke: #b9852f; stroke-width: 1.5; stroke-dasharray: 6 4; fill: none; }
+              .dep-lbl { font-size: 12px; font-style: italic; font-weight: 600; text-anchor: middle; }
+              .lbl-inc { fill: #2f4b7c; }
+              .lbl-ext { fill: #925f18; }
+              .cond-lbl { font-size: 11px; fill: #70472f; text-anchor: middle; }
+              .halo { paint-order: stroke; stroke: #ffffff; stroke-width: 5px; stroke-linejoin: round; }
+            </style>
+          </defs>
+
+          <!-- NỀN -->
+          <rect x="0" y="0" width="1140" height="760" fill="#f7f8fa" rx="16"/>
+
+          <!-- HỘP 1: SMARTWATCH -->
+          <g id="box-smartwatch">
+            <rect x="150" y="25" width="410" height="690" class="sys-box"/>
+            <rect x="150" y="25" width="410" height="38" rx="14" class="box-head"/>
+            <rect x="150" y="49" width="410" height="14" fill="#e8eef9"/>
+            <line x1="150" y1="63" x2="560" y2="63" stroke="#2f4b7c" stroke-width="1.5"/>
+            <text x="355" y="50" text-anchor="middle" font-size="14.5px" font-weight="800" fill="#1f2f52" letter-spacing="0.04em">PHÂN HỆ SMARTWATCH (ĐỒNG HỒ THÔNG MINH)</text>
+
+            <ellipse cx="355" cy="105" rx="140" ry="25" class="uc-oval"/>
+            <text x="355" y="110" class="uc-text">UC-02: Tự động nhận biết HĐ thể chất</text>
+
+            <ellipse cx="355" cy="195" rx="148" ry="30" class="uc-oval core"/>
+            <text x="355" y="192" class="uc-text bold">UC-01: Ghi nhận hoạt động thể chất</text>
+            <text x="355" y="210" font-size="11.5px" fill="#5b6472" text-anchor="middle">(Đặc tả chính của TV-B)</text>
+
+            <ellipse cx="355" cy="285" rx="140" ry="25" class="uc-oval"/>
+            <text x="355" y="290" class="uc-text">UC-03: Cập nhật thông số tức thời</text>
+
+            <ellipse cx="270" cy="385" rx="105" ry="25" class="uc-oval"/>
+            <text x="270" y="382" class="uc-text">UC-04: Tạm dừng /</text>
+            <text x="270" y="398" class="uc-text">Tiếp tục hoạt động</text>
+
+            <ellipse cx="445" cy="385" rx="100" ry="25" class="uc-oval"/>
+            <text x="445" y="382" class="uc-text">UC-05: Kết thúc</text>
+            <text x="445" y="398" class="uc-text">hoạt động thể chất</text>
+
+            <ellipse cx="355" cy="515" rx="148" ry="28" class="uc-oval core"/>
+            <text x="355" y="512" class="uc-text bold">UC-06: Tự động đồng bộ</text>
+            <text x="355" y="529" class="uc-text">dữ liệu sang điện thoại</text>
+
+            <!-- Quan hệ Smartwatch -->
+            <path d="M355 165 L355 131" class="dep-inc" marker-end="url(#uc-open)"/>
+            <text x="355" y="152" class="dep-lbl lbl-inc halo">«include»</text>
+
+            <path d="M355 225 L355 259" class="dep-inc" marker-end="url(#uc-open)"/>
+            <text x="355" y="246" class="dep-lbl lbl-inc halo">«include»</text>
+
+            <path d="M295 360 L330 224" class="dep-ext" marker-end="url(#uc-open)"/>
+            <text x="282" y="280" class="dep-lbl lbl-ext halo">«extend»</text>
+            <text x="282" y="295" class="cond-lbl halo">[người dùng tạm dừng]</text>
+
+            <path d="M380 224 L425 360" class="dep-inc" marker-end="url(#uc-open)"/>
+            <text x="430" y="280" class="dep-lbl lbl-inc halo">«include»</text>
+          </g>
+
+          <!-- HỘP 2: SMARTPHONE -->
+          <g id="box-smartphone">
+            <rect x="620" y="25" width="460" height="690" class="sys-box"/>
+            <rect x="620" y="25" width="460" height="38" rx="14" class="box-head"/>
+            <rect x="620" y="49" width="460" height="14" fill="#e8eef9"/>
+            <line x1="620" y1="63" x2="1080" y2="63" stroke="#2f4b7c" stroke-width="1.5"/>
+            <text x="850" y="50" text-anchor="middle" font-size="14.5px" font-weight="800" fill="#1f2f52" letter-spacing="0.04em">PHÂN HỆ SMARTPHONE (ĐIỆN THOẠI DI ĐỘNG)</text>
+
+            <ellipse cx="760" cy="100" rx="115" ry="24" class="uc-oval"/>
+            <text x="760" y="105" class="uc-text">UC-08: Xem danh sách HĐ</text>
+
+            <ellipse cx="760" cy="160" rx="120" ry="24" class="uc-oval"/>
+            <text x="760" y="165" class="uc-text">UC-09: Xem thống kê tổng hợp</text>
+
+            <ellipse cx="760" cy="225" rx="125" ry="26" class="uc-oval core"/>
+            <text x="760" y="229" class="uc-text bold">UC-10: Xem phân tích chi tiết HĐ</text>
+
+            <ellipse cx="945" cy="225" rx="115" ry="26" class="uc-oval"/>
+            <text x="945" y="222" class="uc-text">UC-11: Xem biểu đồ</text>
+            <text x="945" y="238" class="uc-text">tốc độ &amp; nhịp tim</text>
+
+            <ellipse cx="760" cy="300" rx="125" ry="25" class="uc-oval"/>
+            <text x="760" y="305" class="uc-text">UC-12: Chia sẻ lên mạng xã hội</text>
+
+            <ellipse cx="760" cy="375" rx="125" ry="25" class="uc-oval"/>
+            <text x="760" y="380" class="uc-text">UC-13: Quản lý lịch biểu HĐ</text>
+
+            <ellipse cx="945" cy="375" rx="115" ry="26" class="uc-oval core"/>
+            <text x="945" y="372" class="uc-text bold">UC-14: Nhắc nhở</text>
+            <text x="945" y="388" class="uc-text">theo lịch biểu</text>
+
+            <ellipse cx="760" cy="450" rx="120" ry="25" class="uc-oval"/>
+            <text x="760" y="455" class="uc-text">UC-15: Đặt mục tiêu hoạt động</text>
+
+            <ellipse cx="945" cy="450" rx="118" ry="26" class="uc-oval"/>
+            <text x="945" y="447" class="uc-text">UC-16: Đánh giá mục tiêu</text>
+            <text x="945" y="463" class="uc-text">&amp; đưa ra lời khuyên</text>
+
+            <ellipse cx="760" cy="515" rx="125" ry="28" class="uc-oval core"/>
+            <text x="760" y="512" class="uc-text bold">UC-07: Nhận dữ liệu đồng bộ</text>
+            <text x="760" y="529" class="uc-text">từ đồng hồ thông minh</text>
+
+            <!-- Quan hệ Smartphone -->
+            <path d="M830 225 L884 225" class="dep-ext" marker-end="url(#uc-open)"/>
+            <text x="857" y="212" class="dep-lbl lbl-ext halo">«extend»</text>
+            <text x="857" y="243" class="cond-lbl halo">[xem chi tiết km/biểu đồ]</text>
+
+            <path d="M885 375 L831 375" class="dep-inc" marker-end="url(#uc-open)"/>
+            <text x="858" y="365" class="dep-lbl lbl-inc halo">«include»</text>
+
+            <path d="M827 450 L881 450" class="dep-ext" marker-end="url(#uc-open)"/>
+            <text x="854" y="437" class="dep-lbl lbl-ext halo">«extend»</text>
+            <text x="854" y="475" class="cond-lbl halo">[không đạt mục tiêu]</text>
+          </g>
+
+          <!-- ĐỒNG BỘ 2 PHÂN HỆ -->
+          <path d="M504 515 L634 515" class="dep-inc" stroke-width="2.2" marker-end="url(#uc-open)"/>
+          <rect x="525" y="490" width="90" height="20" rx="4" fill="#ffffff" stroke="#2f4b7c" stroke-width="1"/>
+          <text x="570" y="504" font-size="11.5px" font-weight="700" fill="#2f4b7c" text-anchor="middle">«Bluetooth»</text>
+          <text x="570" y="530" font-size="11px" font-style="italic" fill="#5b6472" text-anchor="middle">[đã ghép đôi]</text>
+
+          <!-- ACTOR: NGƯỜI DÙNG -->
+          <g id="actor-user" transform="translate(65, 300)">
+            <circle cx="0" cy="0" r="14" class="actor-head"/>
+            <line x1="0" y1="14" x2="0" y2="52" class="actor-line"/>
+            <line x1="-22" y1="26" x2="22" y2="26" class="actor-line"/>
+            <line x1="0" y1="52" x2="-18" y2="82" class="actor-line"/>
+            <line x1="0" y1="52" x2="18" y2="82" class="actor-line"/>
+            <text x="0" y="106" class="actor-label">Người dùng</text>
+            <text x="0" y="122" font-size="11.5px" fill="#5b6472" text-anchor="middle">(User)</text>
+          </g>
+
+          <line x1="90" y1="310" x2="218" y2="210" class="assoc"/>
+          <line x1="90" y1="330" x2="175" y2="385" class="assoc"/>
+          <line x1="90" y1="350" x2="350" y2="395" class="assoc"/>
+          <path d="M85 270 Q 200 120 645 100" class="assoc"/>
+          <path d="M85 285 Q 300 160 640 160" class="assoc"/>
+          <path d="M90 300 Q 320 220 635 225" class="assoc"/>
+          <path d="M90 320 Q 340 300 635 300" class="assoc"/>
+          <path d="M90 340 Q 330 370 635 375" class="assoc"/>
+          <path d="M90 360 Q 320 445 640 450" class="assoc"/>
+
+          <!-- ACTORS BÊN PHẢI -->
+          <g id="actor-map" transform="translate(1010, 135)">
+            <rect x="-48" y="-18" width="96" height="36" rx="8" fill="#eef1f5" stroke="#2f4b7c" stroke-width="1.8"/>
+            <text x="0" y="-1" font-size="12px" font-weight="700" fill="#1f2f52" text-anchor="middle">«hệ thống»</text>
+            <text x="0" y="14" font-size="12px" font-weight="700" fill="#2f4b7c" text-anchor="middle">Dịch vụ bản đồ</text>
+          </g>
+          <line x1="962" y1="135" x2="880" y2="215" class="assoc"/>
+
+          <g id="actor-social" transform="translate(1010, 300)">
+            <rect x="-48" y="-18" width="96" height="36" rx="8" fill="#eef1f5" stroke="#2f4b7c" stroke-width="1.8"/>
+            <text x="0" y="-1" font-size="12px" font-weight="700" fill="#1f2f52" text-anchor="middle">«hệ thống»</text>
+            <text x="0" y="14" font-size="12px" font-weight="700" fill="#2f4b7c" text-anchor="middle">Mạng xã hội</text>
+          </g>
+          <line x1="962" y1="300" x2="885" y2="300" class="assoc"/>
+
+          <g id="actor-time" transform="translate(1010, 375)">
+            <circle cx="0" cy="0" r="14" fill="#fffdf8" stroke="#b9852f" stroke-width="1.8"/>
+            <path d="M0 -9 L0 0 L6 4" stroke="#b9852f" stroke-width="1.8" fill="none"/>
+            <text x="0" y="26" font-size="11.5px" font-weight="700" fill="#925f18" text-anchor="middle">Thời gian</text>
+          </g>
+          <line x1="996" y1="375" x2="1060" y2="375" class="assoc" stroke="#b9852f"/>
+
+          <!-- CHÚ THÍCH -->
+          <g id="legend" transform="translate(150, 725)">
+            <rect x="0" y="0" width="830" height="26" fill="#ffffff" stroke="#d8dde5" rx="6"/>
+            <text x="15" y="18" font-size="11.5px" font-weight="700" fill="#1f2937">Chú thích:</text>
+            <line x1="80" y1="13" x2="115" y2="13" stroke="#475569" stroke-width="1.5"/>
+            <text x="122" y="17" font-size="11.5px" fill="#5b6472">Association</text>
+            <line x1="210" y1="13" x2="245" y2="13" stroke="#2f4b7c" stroke-width="1.5" stroke-dasharray="5 3"/>
+            <text x="252" y="17" font-size="11.5px" fill="#2f4b7c">«include»</text>
+            <line x1="330" y1="13" x2="365" y2="13" stroke="#b9852f" stroke-width="1.5" stroke-dasharray="5 3"/>
+            <text x="372" y="17" font-size="11.5px" fill="#925f18">«extend» [kèm guard]</text>
+            <rect x="520" y="5" width="22" height="15" rx="3" fill="#e8f0fc" stroke="#2f4b7c" stroke-width="2"/>
+            <text x="550" y="17" font-size="11.5px" fill="#1f2f52">Use case trọng tâm đặc tả</text>
+          </g>
+        </svg>
+      </div>
+
+      <h3>Bảng ghi chú quan hệ Include và Extend</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Loại</th><th>Use case gốc</th><th>Use case bao gồm / mở rộng</th><th>Lý do chọn; Với extend ghi rõ điều kiện</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>«include»</code></td>
+              <td><b>UC-01: Ghi nhận HĐ thể chất</b></td>
+              <td>UC-02: Tự động nhận biết HĐ</td>
+              <td>Mỗi lần bắt đầu theo dõi, hệ thống luôn phải nhận diện phân loại vận động để áp dụng thuật toán đo.</td>
+            </tr>
+            <tr>
+              <td><code>«include»</code></td>
+              <td><b>UC-01: Ghi nhận HĐ thể chất</b></td>
+              <td>UC-03: Cập nhật thông số tức thời</td>
+              <td>Hành vi tính toán và hiển thị các chỉ số lên màn hình chu kỳ 1s là bắt buộc trong suốt phiên tập.</td>
+            </tr>
+            <tr>
+              <td><code>«include»</code></td>
+              <td><b>UC-01: Ghi nhận HĐ thể chất</b></td>
+              <td>UC-05: Kết thúc hoạt động thể chất</td>
+              <td>Khi hoàn thành, thao tác chốt dữ liệu và lưu tạm là bước tất yếu để đóng phiên tập.</td>
+            </tr>
+            <tr>
+              <td><code>«extend»</code></td>
+              <td><b>UC-01: Ghi nhận HĐ thể chất</b></td>
+              <td>UC-04: Tạm dừng / Tiếp tục HĐ</td>
+              <td><b>Điều kiện:</b> <code>[Người dùng yêu cầu tạm dừng khi dừng nghỉ/chờ đèn]</code>. Không phải phiên tập nào cũng có tạm dừng.</td>
+            </tr>
+            <tr>
+              <td><code>«extend»</code></td>
+              <td><b>UC-10: Xem phân tích chi tiết</b></td>
+              <td>UC-11: Xem biểu đồ tốc độ &amp; nhịp tim</td>
+              <td><b>Điều kiện:</b> <code>[Người dùng bấm xem chi tiết từng km hoặc biểu đồ thời gian]</code>. Mở rộng cho màn hình chi tiết cơ bản.</td>
+            </tr>
+            <tr>
+              <td><code>«include»</code></td>
+              <td><b>UC-13: Quản lý lịch biểu HĐ</b></td>
+              <td>UC-14: Nhắc nhở theo lịch biểu</td>
+              <td>Khi có lịch biểu bật tính năng nhắc trước, bộ đếm thời gian luôn tự động kích hoạt thông báo.</td>
+            </tr>
+            <tr>
+              <td><code>«extend»</code></td>
+              <td><b>UC-15: Đặt mục tiêu hoạt động</b></td>
+              <td>UC-16: Đánh giá mục tiêu &amp; lời khuyên</td>
+              <td><b>Điều kiện:</b> <code>[Kết quả thực tế không đạt mục tiêu đã đặt]</code>. Hệ thống đưa ra lời khuyên thích hợp.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Bảng ghi chú phân hệ (Use case liên quan cả hai phân hệ)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Use case</th><th>Phân hệ đặt Use case</th><th>Vai trò phân hệ còn lại</th><th>Lý do chọn phân hệ đặt Use case</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>UC-06: Tự động đồng bộ dữ liệu sang điện thoại</b></td>
+              <td><b>Phân hệ Smartwatch</b></td>
+              <td><b>Smartphone</b> là Listener tiếp nhận dữ liệu, ghi CSDL và gửi phản hồi xác nhận (ACK).</td>
+              <td>Dữ liệu phiên tập đang lưu trong Flash của đồng hồ. Smartwatch đóng vai trò bên gửi (Sender/Client) chủ động phát tín hiệu khi ghép đôi Bluetooth.</td>
+            </tr>
+            <tr>
+              <td><b>UC-07: Nhận dữ liệu đồng bộ từ đồng hồ</b></td>
+              <td><b>Phân hệ Smartphone</b></td>
+              <td><b>Smartwatch</b> là thiết bị ngoại vi cung cấp luồng dữ liệu thô.</td>
+              <td>Smartphone chịu trách nhiệm lưu trữ vĩnh viễn, giải mã tọa độ để gọi Dịch vụ bản đồ và xử lý thống kê lâu dài.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MỤC 03: ĐẶC TẢ USE CASE A -->
+    <section class="lesson" id="dac-ta">
+      <div class="lh">
+        <span class="num">03</span>
+        <h2>Yêu cầu 2: Đặc tả Use Case A (Phân hệ Smartwatch)</h2>
+        <p class="lead">Đặc tả 14 mục chi tiết cho use case trọng tâm UC-01: Ghi nhận hoạt động thể chất.</p>
+      </div>
+
+      <div class="card">
+        <h3>Lý do chọn Use Case UC-01</h3>
+        <p>Use case <b>"Ghi nhận hoạt động thể chất"</b> là chức năng hạt nhân quan trọng nhất của phân hệ Smartwatch. Nếu thiếu use case này, toàn bộ chuỗi chức năng của hệ sinh thái (đồng bộ, hiển thị bản đồ, vẽ đồ thị tốc độ/nhịp tim, đánh giá mục tiêu) đều không thể thực hiện được do không có dữ liệu nguồn. Đây là use case gắn liền với phần cứng cảm biến thời gian thực, có phương thức kích hoạt đa dạng và mang tính đặc thù cao nhất của đề bài.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="spec-table">
+          <tbody>
+            <tr>
+              <th>1. Mã và tên</th>
+              <td><b>UC-01: Ghi nhận hoạt động thể chất</b> <i>(Tracking physical activity)</i></td>
+            </tr>
+            <tr>
+              <th>2. Mô tả tóm tắt</th>
+              <td>Phân hệ Smartwatch tự động hoặc theo lệnh người dùng tiến hành thu thập, đo đạc và hiển thị tức thời các thông số sức khỏe (quãng đường, thời gian di chuyển, tốc độ trung bình, nhịp tim hiện tại) trong suốt quá trình người dùng vận động; kết thúc khi người dùng ra lệnh và lưu tạm vào bộ nhớ đồng hồ chờ đồng bộ.</td>
+            </tr>
+            <tr>
+              <th>3. Actor chính</th>
+              <td><b>Người dùng</b> <i>(User)</i></td>
+            </tr>
+            <tr>
+              <th>4. Actor phụ</th>
+              <td><b>Cảm biến Smartwatch</b> (Cảm biến gia tốc 3 trục, cảm biến nhịp tim PPG, chip định vị GPS).</td>
+            </tr>
+            <tr>
+              <th>5. Kích hoạt</th>
+              <td>Cảm biến gia tốc tự động phát hiện vận động thể chất (đi bộ, chạy bộ, đạp xe, bơi lội); <b>hoặc</b> Người dùng chủ động mở menu trên đồng hồ và bấm "Bắt đầu".</td>
+            </tr>
+            <tr>
+              <th>6. Tiền điều kiện</th>
+              <td>Smartwatch đang hoạt động, đeo trên cổ tay, dung lượng pin ≥ 5%, bộ nhớ Flash còn dung lượng trống và các cảm biến hoạt động bình thường.</td>
+            </tr>
+            <tr>
+              <th>7. Hậu điều kiện (thành công)</th>
+              <td>1. Hoạt động chuyển sang trạng thái <b>"Đã lưu tạm"</b> <i>(Temporarily Saved)</i>.<br>2. Toàn bộ thông số (quãng đường km, thời gian, tốc độ tb, nhịp tim, tọa độ) được đóng gói nguyên vẹn trong bộ nhớ đệm Smartwatch sẵn sàng truyền Bluetooth.<br>3. Màn hình đồng hồ hiển thị tóm tắt kết quả phiên tập.</td>
+            </tr>
+            <tr>
+              <th>8. Hậu điều kiện (thất bại)</th>
+              <td>Phiên hoạt động bị hủy bỏ hoặc chuyển sang trạng thái <b>"Đã hủy"</b> <i>(Cancelled)</i> nếu thời gian &lt; 1 phút hoặc người dùng hủy; thông báo lỗi tương ứng được lưu log.</td>
+            </tr>
+            <tr>
+              <th>9. Luồng chính</th>
+              <td>
+                <ol>
+                  <li>Cảm biến chuyển động phát hiện người dùng vận động liên tục và kích hoạt UC-02 nhận diện loại hoạt động (đi bộ, chạy bộ, đạp xe, bơi lội).</li>
+                  <li>Smartwatch rung phản hồi nhẹ, kích hoạt phiên theo dõi và khởi tạo đối tượng ở trạng thái "Đang theo dõi".</li>
+                  <li>Smartwatch kích hoạt chip GPS và cảm biến nhịp tim quang học PPG để bắt đầu thu thập số liệu.</li>
+                  <li>Smartwatch thực hiện UC-03: liên tục lấy mẫu mỗi 1 giây, tính toán và hiển thị các thông số tức thời (quãng đường km, thời gian, tốc độ trung bình km/h, nhịp tim bpm) lên màn hình theo <span class="tag-rule">BR-01</span>, <span class="tag-rule">BR-02</span>.</li>
+                  <li>Người dùng hoàn thành vận động và chạm nút "Kết thúc" trên màn hình đồng hồ.</li>
+                  <li>Smartwatch ngừng lấy mẫu cảm biến và tắt chip GPS.</li>
+                  <li>Smartwatch tính toán chỉ số tổng kết và hiển thị màn hình tóm tắt phiên tập.</li>
+                  <li>Smartwatch lưu toàn bộ gói dữ liệu vào bộ nhớ đệm Flash, chuyển trạng thái sang "Đã lưu tạm" và kết thúc use case.</li>
+                </ol>
+              </td>
+            </tr>
+            <tr>
+              <th>10. Luồng thay thế</th>
+              <td>
+                <p><b>1a. Người dùng chủ động kích hoạt thủ công:</b></p>
+                <ul>
+                  <li>1a1. Người dùng mở danh mục bài tập trên đồng hồ, chọn loại hoạt động và ấn "Bắt đầu".</li>
+                  <li>1a2. Smartwatch bỏ qua bước 1 tự nhận diện và tiếp tục thực hiện từ bước 2 của luồng chính.</li>
+                </ul>
+                <p><b>4a. Người dùng tạm dừng và tiếp tục hoạt động (UC-04):</b></p>
+                <ul>
+                  <li>4a1. Tại bước 4, người dùng ấn nút "Tạm dừng" trên màn hình đồng hồ khi dừng nghỉ chân.</li>
+                  <li>4a2. Smartwatch chuyển sang trạng thái "Đang tạm dừng", ngưng đếm thời gian và ngưng cộng dồn quãng đường, duy trì đo nhịp tim.</li>
+                  <li>4a3. Người dùng ấn nút "Tiếp tục".</li>
+                  <li>4a4. Smartwatch chuyển lại "Đang theo dõi" và tiếp tục từ bước 4 luồng chính.</li>
+                </ul>
+                <p><b>5a. Hoạt động kéo dài dưới 1 phút (kích hoạt nhầm):</b></p>
+                <ul>
+                  <li>5a1. Tại bước 5, hệ thống kiểm tra thấy tổng thời gian vận động &lt; 1 phút (<span class="tag-rule">BR-03</span>).</li>
+                  <li>5a2. Smartwatch hỏi xác nhận: "Thời gian hoạt động &lt; 1 phút, bạn có muốn lưu không?".</li>
+                  <li>5a3. Người dùng chọn "Hủy": Smartwatch xóa bộ đệm, chuyển trạng thái "Đã hủy" và kết thúc.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <th>11. Luồng ngoại lệ</th>
+              <td>
+                <p><b>3a. Mất tín hiệu GPS hoặc lỏng cảm biến nhịp tim:</b></p>
+                <ul>
+                  <li>3a1. Tại bước 3 hoặc 4, chip GPS mất vệ tinh (vào hầm, bơi dưới nước) hoặc cảm biến PPG không tiếp xúc da.</li>
+                  <li>3a2. Smartwatch hiển thị biểu tượng cảnh báo mất tín hiệu trên màn hình.</li>
+                  <li>3a3. Smartwatch chuyển sang thuật toán ước lượng quãng đường bằng cảm biến gia tốc đếm bước chân hoặc đếm số vòng bể bơi (<span class="tag-rule">BR-04</span>); nhịp tim giữ giá trị đo gần nhất. Khi có tín hiệu lại, tự động bù tọa độ và tiếp tục bước 4.</li>
+                </ul>
+                <p><b>4b. Smartwatch cạn kiệt pin đột ngột (Pin ≤ 2%):</b></p>
+                <ul>
+                  <li>4b1. Mức pin tụt xuống ngưỡng nguy hiểm ≤ 2%.</li>
+                  <li>4b2. Smartwatch rung cảnh báo, lập tức lưu khẩn cấp toàn bộ dữ liệu đã thu thập đến thời điểm hiện tại vào Flash, chuyển trạng thái sang "Đã lưu tạm" và tắt màn hình để bảo toàn nguồn.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <th>12. Quy tắc nghiệp vụ</th>
+              <td>
+                <p><span class="tag-rule">BR-01</span> <b>Chu kỳ hiển thị tức thời:</b> Lấy mẫu và làm mới thông số trên màn hình Smartwatch đạt tần suất 1 lần/giây (1 Hz, sai số ±0.1s) <i>(GĐ-02)</i>.</p>
+                <p><span class="tag-rule">BR-02</span> <b>Quy chuẩn đơn vị đo lường:</b> Quãng đường tính bằng km (làm tròn 2 chữ số thập phân); Thời gian hiển thị định dạng <code>mm:ss</code> hoặc <code>hh:mm:ss</code>; Tốc độ trung bình tính bằng km/h, công thức: $v_{tb} = \frac{\text{Quãng đường (km)}}{\text{Thời gian thực tế (giờ)}}$; Nhịp tim tính bằng nhịp/phút (bpm).</p>
+                <p><span class="tag-rule">BR-03</span> <b>Thời lượng hợp lệ tối thiểu:</b> Phiên hoạt động chỉ được lưu trữ nếu thời gian thực tế đạt từ 60 giây trở lên <i>(GĐ-03)</i>.</p>
+                <p><span class="tag-rule">BR-04</span> <b>Xử lý hoạt động bơi lội:</b> Tín hiệu GPS không khả dụng dưới nước. Quãng đường bơi tính bằng số lần quay đầu (nhận diện bằng con quay hồi chuyển) nhân với chiều dài bể bơi mặc định 25m hoặc 50m <i>(GĐ-04)</i>.</p>
+                <p><span class="tag-rule">BR-05</span> <b>Bảo toàn dữ liệu đệm:</b> Bản ghi trên đồng hồ chỉ được xóa sau khi nhận được tín hiệu ACK từ điện thoại <i>(GĐ-01)</i>.</p>
+              </td>
+            </tr>
+            <tr>
+              <th>13. Yêu cầu phi chức năng</th>
+              <td>
+                <p><b>NFR-01:</b> Độ trễ hiển thị thông số cảm biến lên màn hình Smartwatch ≤ 1.0 giây.</p>
+                <p><b>NFR-02:</b> Tiêu thụ pin tối ưu, đảm bảo hoạt động liên tục ≥ 8 giờ khi bật song song cả GPS và đo nhịp tim liên tục.</p>
+                <p><b>NFR-03:</b> Lưu dữ liệu tạm vào Flash mỗi 30 giây để chống mất mát dữ liệu nếu sập nguồn đột ngột.</p>
+              </td>
+            </tr>
+            <tr>
+              <th>14. Include, Extend</th>
+              <td>
+                <p><b>Include:</b> UC-02 (Tự động nhận biết HĐ), UC-03 (Cập nhật thông số tức thời), UC-05 (Kết thúc HĐ).</p>
+                <p><b>Extend:</b> UC-04 (Tạm dừng / Tiếp tục HĐ) với điểm mở rộng tại bước 4 khi có lệnh tạm dừng.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MỤC 04: STATE CHART DIAGRAM -->
+    <section class="lesson" id="state">
+      <div class="lh">
+        <span class="num">04</span>
+        <h2>Yêu cầu 4: State Chart Diagram đối tượng "Hoạt động thể chất"</h2>
+        <p class="lead">Mô hình hóa toàn bộ vòng đời của một phiên hoạt động từ khi bắt đầu trên Smartwatch tới khi đồng bộ sang Smartphone.</p>
+      </div>
+
+      <div class="canvas-box">
+        <svg id="st-svg" viewBox="0 0 1080 540" xmlns="http://www.w3.org/2000/svg" font-family="'Be Vietnam Pro', system-ui, sans-serif">
+          <defs>
+            <marker id="st-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" orient="auto">
+              <path d="M1 1L9 5L1 9" fill="none" stroke="#2f4b7c" stroke-width="1.6"/>
+            </marker>
+            <style>
+              .st-box { fill: #ffffff; stroke: #2f4b7c; stroke-width: 2; rx: 12; }
+              .st-box.alt { fill: #e8f0fc; stroke: #2f4b7c; stroke-width: 2.2; }
+              .st-box.term { fill: #fbf7ef; stroke: #b9852f; stroke-width: 2; rx: 12; }
+              .st-name { font-size: 15px; font-weight: 700; fill: #1f2f52; text-anchor: middle; }
+              .st-sub { font-size: 11px; fill: #5b6472; text-anchor: middle; font-style: italic; }
+              .st-edge { stroke: #2f4b7c; stroke-width: 1.6; fill: none; }
+              .st-edge.alt { stroke: #b9852f; stroke-width: 1.6; }
+              .st-edge.err { stroke: #b4474f; stroke-width: 1.6; stroke-dasharray: 6 3; }
+              .st-lbl { font-size: 12px; font-weight: 600; fill: #1f2937; }
+              .st-guard { fill: #70472f; font-weight: 600; }
+              .st-act { fill: #3f7d6b; font-weight: 600; font-style: italic; }
+              .init-dot { fill: #1f2f52; stroke: none; }
+              .final-out { fill: none; stroke: #1f2f52; stroke-width: 2; }
+              .final-in { fill: #1f2f52; stroke: none; }
+              .halo { paint-order: stroke; stroke: #ffffff; stroke-width: 6px; stroke-linejoin: round; }
+            </style>
+          </defs>
+
+          <!-- NỀN -->
+          <rect x="0" y="0" width="1080" height="540" fill="#f7f8fa" rx="16"/>
+
+          <circle cx="60" cy="160" r="12" class="init-dot"/>
+
+          <!-- Trạng thái 1: Đang theo dõi -->
+          <g id="st-track">
+            <rect x="160" y="120" width="200" height="80" class="st-box alt"/>
+            <text x="260" y="155" class="st-name">Đang theo dõi</text>
+            <text x="260" y="175" class="st-sub">(Tracking on Smartwatch)</text>
+            <line x1="160" y1="185" x2="360" y2="185" stroke="#d8dde5" stroke-width="1"/>
+            <text x="260" y="196" font-size="10px" fill="#475569" text-anchor="middle">do / đo đạc &amp; hiển thị 1s</text>
+          </g>
+
+          <!-- Trạng thái 2: Đang tạm dừng -->
+          <g id="st-pause">
+            <rect x="160" y="310" width="200" height="70" class="st-box"/>
+            <text x="260" y="345" class="st-name">Đang tạm dừng</text>
+            <text x="260" y="365" class="st-sub">(Paused)</text>
+          </g>
+
+          <!-- Trạng thái 3: Đã lưu tạm -->
+          <g id="st-temp">
+            <rect x="470" y="120" width="200" height="80" class="st-box alt"/>
+            <text x="570" y="155" class="st-name">Đã lưu tạm</text>
+            <text x="570" y="175" class="st-sub">(Temporarily Saved)</text>
+            <line x1="470" y1="185" x2="670" y2="185" stroke="#d8dde5" stroke-width="1"/>
+            <text x="570" y="196" font-size="10px" fill="#475569" text-anchor="middle">entry / ghi Flash bộ đệm</text>
+          </g>
+
+          <!-- Trạng thái 4: Đang đồng bộ -->
+          <g id="st-sync">
+            <rect x="780" y="120" width="200" height="80" class="st-box"/>
+            <text x="880" y="155" class="st-name">Đang đồng bộ</text>
+            <text x="880" y="175" class="st-sub">(Syncing via Bluetooth)</text>
+            <line x1="780" y1="185" x2="980" y2="185" stroke="#d8dde5" stroke-width="1"/>
+            <text x="880" y="196" font-size="10px" fill="#475569" text-anchor="middle">do / gửi dữ liệu qua BT</text>
+          </g>
+
+          <!-- Trạng thái 5: Đã đồng bộ -->
+          <g id="st-synced">
+            <rect x="780" y="320" width="200" height="70" class="st-box term"/>
+            <text x="880" y="355" class="st-name">Đã đồng bộ</text>
+            <text x="880" y="375" class="st-sub">(Synced to Smartphone)</text>
+          </g>
+
+          <!-- Trạng thái 6: Đã hủy -->
+          <g id="st-cancel">
+            <rect x="470" y="320" width="200" height="70" class="st-box term"/>
+            <text x="570" y="355" class="st-name" fill="#b4474f">Đã hủy</text>
+            <text x="570" y="375" class="st-sub">(Cancelled / Discarded)</text>
+          </g>
+
+          <!-- Điểm kết thúc -->
+          <g id="final-node" transform="translate(880, 470)">
+            <circle cx="0" cy="0" r="16" class="final-out"/>
+            <circle cx="0" cy="0" r="10" class="final-in"/>
+            <text x="0" y="32" font-size="11.5px" font-weight="700" fill="#1f2f52" text-anchor="middle">Kết thúc vòng đời</text>
+          </g>
+
+          <!-- CHUYỂN TRẠNG THÁI -->
+          <!-- Bắt đầu -> Đang theo dõi -->
+          <path d="M72 160 L150 160" class="st-edge" marker-end="url(#st-arrow)"/>
+          <text x="110" y="135" class="st-lbl halo" text-anchor="middle">Phát hiện vận động</text>
+          <text x="110" y="150" font-size="10.5px" class="st-act halo" text-anchor="middle">/ khởi tạo phiên tập</text>
+
+          <!-- Đang theo dõi -> Đang tạm dừng -->
+          <path d="M225 200 L225 300" class="st-edge" marker-end="url(#st-arrow)"/>
+          <text x="215" y="250" class="st-lbl halo" text-anchor="end">Ấn tạm dừng</text>
+          <text x="215" y="265" font-size="10.5px" class="st-act halo" text-anchor="end">/ dừng tính giờ</text>
+
+          <!-- Đang tạm dừng -> Đang theo dõi -->
+          <path d="M295 310 L295 210" class="st-edge" marker-end="url(#st-arrow)"/>
+          <text x="305" y="250" class="st-lbl halo" text-anchor="start">Ấn tiếp tục</text>
+          <text x="305" y="265" font-size="10.5px" class="st-act halo" text-anchor="start">/ đếm giờ tiếp</text>
+
+          <!-- Đang theo dõi -> Đã lưu tạm -->
+          <path d="M360 160 L460 160" class="st-edge" marker-end="url(#st-arrow)"/>
+          <text x="415" y="132" class="st-lbl halo" text-anchor="middle">Ra lệnh kết thúc</text>
+          <text x="415" y="146" class="st-lbl st-guard halo" text-anchor="middle">[thời gian ≥ 1 phút]</text>
+          <text x="415" y="160" font-size="10.5px" class="st-act halo" text-anchor="middle">/ lưu bộ đệm Flash</text>
+
+          <!-- Đang theo dõi -> Đã hủy -->
+          <path d="M340 200 L480 320" class="st-edge err" marker-end="url(#st-arrow)"/>
+          <text x="385" y="255" class="st-lbl halo" fill="#b4474f" text-anchor="middle">Ra lệnh kết thúc</text>
+          <text x="385" y="270" class="st-lbl st-guard halo" text-anchor="middle">[thời gian &lt; 1 phút]</text>
+          <text x="385" y="285" font-size="10.5px" class="st-act halo" text-anchor="middle">/ hủy bản ghi</text>
+
+          <!-- Đã lưu tạm -> Đang đồng bộ -->
+          <path d="M670 160 L770 160" class="st-edge" marker-end="url(#st-arrow)"/>
+          <text x="720" y="132" class="st-lbl halo" text-anchor="middle">Phát hiện Bluetooth</text>
+          <text x="720" y="146" class="st-lbl st-guard halo" text-anchor="middle">[đã ghép đôi]</text>
+          <text x="720" y="160" font-size="10.5px" class="st-act halo" text-anchor="middle">/ truyền gói tin</text>
+
+          <!-- Đang đồng bộ -> Đã lưu tạm (mất sóng) -->
+          <path d="M790 120 C 740 70, 690 70, 640 120" class="st-edge err" marker-end="url(#st-arrow)"/>
+          <text x="715" y="60" class="st-lbl halo" fill="#b4474f" text-anchor="middle">Mất kết nối Bluetooth</text>
+          <text x="715" y="76" font-size="10.5px" class="st-act halo" text-anchor="middle">/ ngừng truyền, giữ nguyên Flash</text>
+
+          <!-- Đang đồng bộ -> Đã đồng bộ -->
+          <path d="M880 200 L880 310" class="st-edge" marker-end="url(#st-arrow)"/>
+          <text x="890" y="250" class="st-lbl halo" text-anchor="start">Nhận xác nhận (ACK)</text>
+          <text x="890" y="265" class="st-lbl st-guard halo" text-anchor="start">[toàn vẹn dữ liệu]</text>
+          <text x="890" y="280" font-size="10.5px" class="st-act halo" text-anchor="start">/ xóa bộ đệm Smartwatch</text>
+
+          <!-- Đã đồng bộ -> Điểm kết thúc -->
+          <path d="M880 390 L880 450" class="st-edge" marker-end="url(#st-arrow)"/>
+          <text x="890" y="420" class="st-lbl halo" text-anchor="start">Lưu trữ hoàn tất</text>
+
+          <!-- Đã hủy -> Điểm kết thúc -->
+          <path d="M670 360 L860 465" class="st-edge alt" marker-end="url(#st-arrow)"/>
+          <text x="720" y="430" class="st-lbl halo" text-anchor="middle">Xác nhận xóa</text>
+        </svg>
+      </div>
+
+      <h3>Bảng chuyển trạng thái (State Transition Table)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Từ trạng thái</th><th>Sự kiện</th><th>Điều kiện [guard]</th><th>Hành động / Action</th><th>Đến trạng thái</th><th>Nguồn sự kiện</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>[Bắt đầu]</b></td>
+              <td>Bắt đầu hoạt động thể chất</td>
+              <td>Phát hiện chuyển động hoặc ấn nút Start</td>
+              <td>Khởi tạo đối tượng; kích hoạt cảm biến nhịp tim &amp; GPS</td>
+              <td><b>Đang theo dõi</b></td>
+              <td>Cảm biến chuyển động / Người dùng</td>
+            </tr>
+            <tr>
+              <td><b>Đang theo dõi</b></td>
+              <td>Ấn nút "Tạm dừng"</td>
+              <td>Đang trong phiên tập</td>
+              <td>Ngừng đếm thời gian; ngừng cộng dồn quãng đường</td>
+              <td><b>Đang tạm dừng</b></td>
+              <td>Người dùng thao tác Smartwatch</td>
+            </tr>
+            <tr>
+              <td><b>Đang tạm dừng</b></td>
+              <td>Ấn nút "Tiếp tục"</td>
+              <td>Đang ở trạng thái tạm dừng</td>
+              <td>Khôi phục bộ đếm thời gian và tính tiếp quãng đường</td>
+              <td><b>Đang theo dõi</b></td>
+              <td>Người dùng thao tác Smartwatch</td>
+            </tr>
+            <tr>
+              <td><b>Đang theo dõi</b></td>
+              <td>Ra lệnh kết thúc</td>
+              <td><code>[Thời gian thực tế ≥ 1 phút]</code></td>
+              <td>Ngừng cảm biến; tổng hợp số liệu; ghi vào bộ nhớ Flash</td>
+              <td><b>Đã lưu tạm</b></td>
+              <td>Người dùng (hoặc tự động khi pin ≤ 2%)</td>
+            </tr>
+            <tr>
+              <td><b>Đang theo dõi</b></td>
+              <td>Ra lệnh kết thúc</td>
+              <td><code>[Thời gian thực tế &lt; 1 phút]</code></td>
+              <td>Hiển thị cảnh báo kích hoạt nhầm; xóa bộ đệm phiên tập</td>
+              <td><b>Đã hủy</b></td>
+              <td>Người dùng thao tác Smartwatch</td>
+            </tr>
+            <tr>
+              <td><b>Đã lưu tạm</b></td>
+              <td>Phát hiện Bluetooth</td>
+              <td><code>[Hai thiết bị đã ghép đôi]</code></td>
+              <td>Mở kênh socket Bluetooth; truyền phát các gói dữ liệu</td>
+              <td><b>Đang đồng bộ</b></td>
+              <td>Kết nối Bluetooth giữa 2 thiết bị</td>
+            </tr>
+            <tr>
+              <td><b>Đang đồng bộ</b></td>
+              <td>Ngắt kết nối Bluetooth</td>
+              <td><code>[Chưa nhận đủ 100% dữ liệu]</code></td>
+              <td>Dừng truyền; giữ nguyên bản ghi Flash; chờ ghép đôi lại</td>
+              <td><b>Đã lưu tạm</b></td>
+              <td>Trạng thái sóng Bluetooth</td>
+            </tr>
+            <tr>
+              <td><b>Đang đồng bộ</b></td>
+              <td>Nhận phản hồi ACK</td>
+              <td><code>[Smartphone xác nhận trọn vẹn]</code></td>
+              <td>Đánh dấu đã đồng bộ; giải phóng (xóa) bản ghi trong Flash</td>
+              <td><b>Đã đồng bộ</b></td>
+              <td>Phân hệ Smartphone (qua Bluetooth)</td>
+            </tr>
+            <tr>
+              <td><b>Đã đồng bộ</b></td>
+              <td>Lưu trữ CSDL thành công</td>
+              <td>Dữ liệu đã lưu lâu dài trên điện thoại</td>
+              <td>Kết thúc vòng đời đối tượng trên đồng hồ</td>
+              <td><b>[Điểm kết thúc]</b></td>
+              <td>Phân hệ Smartphone</td>
+            </tr>
+            <tr>
+              <td><b>Đã hủy</b></td>
+              <td>Xác nhận xóa bỏ</td>
+              <td>Người dùng xác nhận xóa</td>
+              <td>Giải phóng hoàn toàn phiên tập khỏi bộ nhớ</td>
+              <td><b>[Điểm kết thúc]</b></td>
+              <td>Hệ thống Smartwatch</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Bảng các cặp (trạng thái, sự kiện) bị từ chối</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Trạng thái hiện tại</th><th>Sự kiện phát sinh</th><th>Hệ thống xử lý</th><th>Lý do theo đề bài hoặc theo giả định</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>1. Đang theo dõi</b></td>
+              <td>Yêu cầu đồng bộ dữ liệu sang điện thoại qua Bluetooth</td>
+              <td><b>Từ chối / Bỏ qua sự kiện.</b> Không truyền dữ liệu của phiên tập này.</td>
+              <td>Phiên hoạt động thể chất đang diễn ra, người dùng chưa kết thúc bài tập nên số liệu chưa chốt cố định và chưa đóng gói thành bản ghi lưu tạm.</td>
+            </tr>
+            <tr>
+              <td><b>2. Đã lưu tạm</b></td>
+              <td>Cảm biến phát hiện vận động thể chất mới</td>
+              <td><b>Từ chối gộp / Khởi tạo phiên tập mới độc lập.</b> Không ghi đè vào bản ghi đã lưu tạm.</td>
+              <td>Bản ghi đã lưu tạm được bảo vệ toàn vẹn chờ truyền sang Smartphone (BR-05). Vận động mới bắt đầu phải có ID phiên mới và vòng đời riêng biệt.</td>
+            </tr>
+            <tr>
+              <td><b>3. Đang đồng bộ</b></td>
+              <td>Người dùng thao tác ra lệnh "Kết thúc hoạt động"</td>
+              <td><b>Báo lỗi / Hiển thị "Phiên tập đã kết thúc từ trước".</b></td>
+              <td>Hoạt động thể chất đã kết thúc từ trước khi vào trạng thái lưu tạm. Lệnh kết thúc lúc này là thao tác phi logic do chạm nhầm màn hình.</td>
+            </tr>
+            <tr>
+              <td><b>4. Đã đồng bộ</b></td>
+              <td>Điện thoại yêu cầu phát lại dữ liệu phiên tập cũ từ đồng hồ</td>
+              <td><b>Báo lỗi / Phản hồi "Bản ghi đã được giải phóng khỏi đồng hồ".</b></td>
+              <td>Smartwatch chỉ có vai trò lưu trữ tạm thời. Sau khi đồng bộ thành công và nhận ACK từ điện thoại, bản ghi đã được xóa để giải phóng dung lượng bộ đệm.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer style="margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 0.88rem; text-align: center;">
+    NMCNPM · Nhóm 04 · Sản phẩm độc lập của <b>Vương Hữu Khang (TV-B - MSSV: 24120070)</b> cho Bài tập tuần 5.
+  </footer>
+</div>
+
+</body>
+</html>

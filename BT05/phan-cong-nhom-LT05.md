@@ -10,10 +10,10 @@
 | Thành viên | Vai trò | Bài | Phạm vi chính |
 |---|---|---|---|
 | **TV-A** | Làm prototype | Tuần 6 | Chạy prompt chuẩn cho bài sức khoẻ và bài sàn đấu giá; ghi nhật ký; làm slide và báo cáo 8 phút |
-| **TV-B** | Phân tích phân hệ smartwatch | Tuần 5 | Các phần liên quan đến đồng hồ thông minh; state chart "Hoạt động thể chất" |
+| **Vương Hữu Khang (TV-B)** | Phân tích phân hệ smartwatch | Tuần 5 | Các phần liên quan đến đồng hồ thông minh; state chart "Hoạt động thể chất" |
 | **TV-C** | Phân tích phân hệ smartphone | Tuần 5 | Các phần liên quan đến điện thoại; activity diagram; bảng giả định |
 
-**Cách hiểu phân công:** tuần 5 có một bộ sản phẩm chung (một sơ đồ use case, hai đặc tả, một activity diagram, một state chart). TV-B và TV-C cùng làm bộ đó, mỗi người chịu trách nhiệm một phân hệ. TV-A độc lập với tuần 5 về mặt thời gian, nhưng phải đối chiếu với tuần 5 khi viết báo cáo.
+**Cách hiểu phân công:** tuần 5 có một bộ sản phẩm chung (một sơ đồ use case, hai đặc tả, một activity diagram, một state chart). Vương Hữu Khang (TV-B) và TV-C cùng làm bộ đó, mỗi người chịu trách nhiệm một phân hệ. TV-A độc lập với tuần 5 về mặt thời gian, nhưng phải đối chiếu với tuần 5 khi viết báo cáo.
 
 ---
 
@@ -21,15 +21,15 @@
 
 ### 2.1. Bài tuần 5: ứng dụng theo dõi sức khoẻ
 
-| Hạng mục | Người chính | Người hỗ trợ | Đầu ra | Hạn |
+| Hạng mục | Người chính | Người hỗ trợ | Đầu ra | Hạn / Đã xong |
 |---|---|---|---|---|
-| Thống nhất phân hệ và danh sách actor, use case | TV-B + TV-C | TV-A | Danh sách actor, danh sách use case theo hộp | ____ |
-| Sơ đồ use case (2 hộp: smartwatch, smartphone) | TV-B (vẽ) | TV-C (rà soát) | Sơ đồ SVG, ghi chú include/extend, ghi chú phân hệ | ____ |
-| Bảng giả định (≥5 mục, ≥1 về giao tiếp giữa hai thiết bị) | TV-C | TV-B | Bảng giả định GĐ-01 trở đi | ____ |
-| Đặc tả use case A (phân hệ smartwatch, ví dụ "Ghi nhận hoạt động thể chất") | TV-B | TV-C | Bảng 14 mục, luồng chính, luồng thay thế, ngoại lệ, BR | ____ |
-| Đặc tả use case B (phân hệ smartphone, ví dụ "Nhắc nhở theo lịch biểu") | TV-C | TV-B | Bảng 14 mục | ____ |
-| Activity diagram (dựng từ một đặc tả) | TV-C | TV-B | Sơ đồ có swimlane, bảng truy vết | ____ |
-| State chart "Hoạt động thể chất" + bảng chuyển trạng thái + ≥3 cặp bị từ chối | TV-B | TV-C | Sơ đồ, hai bảng | ____ |
+| Thống nhất phân hệ và danh sách actor, use case | Vương Hữu Khang (TV-B) + TV-C | TV-A | Danh sách actor, danh sách use case theo hộp | Đã xong (15/10/2026) |
+| Sơ đồ use case (2 hộp: smartwatch, smartphone) | Vương Hữu Khang (TV-B) (vẽ) | TV-C (rà soát) | Sơ đồ SVG, ghi chú include/extend, ghi chú phân hệ | Đã xong (15/10/2026) |
+| Bảng giả định (≥5 mục, ≥1 về giao tiếp giữa hai thiết bị) | TV-C | Vương Hữu Khang (TV-B) | Bảng giả định GĐ-01 trở đi | ____ |
+| Đặc tả use case A (phân hệ smartwatch, ví dụ "Ghi nhận hoạt động thể chất") | Vương Hữu Khang (TV-B) | TV-C | Bảng 14 mục, luồng chính, luồng thay thế, ngoại lệ, BR | Đã xong (15/10/2026) |
+| Đặc tả use case B (phân hệ smartphone, ví dụ "Nhắc nhở theo lịch biểu") | TV-C | Vương Hữu Khang (TV-B) | Bảng 14 mục | ____ |
+| Activity diagram (dựng từ một đặc tả) | TV-C | Vương Hữu Khang (TV-B) | Sơ đồ có swimlane, bảng truy vết | ____ |
+| State chart "Hoạt động thể chất" + bảng chuyển trạng thái + ≥3 cặp bị từ chối | Vương Hữu Khang (TV-B) | TV-C | Sơ đồ, hai bảng | Đã xong (15/10/2026) |
 | Danh sách kiểm tra nhất quán | TV-A | Cả nhóm | Checklist đã đánh dấu | ____ |
 | Ghép thành một file HTML, đúng thứ tự mục 03 đến 08 | TV-A | Cả nhóm | File HTML duy nhất | ____ |
 
@@ -40,19 +40,19 @@
 | Hạng mục | Người chính | Người hỗ trợ | Đầu ra | Hạn |
 |---|---|---|---|---|
 | Chọn công cụ, kiểm tra điều kiện truy cập và ghi ngày thử | TV-A | Cả nhóm | Ghi chú gói dùng, ngày, mô hình | ____ |
-| Ghi tiêu chí đếm 24 thành phần (SK) và 22 thành phần (DG) trước khi chạy prompt | TV-A | TV-B, TV-C | Mục đầu nhật ký | ____ |
-| Bài 1 (sức khoẻ): lượt prompt chuẩn, lượt thành phần, 3 yêu cầu chỉnh sửa | TV-A | TV-B (kiểm tra phân hệ smartwatch), TV-C (kiểm tra phân hệ smartphone) | Nhật ký, ảnh chụp, bảng SK đã đánh dấu | ____ |
-| Bài 2 (đấu giá): lượt prompt chuẩn, lượt thành phần, 3 yêu cầu chỉnh sửa | TV-A | TV-B, TV-C cùng đối chiếu công thức tiền | Nhật ký, ảnh chụp, bảng DG đã đánh dấu | ____ |
+| Ghi tiêu chí đếm 24 thành phần (SK) và 22 thành phần (DG) trước khi chạy prompt | TV-A | Vương Hữu Khang (TV-B), TV-C | Mục đầu nhật ký | ____ |
+| Bài 1 (sức khoẻ): lượt prompt chuẩn, lượt thành phần, 3 yêu cầu chỉnh sửa | TV-A | Vương Hữu Khang (TV-B) (kiểm tra phân hệ smartwatch), TV-C (kiểm tra phân hệ smartphone) | Nhật ký, ảnh chụp, bảng SK đã đánh dấu | ____ |
+| Bài 2 (đấu giá): lượt prompt chuẩn, lượt thành phần, 3 yêu cầu chỉnh sửa | TV-A | Vương Hữu Khang (TV-B), TV-C cùng đối chiếu công thức tiền | Nhật ký, ảnh chụp, bảng DG đã đánh dấu | ____ |
 | Phụ lục A (nhật ký nguyên văn), Phụ lục B (hai bảng thành phần) | TV-A | Cả nhóm | Tệp phụ lục | ____ |
-| Slide báo cáo (5 phần) | TV-A | TV-B, TV-C viết phần giới hạn và khuyến nghị | Slide PDF hoặc PPTX | ____ |
-| Video minh hoạ dự phòng (≤ 90 giây) | TV-B | TV-C | Tệp video | ____ |
+| Slide báo cáo (5 phần) | TV-A | Vương Hữu Khang (TV-B), TV-C viết phần giới hạn và khuyến nghị | Slide PDF hoặc PPTX | ____ |
+| Video minh hoạ dự phòng (≤ 90 giây) | Vương Hữu Khang (TV-B) | TV-C | Tệp video | ____ |
 | Chuẩn bị hỏi đáp | Cả nhóm | — | Trả lời bằng dữ liệu nhật ký | ____ |
 
 ### 2.3. Thứ tự và phụ thuộc
 
-1. **Ngay từ đầu:** TV-A bắt đầu tuần 6 vì bài này không phụ thuộc vào sản phẩm tuần 5. TV-B và TV-C thống nhất phân hệ và actor trước.
+1. **Ngay từ đầu:** TV-A bắt đầu tuần 6 vì bài này không phụ thuộc vào sản phẩm tuần 5. Vương Hữu Khang (TV-B) và TV-C thống nhất phân hệ và actor trước.
 2. **Tuần 5:** sơ đồ use case → đặc tả → activity diagram và state chart → kiểm tra nhất quán.
-3. **Giao nhau:** khi TV-B hoặc TV-C phát hiện giả định mới trong tuần 5, cần báo TV-A để đối chiếu với prototype.
+3. **Giao nhau:** khi Vương Hữu Khang (TV-B) hoặc TV-C phát hiện giả định mới trong tuần 5, cần báo TV-A để đối chiếu với prototype.
 4. **Trước khi nộp:** cả nhóm đọc lại danh sách kiểm tra ở Mục 5.
 
 ---
