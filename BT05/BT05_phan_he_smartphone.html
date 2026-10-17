@@ -1,0 +1,1501 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bài làm Thành viên C - Bài tập tuần 5 (Phân hệ Smartphone)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --paper: #fbf7ef;
+            --paper-strong: #fffdf8;
+            --surface: #f2e8da;
+            --surface-deep: #e8dac7;
+            --ink: #302821;
+            --ink-soft: #695b4f;
+            --coffee: #70472f;
+            --coffee-dark: #40281d;
+            --caramel: #c6813e;
+            --sage: #68765d;
+            --sage-soft: #e1e7db;
+            --rose: #a24b3d;
+            --rose-soft: #f3dfd9;
+            --line: #d9caba;
+            --shadow: 0 18px 46px rgba(64, 40, 29, 0.11);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 84px;
+            font-size: clamp(16px, 0.5vw + 9px, 19px);
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: radial-gradient(circle at 7% 0%, rgba(198, 129, 62, 0.11), transparent 28rem), linear-gradient(180deg, #f5ede2, var(--paper) 32rem);
+            font-family: "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .shell {
+            width: min(1200px, calc(100% - 48px));
+            margin: 0 auto;
+            padding-bottom: 60px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: "Lora", serif;
+            color: var(--coffee-dark);
+            line-height: 1.25;
+            margin: 0;
+        }
+
+        h3 {
+            font-size: 1.12rem;
+            margin: 22px 0 10px;
+        }
+
+        p {
+            margin: 0 0 12px;
+        }
+
+        ul,
+        ol {
+            margin: 0 0 12px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin-bottom: 4px;
+        }
+
+        code {
+            background: var(--surface);
+            padding: 1px 6px;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        a {
+            color: var(--coffee);
+        }
+
+        .ic {
+            width: 1.1em;
+            height: 1.1em;
+            flex: none;
+            vertical-align: -0.18em;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        h3 .ic,
+        .eyebrow .ic {
+            color: var(--caramel);
+            margin-right: 0.4em;
+        }
+
+        .card.sage h3 .ic {
+            color: var(--sage);
+        }
+
+        .card.rose h3 .ic {
+            color: var(--rose);
+        }
+
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: rgba(255, 253, 248, 0.92);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .nav-in {
+            width: min(1200px, calc(100% - 48px));
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            height: 64px;
+        }
+
+        .nav .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--coffee-dark);
+            font-weight: 800;
+            font-size: 0.88rem;
+            text-decoration: none;
+            flex: none;
+        }
+
+        .nav .mark {
+            display: grid;
+            place-items: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--coffee-dark);
+            color: #fffaf3;
+            font-family: "Lora", serif;
+            font-size: 0.85rem;
+        }
+
+        .nav .role-tag {
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--caramel);
+            border: 1px solid var(--caramel);
+            border-radius: 999px;
+            padding: 1px 9px;
+        }
+
+        .nav ul {
+            list-style: none;
+            display: flex;
+            gap: 4px;
+            margin: 0 0 0 auto;
+            padding: 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .nav a.lnk {
+            position: relative;
+            display: block;
+            padding: 18px 10px;
+            white-space: nowrap;
+            color: var(--ink-soft);
+            text-decoration: none;
+            font-size: 0.84rem;
+            font-weight: 600;
+        }
+
+        .nav a.lnk i {
+            font-style: normal;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--caramel);
+            margin-right: 6px;
+        }
+
+        .nav a.lnk:hover,
+        .nav a.lnk.on {
+            color: var(--coffee-dark);
+        }
+
+        .nav a.lnk.on::after {
+            content: "";
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            bottom: -1px;
+            height: 3px;
+            border-radius: 3px 3px 0 0;
+            background: var(--caramel);
+        }
+
+        .nav .progress {
+            position: absolute;
+            left: 0;
+            bottom: -1px;
+            height: 2px;
+            width: 0;
+            background: var(--coffee);
+        }
+
+        .hero {
+            margin-top: 18px;
+            padding: clamp(30px, 5vw, 44px);
+            border-radius: 26px;
+            color: #fffaf3;
+            background: linear-gradient(120deg, #2f261f, #4d3022);
+            box-shadow: var(--shadow);
+        }
+
+        .hero h1 {
+            color: #fffaf3;
+            font-size: clamp(1.8rem, 4vw, 2.3rem);
+            margin: 6px 0 10px;
+        }
+
+        .hero p {
+            color: #eadccb;
+            margin: 0;
+            max-width: 840px;
+        }
+
+        .eyebrow {
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: #e5b784;
+            margin: 0 0 6px;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 18px;
+        }
+
+        .chip {
+            padding: 5px 13px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #fffaf3;
+            text-decoration: none;
+        }
+
+        .chip:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .lesson {
+            margin: 44px 0;
+        }
+
+        .lh {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 4px 18px;
+            align-items: baseline;
+            margin-bottom: 18px;
+        }
+
+        .lh .num {
+            grid-row: 1 / span 2;
+            font-family: "Lora", serif;
+            font-size: 2.8rem;
+            line-height: 1;
+            color: var(--caramel);
+            font-weight: 700;
+        }
+
+        .lh h2 {
+            font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+        }
+
+        .lh .lead {
+            grid-column: 2;
+            color: var(--ink-soft);
+            margin: 0;
+            max-width: 860px;
+        }
+
+        .card {
+            background: var(--paper-strong);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(64, 40, 29, 0.04);
+        }
+
+        .card.sage {
+            background: var(--sage-soft);
+            border-color: #c7d1bd;
+        }
+
+        .card.rose {
+            background: var(--rose-soft);
+            border-color: #e4bfb5;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--paper-strong);
+            margin-bottom: 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.91rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--surface);
+            color: var(--coffee-dark);
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .diagram {
+            background: var(--paper-strong);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 18px;
+        }
+
+        .diagram svg {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        svg text {
+            font-family: "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            fill: var(--ink);
+            user-select: none;
+        }
+
+        .txt-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            fill: var(--coffee-dark);
+        }
+
+        .txt-actor {
+            font-size: 13px;
+            font-weight: 700;
+            fill: var(--coffee-dark);
+        }
+
+        .txt-stereo {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .txt-uc {
+            font-size: 12.5px;
+            font-weight: 500;
+            fill: var(--ink);
+        }
+
+        .txt-uc-core {
+            font-size: 12.5px;
+            font-weight: 700;
+            fill: var(--coffee-dark);
+        }
+
+        .badge-bg {
+            fill: #fffdf8;
+            stroke: #c8b8a6;
+            stroke-width: 1.2;
+        }
+
+        .badge-bg.pass {
+            fill: #edf3e9;
+            stroke: #9fb595;
+            stroke-width: 1.2;
+        }
+
+        .badge-bg.err {
+            fill: #fdf0ed;
+            stroke: #dca397;
+            stroke-width: 1.2;
+        }
+
+        .badge-bg.neutral {
+            fill: #f7f1e7;
+            stroke: #c8b8a6;
+            stroke-width: 1.2;
+        }
+
+        svg .small {
+            font-size: 11px;
+            fill: var(--ink-soft);
+        }
+
+        svg .bold {
+            font-weight: 700;
+        }
+
+        svg .box {
+            fill: var(--paper-strong);
+            stroke: var(--coffee);
+            stroke-width: 1.8;
+        }
+
+        svg .box.alt {
+            fill: var(--sage-soft);
+            stroke: var(--sage);
+            stroke-width: 1.8;
+        }
+
+        svg .box.err {
+            fill: var(--rose-soft);
+            stroke: var(--rose);
+            stroke-width: 1.8;
+        }
+
+        svg .box.subsys {
+            fill: rgba(242, 232, 218, 0.45);
+            stroke: var(--caramel);
+            stroke-width: 1.8;
+            stroke-dasharray: 6 4;
+        }
+
+        svg .arrow {
+            fill: none;
+            stroke: var(--coffee-dark);
+            stroke-width: 1.8;
+        }
+
+        svg .arrow-dash {
+            fill: none;
+            stroke: var(--coffee-dark);
+            stroke-width: 1.6;
+            stroke-dasharray: 5 4;
+        }
+
+        label.chk {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            font-size: 0.93rem;
+            margin-bottom: 10px;
+            cursor: default;
+        }
+
+        label.chk input {
+            margin-top: 0.35em;
+            accent-color: var(--coffee);
+        }
+
+        @media (max-width: 900px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- THANH ĐIỀU HƯỚNG -->
+    <nav class="nav" id="nav">
+        <div class="nav-in">
+            <a class="brand" href="#top">
+                <span class="mark">SE</span>
+                <span>Nhóm LT05 — TV-C</span>
+                <span class="role-tag">Phân hệ Smartphone</span>
+            </a>
+            <ul>
+                <li><a class="lnk" href="#gia-dinh"><i>03</i>Bảng giả định</a></li>
+                <li><a class="lnk" href="#usecase"><i>04</i>Sơ đồ Use Case</a></li>
+                <li><a class="lnk" href="#dac-ta"><i>05</i>Đặc tả Use Case</a></li>
+                <li><a class="lnk" href="#activity"><i>06</i>Activity Diagram</a></li>
+            </ul>
+        </div>
+        <div class="progress" id="progress"></div>
+    </nav>
+
+    <div class="shell" id="top">
+        <!-- HERO BANNER -->
+        <header class="hero">
+            <p class="eyebrow"><span data-icon="layers"></span>Bài tập tuần 5 — Mô hình hoá yêu cầu phần mềm</p>
+            <h1>Phân tích yêu cầu: Phân hệ Smartphone (Thành viên C)</h1>
+            <p>Trách nhiệm TV-C: Bảng giả định toàn hệ thống (Mục 03), Sơ đồ Use Case phân hệ Smartphone (Mục 04), Bản
+                đặc tả Use Case cốt lõi 14 mục (Mục 05) và Activity Diagram kèm Bảng truy vết (Mục 06).</p>
+            <div class="chips">
+                <a class="chip" href="#gia-dinh">03. Bảng giả định (GĐ-00 → GĐ-09)</a>
+                <a class="chip" href="#usecase">04. Sơ đồ Use Case Smartphone</a>
+                <a class="chip" href="#dac-ta">05. Đặc tả UC-10 (Xem phân tích thống kê)</a>
+                <a class="chip" href="#activity">06. Activity Diagram (Swimlane & Truy vết)</a>
+            </div>
+        </header>
+
+        <main>
+            <!-- ================= MỤC 03: BẢNG GIẢ ĐỊNH ================= -->
+            <section class="lesson" id="gia-dinh">
+                <div class="lh">
+                    <span class="num">03</span>
+                    <h2>Bảng giả định (Assumptions)</h2>
+                    <p class="lead">Làm rõ các điểm đề bài chưa nêu hoặc thiếu trường hợp biên: công thức calo, độ cao,
+                        môn bơi lội, ngắt kết nối Bluetooth, ngưỡng tức thời, đánh giá mục tiêu và xử lý nhắc nhở.</p>
+                </div>
+
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:9%">Mã</th>
+                                <th style="width:26%">Chỗ đề chưa rõ</th>
+                                <th style="width:43%">Giả định của bài làm</th>
+                                <th style="width:22%">Ảnh hưởng đến</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>GĐ-00</b><br><i>(Ví dụ)</i></td>
+                                <td>Quãng đường thực tế đúng bằng mục tiêu (đề chỉ nêu trường hợp chưa đạt).</td>
+                                <td>Quy ước đạt mục tiêu khi kết quả thực tế lớn hơn hoặc bằng mục tiêu
+                                    (<code>≥</code>). Áp dụng cho cả quãng đường, thời gian và tốc độ trung bình.</td>
+                                <td>Guard trong Activity Diagram; Quy tắc nghiệp vụ đánh giá mục tiêu
+                                    (<code>BR-03</code>) trong Đặc tả <code>UC-10</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><b>GĐ-01</b></td>
+                                <td>Xử lý khi ngắt Bluetooth lúc đang đồng bộ; thời điểm xoá dữ liệu lưu tạm trên đồng
+                                    hồ.</td>
+                                <td>Khi kết nối bị ngắt giữa chừng, smartwatch giữ nguyên dữ liệu và chuyển về trạng
+                                    thái <b>Chờ đồng bộ</b> để đồng bộ lại khi kết nối lại. Dữ liệu tạm chỉ được xoá sau
+                                    khi smartphone xác nhận đã lưu trữ an toàn.</td>
+                                <td>State Chart (các trạng thái <b>Chờ đồng bộ</b>, <b>Đang đồng bộ</b>, <b>Đã đồng
+                                        bộ</b>, <b>Đã xoá tạm</b>); Ghi chú phân hệ ở Sơ đồ Use Case.</td>
+                            </tr>
+                            <tr>
+                                <td><b>GĐ-02</b></td>
+                                <td>Định lượng cụm từ "tức thời" khi cảm biến nhận biết và ghi nhận hoạt động.</td>
+                                <td>Quy ước cụ thể: (1) Cảm biến đồng hồ tự nhận diện loại hoạt động trong tối đa <b>10
+                                        giây</b>; (2) Tần suất làm mới các thông số trên màn hình đồng hồ là <b>1
+                                        giây/lần</b>.</td>
+                                <td>Yêu cầu phi chức năng và Quy tắc nghiệp vụ của Đặc tả Use Case phân hệ smartwatch
+                                    (<code>UC-01</code>).</td>
+                            </tr>
+                            <tr>
+                                <td><b>GĐ-03</b></td>
+                                <td>Công thức tính calo tiêu thụ và độ cao thay đổi (đề không có cảm biến độ cao, cân
+                                    nặng, tuổi).</td>
+                                <td>Độ cao thay đổi (m) tính bằng tổng các khoảng chênh cao dương (elevation gain) giữa
+                                    các mốc GPS liên tiếp (Bơi lội = 0 m). Lượng calo (kcal) tính theo công thức MET
+                                    chuẩn: <code>Calo = MET × 60 kg × (phút / 60)</code> (Đi bộ: 3.5, Chạy: 8.0, Đạp xe:
+                                    6.0, Bơi: 7.0, Khác: 5.0).</td>
+                                <td>Quy tắc <code>BR-01</code>, <code>BR-02</code> và Bước 4 Luồng chính Đặc tả
+                                    <code>UC-10</code>; Hành động tính thống kê trong Activity Diagram.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>GĐ-04</b></td>
+                                <td>Cách xử lý khi điện thoại mất mạng hoặc Dịch vụ bản đồ bị treo, lỗi không phản hồi.
+                                </td>
+                                <td>Nếu Dịch vụ bản đồ không phản hồi sau <b>3 giây</b> (timeout) hoặc mất kết nối mạng,
+                                    ứng dụng ẩn khung bản đồ, hiển thị thông báo ngoại tuyến nhưng vẫn tính toán và hiển
+                                    thị đầy đủ các số liệu thống kê.</td>
+                                <td>Luồng thay thế <code>3a</code> và Yêu cầu phi chức năng trong Đặc tả
+                                    <code>UC-10</code>; Nhánh Decision kiểm tra tải bản đồ trong Activity Diagram.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>GĐ-05</b></td>
+                                <td>Thời điểm hệ thống đối chiếu mục tiêu và hiển thị lời khuyên cho người dùng.</td>
+                                <td>Hệ thống tự động đối chiếu số liệu thực tế với mục tiêu đã đặt ngay khi người dùng
+                                    mở xem phân tích chi tiết hoạt động đó (nếu có gắn mục tiêu) và hiển thị kết quả kèm
+                                    lời khuyên ngay trên màn hình.</td>
+                                <td>Quan hệ <code>&lt;&lt;include&gt;&gt;</code> trên Sơ đồ Use Case; Bước 5 Luồng chính
+                                    và Luồng thay thế <code>5a</code>, <code>5b</code> Đặc tả <code>UC-10</code>;
+                                    Activity Diagram.</td>
+                            </tr>
+                            <tr>
+                                <td><b>GĐ-06</b></td>
+                                <td>Đo quãng đường và vẽ bản đồ môn Bơi lội khi mất sóng GPS dưới nước.</td>
+                                <td>Khi nhận diện môn Bơi lội, smartwatch đo quãng đường qua cảm biến chuyển động (số
+                                    sải tay × 1,2 m/sải); chỉ lấy tọa độ GPS lúc bắt đầu và kết thúc khi tay nổi trên
+                                    mặt nước; smartphone ghim vị trí hồ bơi thay vì vẽ lộ trình liên tục.</td>
+                                <td>Quy tắc nghiệp vụ trong Đặc tả <code>UC-01</code> (smartwatch) và <code>UC-10</code>
+                                    (smartphone).</td>
+                            </tr>
+                            <tr>
+                                <td><b>GĐ-07</b></td>
+                                <td>Xử lý khi người dùng bỏ qua thông báo nhắc nhở hoặc đang bận trong một buổi tập
+                                    khác.</td>
+                                <td>Đến mốc nhắc trước, nếu người dùng không bấm xác nhận sau 5 phút, ứng dụng nhắc lại
+                                    thêm tối đa 1 lần rồi đóng thông báo. Nếu lúc đó smartwatch đang ở trạng thái theo
+                                    dõi bài tập khác thì tự động bỏ qua để tránh ngắt quãng.</td>
+                                <td>Đặc tả Use Case <code>UC-14</code>, Luồng thay thế <code>2a</code>, <code>5a</code>
+                                    và Quy tắc <code>BR-05</code>, <code>BR-06</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><b>GĐ-08</b></td>
+                                <td>Cấu trúc gói tin đồng bộ qua Bluetooth để smartphone đủ dữ liệu phân tích và vẽ biểu
+                                    đồ.</td>
+                                <td>Gói tin gồm: Mã hoạt động, Loại hoạt động, Thời gian bắt đầu/kết thúc, Tổng quãng
+                                    đường, Tổng thời gian, Mảng tọa độ GPS gắn mốc thời gian, và Mảng nhịp tim theo chu
+                                    kỳ 1 giây/lần.</td>
+                                <td>Ghi chú phân hệ ở Sơ đồ Use Case; Tiền điều kiện của <code>UC-10</code>; State
+                                    Chart.</td>
+                            </tr>
+                            <tr>
+                                <td><b>GĐ-09</b></td>
+                                <td>Xử lý khi mất tín hiệu GPS giữa chừng lúc chạy bộ/đạp xe qua hầm hoặc toà nhà cao
+                                    tầng.</td>
+                                <td>Nếu mất sóng GPS tạm thời, smartwatch ước tính quãng đường di chuyển bằng cảm biến
+                                    bước chân/gia tốc cho đến khi bắt lại tín hiệu GPS, đảm bảo dữ liệu ghi nhận liên
+                                    tục.</td>
+                                <td>Đặc tả phân hệ Smartwatch (<code>UC-01</code>) của TV-B.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ================= MỤC 04: SƠ ĐỒ USE CASE PHÂN HỆ SMARTPHONE ================= -->
+            <section class="lesson" id="usecase">
+                <div class="lh">
+                    <span class="num">04</span>
+                    <h2>Đóng góp Sơ đồ Use Case (Phân hệ Smartphone)</h2>
+                    <p class="lead">Xác định ranh giới phân hệ smartphone, các Actor tham gia, use case nội bộ, quan hệ
+                        <code>&lt;&lt;include&gt;&gt;</code>, <code>&lt;&lt;extend&gt;&gt;</code> và use case liên phân
+                        hệ để phối hợp hoàn chỉnh với sơ đồ của TV-B.
+                    </p>
+                </div>
+
+
+                <!-- SƠ ĐỒ USE CASE SVG (BỐ CỤC CHUẨN MỰC, THOÁNG ĐÃNG, ĐỒNG NHẤT FONT CHỮ, KHÔNG CHỒNG CHÉO) -->
+                <div class="diagram">
+                    <svg viewBox="0 0 1000 485" role="img"
+                        aria-label="Sơ đồ Use Case Phân hệ Smartphone chuẩn mực không chồng chéo">
+                        <defs>
+                            <marker id="uc-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5"
+                                markerWidth="9" markerHeight="9" orient="auto">
+                                <path d="M0 0L10 5L0 10z" fill="#40281d" />
+                            </marker>
+                            <marker id="uc-dash-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9"
+                                refY="5" markerWidth="9" markerHeight="9" orient="auto">
+                                <path d="M0 0L10 5L0 10z" fill="#40281d" />
+                            </marker>
+                        </defs>
+
+                        <!-- Khung Ranh giới Phân hệ Smartphone (Rộng 610px) -->
+                        <rect class="box subsys" x="165" y="18" width="620" height="452" rx="16" />
+                        <text class="txt-title" x="475" y="46" text-anchor="middle">HỆ THỐNG THEO DÕI SỨC KHOẺ — PHÂN HỆ
+                            SMARTPHONE</text>
+
+                        <!-- Actor Người dùng (Bên trái) -->
+                        <circle cx="75" cy="142" r="16" fill="none" stroke="#40281d" stroke-width="2.2" />
+                        <path d="M75 158V202 M46 174H104 M75 202L50 248 M75 202L100 248" stroke="#40281d"
+                            stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                        <text class="txt-actor" x="75" y="274" text-anchor="middle">Người dùng</text>
+
+                        <!-- Actor Thời gian (Bên trái dưới) -->
+                        <circle cx="75" cy="385" r="16" fill="#fffdf8" stroke="#c6813e" stroke-width="2.2" />
+                        <path d="M75 373V385H85" stroke="#c6813e" stroke-width="2" fill="none" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <text class="txt-stereo" x="75" y="418" text-anchor="middle"
+                            fill="#c6813e">&lt;&lt;timer&gt;&gt;</text>
+                        <text class="txt-actor" x="75" y="436" text-anchor="middle">Thời gian</text>
+
+                        <!-- Actor Dịch vụ bản đồ (Bên phải ngang UC-10) -->
+                        <rect class="box alt" x="815" y="164" width="155" height="52" rx="10" />
+                        <text class="txt-stereo" x="892" y="184" text-anchor="middle"
+                            fill="#68765d">&lt;&lt;system&gt;&gt;</text>
+                        <text class="txt-actor" x="892" y="202" text-anchor="middle">Dịch vụ bản đồ</text>
+
+                        <!-- Actor Mạng xã hội (Bên phải ngang Chia sẻ) -->
+                        <rect class="box alt" x="815" y="259" width="155" height="52" rx="10" />
+                        <text class="txt-stereo" x="892" y="279" text-anchor="middle"
+                            fill="#68765d">&lt;&lt;system&gt;&gt;</text>
+                        <text class="txt-actor" x="892" y="297" text-anchor="middle">Mạng xã hội</text>
+
+                        <!-- CỘT 1 (BÊN TRÁI HỘP - TÂM X = 305) -->
+                        <!-- 1. Xem danh sách -->
+                        <ellipse cx="305" cy="100" rx="105" ry="26" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.8" />
+                        <text class="txt-uc" x="305" y="104" text-anchor="middle">Xem danh sách hoạt động</text>
+
+                        <!-- 2. UC-10: Xem phân tích thống kê (Cốt lõi - Nền xanh nhẹ) -->
+                        <ellipse cx="305" cy="190" rx="115" ry="32" fill="#e1e7db" stroke="#68765d"
+                            stroke-width="2.2" />
+                        <text class="txt-uc-core" x="305" y="185" text-anchor="middle">UC-10: Xem phân tích</text>
+                        <text class="txt-uc-core" x="305" y="202" text-anchor="middle">thống kê hoạt động</text>
+
+                        <!-- 3. Tạo lịch biểu & đặt mục tiêu -->
+                        <ellipse cx="305" cy="290" rx="110" ry="28" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.8" />
+                        <text class="txt-uc" x="305" y="285" text-anchor="middle">Tạo lịch biểu</text>
+                        <text class="txt-uc" x="305" y="302" text-anchor="middle">&amp; đặt mục tiêu hoạt động</text>
+
+                        <!-- 4. UC-14: Nhắc nhở theo lịch biểu -->
+                        <ellipse cx="305" cy="395" rx="110" ry="28" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.8" />
+                        <text class="txt-uc-core" x="305" y="390" text-anchor="middle">UC-14: Nhắc nhở</text>
+                        <text class="txt-uc-core" x="305" y="407" text-anchor="middle">theo lịch biểu</text>
+
+                        <!-- CỘT 2 (BÊN PHẢI HỘP - TÂM X = 635, KHOẢNG CÁCH GIỮA 2 CỘT LÀ 100px RỘNG RÃI) -->
+                        <!-- 5. Đánh giá mục tiêu (Include) -->
+                        <ellipse cx="635" cy="115" rx="105" ry="28" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.6" />
+                        <text class="txt-uc" x="635" y="110" text-anchor="middle">Đánh giá</text>
+                        <text class="txt-uc" x="635" y="127" text-anchor="middle">mục tiêu hoạt động</text>
+
+                        <!-- 6. Chia sẻ kết quả (Extend) -->
+                        <ellipse cx="635" cy="285" rx="105" ry="28" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.6" />
+                        <text class="txt-uc" x="635" y="280" text-anchor="middle">Chia sẻ kết quả</text>
+                        <text class="txt-uc" x="635" y="297" text-anchor="middle">lên mạng xã hội</text>
+
+                        <!-- ĐƯỜNG NỐI TỪ NGƯỜI DÙNG ĐẾN USE CASE -->
+                        <line x1="104" y1="172" x2="200" y2="105" stroke="#40281d" stroke-width="1.8" />
+                        <line x1="104" y1="184" x2="190" y2="190" stroke="#40281d" stroke-width="1.8" />
+                        <line x1="104" y1="198" x2="195" y2="285" stroke="#40281d" stroke-width="1.8" />
+                        <line x1="104" y1="212" x2="198" y2="385" stroke="#40281d" stroke-width="1.8"
+                            stroke-dasharray="4 3" />
+
+                        <!-- THỜI GIAN KÍCH HOẠT UC-14 -->
+                        <line x1="95" y1="395" x2="192" y2="395" stroke="#c6813e" stroke-width="2"
+                            marker-end="url(#uc-arrow)" />
+
+                        <!-- ĐƯỜNG NỐI NGANG THẲNG TẮP ĐẾN HỆ THỐNG NGOÀI (HOÀN TOÀN KHÔNG CẮT BẤT KỲ ĐỐI TƯỢNG NÀO) -->
+                        <line x1="420" y1="190" x2="815" y2="190" stroke="#40281d" stroke-width="1.8" />
+                        <line x1="740" y1="285" x2="815" y2="285" stroke="#40281d" stroke-width="1.8" />
+
+                        <!-- INCLUDE: UC-10 -> Đánh giá mục tiêu (Điểm dừng chính xác mép elip, không lấn vào trong chữ) -->
+                        <path class="arrow-dash" d="M397 171L544 134" marker-end="url(#uc-dash-arrow)" />
+                        <rect class="badge-bg" x="435" y="141" width="72" height="20" rx="5" />
+                        <text class="txt-stereo" x="471" y="155" text-anchor="middle"
+                            fill="#68765d">&lt;&lt;include&gt;&gt;</text>
+
+                        <!-- EXTEND: Chia sẻ -> UC-10 (Điểm dừng chính xác mép elip, không lấn vào trong chữ) -->
+                        <path class="arrow-dash" d="M564 265L394 216" marker-end="url(#uc-dash-arrow)" />
+                        <rect class="badge-bg" x="444" y="229" width="70" height="20" rx="5" />
+                        <text class="txt-stereo" x="479" y="243" text-anchor="middle"
+                            fill="#c6813e">&lt;&lt;extend&gt;&gt;</text>
+                    </svg>
+                </div>
+
+                <h3>Ghi chú quan hệ Include và Extend (Phân hệ Smartphone)</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:14%">Loại quan hệ</th>
+                                <th style="width:26%">Use case gốc</th>
+                                <th style="width:30%">Use case liên kết</th>
+                                <th style="width:30%">Lý do chọn &amp; Điều kiện kích hoạt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>&lt;&lt;include&gt;&gt;</b></td>
+                                <td>Xem phân tích thống kê hoạt động thể chất (<code>UC-10</code>)</td>
+                                <td>Đánh giá mục tiêu hoạt động</td>
+                                <td>Mỗi lần xem phân tích hoạt động có gắn mục tiêu, hệ thống bắt buộc tự động so sánh
+                                    số liệu thực tế với các chỉ số mục tiêu đã đặt (theo <code>GĐ-05</code>,
+                                    <code>BR-03</code>).
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>&lt;&lt;extend&gt;&gt;</b></td>
+                                <td>Xem phân tích thống kê hoạt động thể chất (<code>UC-10</code>)</td>
+                                <td>Chia sẻ kết quả hoạt động lên mạng xã hội</td>
+                                <td>Hành động chia sẻ là tuỳ chọn không bắt buộc, chỉ thực hiện khi người dùng muốn khoe
+                                    thành tích. <i>Điều kiện kích hoạt:</i>
+                                    <code>[Người dùng nhấn nút chia sẻ kết quả lên MXH]</code>.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Ghi chú Use Case liên phân hệ (Smartwatch &amp; Smartphone)</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:26%">Use case</th>
+                                <th style="width:22%">Phân hệ đặt use case</th>
+                                <th style="width:24%">Vai trò phân hệ còn lại</th>
+                                <th style="width:28%">Lý do phân định</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>Đồng bộ dữ liệu hoạt động</b></td>
+                                <td><b>Phân hệ Smartphone</b><br><i>(hoặc kích hoạt từ Smartwatch)</i></td>
+                                <td><b>Smartwatch:</b> Truyền phát dữ liệu lưu tạm qua Bluetooth khi hai thiết bị ghép
+                                    đôi.</td>
+                                <td>Phân hệ smartphone là nơi tiếp nhận, kiểm tra toàn vẹn, lưu trữ vĩnh viễn vào CSDL
+                                    và gửi tín hiệu xác nhận để smartwatch xoá bản lưu tạm (theo <code>GĐ-01</code>).
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ================= MỤC 05: ĐẶC TẢ USE CASE ================= -->
+            <section class="lesson" id="dac-ta">
+                <div class="lh">
+                    <span class="num">05</span>
+                    <h2>Đặc tả Use Case cốt lõi (Phân hệ Smartphone)</h2>
+                    <p class="lead">Bản đặc tả 14 mục chuẩn chỉnh cho Use Case chính thức <b>UC-10: Xem phân tích thống
+                            kê hoạt động thể chất</b>, kèm phương án dự phòng <b>UC-14: Nhắc nhở hoạt động theo lịch
+                            biểu</b>.</p>
+                </div>
+
+                <!-- BẢN ĐẶC TẢ CHÍNH THỨC: UC-10 -->
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:22%">Mục</th>
+                                <th style="width:78%">Nội dung đặc tả (UC-10: Xem phân tích thống kê hoạt động thể chất)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>1. Mã và tên</b></td>
+                                <td><b>UC-10: Xem phân tích thống kê hoạt động thể chất</b></td>
+                            </tr>
+                            <tr>
+                                <td><b>2. Mô tả tóm tắt</b></td>
+                                <td>Phân hệ smartphone hiển thị bản đồ lộ trình trực quan, các số liệu thống kê tổng
+                                    quát, kết quả đối chiếu mục tiêu (kèm lời khuyên) và số liệu chi tiết tốc độ, nhịp
+                                    tim của hoạt động được Người dùng chọn.</td>
+                            </tr>
+                            <tr>
+                                <td><b>3. Actor chính</b></td>
+                                <td>Người dùng</td>
+                            </tr>
+                            <tr>
+                                <td><b>4. Actor phụ</b></td>
+                                <td>Dịch vụ bản đồ (Map Service)</td>
+                            </tr>
+                            <tr>
+                                <td><b>5. Kích hoạt</b></td>
+                                <td>Người dùng chọn xem chi tiết một hoạt động thể chất từ danh sách lịch sử trên ứng
+                                    dụng smartphone.</td>
+                            </tr>
+                            <tr>
+                                <td><b>6. Tiền điều kiện</b></td>
+                                <td>Hoạt động thể chất đã được đồng bộ thành công sang smartphone và đang ở trạng thái
+                                    <b>Đã đồng bộ</b>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>7. Hậu điều kiện (thành công)</b></td>
+                                <td>Bản đồ lộ trình, các chỉ số thống kê tổng quát, kết quả đánh giá mục tiêu và thống
+                                    kê chi tiết tốc độ/nhịp tim được hiển thị đầy đủ cho Người dùng. Đối tượng Hoạt động
+                                    thể chất giữ nguyên trạng thái <b>Đã đồng bộ</b>.</td>
+                            </tr>
+                            <tr>
+                                <td><b>8. Hậu điều kiện (thất bại)</b></td>
+                                <td>Phân hệ smartphone thông báo lỗi không thể truy xuất hoặc xử lý dữ liệu. Đối tượng
+                                    Hoạt động thể chất giữ nguyên trạng thái <b>Đã đồng bộ</b>.</td>
+                            </tr>
+                            <tr>
+                                <td><b>9. Luồng chính</b></td>
+                                <td>
+                                    1. Người dùng chọn xem phân tích thống kê một hoạt động thể chất.<br>
+                                    2. Phân hệ smartphone truy xuất dữ liệu lưu trữ của hoạt động và gửi danh sách tọa
+                                    độ GPS sang Dịch vụ bản đồ.<br>
+                                    3. Dịch vụ bản đồ tạo và gửi trả về dữ liệu bản đồ trực quan của lộ trình di
+                                    chuyển.<br>
+                                    4. Phân hệ smartphone tính toán và hiển thị bản đồ lộ trình cùng các số liệu thống
+                                    kê tổng quát gồm: thời gian (phút), quãng đường (km), calo tiêu thụ (kcal) và độ cao
+                                    thay đổi (m) theo quy tắc <b>BR-01</b> và <b>BR-02</b>.<br>
+                                    5. Phân hệ smartphone đối chiếu kết quả thực tế với mục tiêu trong lịch biểu và hiển
+                                    thị thông báo hoàn thành mục tiêu theo quy tắc <b>BR-03</b>.<br>
+                                    6. Người dùng yêu cầu xem chi tiết tốc độ và nhịp tim.<br>
+                                    7. Phân hệ smartphone tính toán và hiển thị tốc độ/nhịp tim trung bình toàn lộ
+                                    trình, chi tiết theo từng km và biểu đồ biến thiên theo thời gian theo quy tắc
+                                    <b>BR-04</b>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>10. Luồng thay thế</b></td>
+                                <td>
+                                    <b>3a. Dịch vụ bản đồ không phản hồi hoặc mất mạng (theo GĐ-04):</b><br>
+                                    - <i>Điều kiện:</i> Tại bước 3, Dịch vụ bản đồ không phản hồi sau 3 giây hoặc điện
+                                    thoại mất mạng.<br>
+                                    - <i>Hành động:</i> Ứng dụng ẩn khung bản đồ, thông báo <i>"Không thể tải bản đồ lộ
+                                        trình (chế độ ngoại tuyến)"</i> và chuyển sang <b>Bước 4</b> hiển thị các số
+                                    liệu thống kê tổng quát.<br><br>
+
+                                    <b>5a. Hoạt động không gắn với lịch biểu có mục tiêu (theo GĐ-05):</b><br>
+                                    - <i>Điều kiện:</i> Tại bước 5, hoạt động thể chất không có mục tiêu cần đạt.<br>
+                                    - <i>Hành động:</i> Ứng dụng bỏ qua bước đối chiếu mục tiêu và chuyển thẳng sang
+                                    <b>Bước 6</b>.<br><br>
+
+                                    <b>5b. Chưa đạt mục tiêu đã đặt (theo BR-03, GĐ-00, GĐ-05):</b><br>
+                                    - <i>Điều kiện:</i> Tại bước 5, có ít nhất một thông số thực tế nhỏ hơn giá trị mục
+                                    tiêu.<br>
+                                    - <i>Hành động:</i> Ứng dụng hiển thị thông báo chưa hoàn thành mục tiêu kèm lời
+                                    khuyên động viên hoặc gợi ý điều chỉnh lại mục tiêu, rồi chuyển sang <b>Bước
+                                        6</b>.<br><br>
+
+                                    <b>6a. Người dùng đóng màn hình phân tích (không xem chi tiết):</b><br>
+                                    - <i>Điều kiện:</i> Sau bước 5 (hoặc 5a, 5b), Người dùng thoát màn hình phân
+                                    tích.<br>
+                                    - <i>Hành động:</i> Use case kết thúc thành công.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>11. Luồng ngoại lệ</b></td>
+                                <td>
+                                    <b>2e. Dữ liệu hoạt động bị hỏng hoặc thời gian bằng 0:</b><br>
+                                    - <i>Điều kiện:</i> Tại bước 2, tệp dữ liệu hoạt động bị hỏng cấu trúc hoặc tổng
+                                    thời gian ghi nhận bằng 0 phút.<br>
+                                    - <i>Hành động:</i> Phân hệ smartphone báo lỗi <i>"Dữ liệu hoạt động bị hỏng, không
+                                        thể tạo phân tích thống kê"</i> và kết thúc thất bại use case.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>12. Quy tắc nghiệp vụ</b></td>
+                                <td>
+                                    - <b>BR-01 (Tính lượng calo tiêu thụ — áp dụng tại Bước 4):</b><br>
+                                    <code>Lượng calo tiêu thụ (kcal) = MET × 60 (kg) × (Thời gian di chuyển (phút) / 60)</code>,
+                                    với hệ số MET chuẩn: Đi bộ = 3.5, Chạy bộ = 8.0, Đạp xe = 6.0, Bơi lội = 7.0, Khác =
+                                    5.0 <i>(Nguồn: Đề bài đoạn 4 &amp; Giả định GĐ-03)</i>.<br><br>
+                                    - <b>BR-02 (Tính độ cao thay đổi — áp dụng tại Bước 4):</b><br>
+                                    <code>Độ cao thay đổi (m) = Tổng các khoảng chênh lệch độ cao dương giữa hai mốc GPS liên tiếp</code>.
+                                    Riêng môn <i>Bơi lội</i> mặc định bằng 0 m <i>(Nguồn: Đề bài đoạn 4 &amp; Giả định
+                                        GĐ-03, GĐ-06)</i>.<br><br>
+                                    - <b>BR-03 (Đánh giá hoàn thành mục tiêu — áp dụng tại Bước 5, nhánh 5b):</b><br>
+                                    Được công nhận <b>Đạt mục tiêu</b> khi thoả mãn đồng thời:
+                                    <code>Quãng đường thực tế (km) ≥ Quãng đường mục tiêu (km)</code>,
+                                    <code>Thời gian thực tế (phút) ≥ Thời gian mục tiêu (phút)</code>, và
+                                    <code>Tốc độ trung bình (km/h) ≥ Tốc độ mục tiêu (km/h)</code>. Vi phạm bất kỳ tiêu
+                                    chí nào thì tính là <b>Chưa đạt</b> và bắt buộc hiển thị lời khuyên <i>(Nguồn: Đề
+                                        bài đoạn 5 &amp; Giả định GĐ-00, GĐ-05)</i>.<br><br>
+                                    - <b>BR-04 (Tính thống kê tốc độ và nhịp tim — áp dụng tại Bước 7):</b><br>
+                                    <code>Tốc độ trung bình toàn lộ trình (km/h) = Tổng quãng đường (km) / (Tổng thời gian (phút) / 60)</code>.<br>
+                                    <code>Nhịp tim trung bình (lần/phút) = Trung bình cộng các mẫu nhịp tim đo được trong buổi tập</code>.<br>
+                                    Tốc độ và nhịp tim chi tiết được tính riêng cho từng phân đoạn 1 km lũy kế trên lộ
+                                    trình <i>(Nguồn: Đề bài đoạn 4)</i>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>13. Yêu cầu phi chức năng</b></td>
+                                <td>
+                                    - Thời gian xử lý và hiển thị phân tích thống kê tổng quát không vượt quá <b>2
+                                        giây</b> kể từ khi nhận yêu cầu.<br>
+                                    - Thời gian chờ tối đa (timeout) khi truy vấn Dịch vụ bản đồ là <b>3 giây</b> (theo
+                                    <b>GĐ-04</b>).
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>14. Include, extend</b></td>
+                                <td>
+                                    - <b>Include:</b> <code>UC-10</code> bao gồm (<code>&lt;&lt;include&gt;&gt;</code>)
+                                    use case <b>Đánh giá mục tiêu hoạt động</b>.<br>
+                                    - <b>Extend:</b> <code>UC-10</code> được mở rộng
+                                    (<code>&lt;&lt;extend&gt;&gt;</code>) bởi use case <b>Chia sẻ kết quả lên mạng xã
+                                        hội</b> với điều kiện: <code>[Người dùng nhấn chọn chia sẻ kết quả]</code>.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- BẢN ĐẶC TẢ DỰ PHÒNG: UC-14 -->
+                <div class="card mt" style="margin-top:28px">
+                    <h3><span data-icon="lightbulb"></span>Phương án Use Case dự phòng: UC-14 — Nhắc nhở hoạt động thể
+                        chất theo lịch biểu</h3>
+                    <p><b>Lý do chọn Use Case:</b> Đại diện cho nhóm chức năng tự động hoá của smartphone, được kích
+                        hoạt bởi <b>Thời gian</b> chứ không có tác nhân người khởi động, đáp ứng câu hỏi gợi ý của bài
+                        giảng về use case do thời gian kích hoạt.</p>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:22%">Mục</th>
+                                <th style="width:78%">Nội dung đặc tả (UC-14: Nhắc nhở hoạt động thể chất theo lịch
+                                    biểu)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>1. Mã và tên</b></td>
+                                <td><b>UC-14: Nhắc nhở hoạt động thể chất theo lịch biểu</b></td>
+                            </tr>
+                            <tr>
+                                <td><b>2. Mô tả tóm tắt</b></td>
+                                <td>Phân hệ smartphone tự động quét lịch biểu định kỳ và phát thông báo nhắc nhở kèm mục
+                                    tiêu rèn luyện cho Người dùng trước giờ bắt đầu theo số phút đã cài đặt.</td>
+                            </tr>
+                            <tr>
+                                <td><b>3. Actor chính</b></td>
+                                <td>Không có actor người (Kích hoạt tự động bởi <b>Thời gian hệ thống</b>).</td>
+                            </tr>
+                            <tr>
+                                <td><b>4. Actor phụ</b></td>
+                                <td>Người dùng (bên tiếp nhận thông báo).</td>
+                            </tr>
+                            <tr>
+                                <td><b>5. Kích hoạt</b></td>
+                                <td>Thời gian hệ thống chạm mốc nhắc nhở
+                                    (<code>Thời gian bắt đầu − Số phút nhắc trước</code>) vào ngày trùng với tần suất
+                                    lặp của lịch biểu.</td>
+                            </tr>
+                            <tr>
+                                <td><b>6. Tiền điều kiện</b></td>
+                                <td>Tồn tại ít nhất một lịch biểu hoạt động đang bật chế độ nhắc nhở
+                                    (<code>Có nhắc nhở = Bật</code>).</td>
+                            </tr>
+                            <tr>
+                                <td><b>7. Hậu điều kiện (thành công)</b></td>
+                                <td>Thông báo nhắc nhở (tên hoạt động, loại hoạt động, thời gian bắt đầu, mục tiêu) hiển
+                                    thị thành công cho Người dùng.</td>
+                            </tr>
+                            <tr>
+                                <td><b>8. Hậu điều kiện (thất bại)</b></td>
+                                <td>Hệ thống không thể phát thông báo và ghi nhận lỗi vào nhật ký dịch vụ.</td>
+                            </tr>
+                            <tr>
+                                <td><b>9. Luồng chính</b></td>
+                                <td>
+                                    1. Thời gian hệ thống điểm tới mốc kiểm tra lịch biểu.<br>
+                                    2. Phân hệ smartphone truy xuất thông tin lịch biểu đến hạn gồm: tên hoạt động, loại
+                                    hoạt động, giờ bắt đầu và số phút nhắc trước theo <b>BR-05</b>.<br>
+                                    3. Phân hệ smartphone trích xuất thông tin mục tiêu tương ứng (quãng đường, thời
+                                    gian, tốc độ).<br>
+                                    4. Phân hệ smartphone tạo và hiển thị biểu ngữ thông báo nhắc nhở cho Người
+                                    dùng.<br>
+                                    5. Người dùng xác nhận đã xem thông báo.<br>
+                                    6. Phân hệ smartphone đánh dấu hoàn tất lượt nhắc trong ngày.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>10. Luồng thay thế</b></td>
+                                <td>
+                                    - <b>2a. Đang trong buổi tập khác (theo GĐ-07):</b> Tại bước 2, nếu phát hiện đồng
+                                    hồ đang theo dõi bài tập khác, hệ thống tự động bỏ qua lần nhắc này và chuyển đến
+                                    Bước 6.<br>
+                                    - <b>3a. Lịch biểu không đặt mục tiêu:</b> Tại bước 3, hệ thống tạo thông báo chỉ
+                                    gồm tên hoạt động và thời gian còn lại, rồi chuyển sang Bước 4.<br>
+                                    - <b>5a. Người dùng không phản hồi (theo GĐ-07):</b> Sau 5 phút kể từ bước 4, nếu
+                                    người dùng không tương tác, hệ thống nhắc lại thêm 1 lần nữa rồi chuyển sang Bước 6.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>11. Luồng ngoại lệ</b></td>
+                                <td>
+                                    <b>4e. Quyền thông báo bị tắt:</b> Tại bước 4, nếu ứng dụng bị chặn quyền hiển thị
+                                    thông báo, hệ thống ghi nhật ký lỗi và kết thúc thất bại use case.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>12. Quy tắc nghiệp vụ</b></td>
+                                <td>
+                                    - <b>BR-05 (Mốc kích hoạt nhắc nhở):</b> Kích hoạt khi: (1) Ngày hiện tại đúng tần
+                                    suất; (2) Có bật nhắc nhở; (3)
+                                    <code>Thời gian = Giờ bắt đầu − Số phút nhắc trước</code> <i>(Nguồn: Đề bài đoạn
+                                        5)</i>.<br>
+                                    - <b>BR-06 (Giới hạn nhắc lại):</b> Chỉ nhắc lại tối đa 1 lần sau 5 phút nếu người
+                                    dùng không bấm xác nhận <i>(Nguồn: Giả định GĐ-07)</i>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>13. Yêu cầu phi chức năng</b></td>
+                                <td>Độ trễ từ thời điểm đến hạn nhắc nhở cho đến khi thông báo hiển thị trên màn hình
+                                    không vượt quá <b>5 giây</b>.</td>
+                            </tr>
+                            <tr>
+                                <td><b>14. Include, extend</b></td>
+                                <td>Không có.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ================= MỤC 06: ACTIVITY DIAGRAM ================= -->
+            <section class="lesson" id="activity">
+                <div class="lh">
+                    <span class="num">06</span>
+                    <h2>Activity Diagram &amp; Bảng truy vết</h2>
+                    <p class="lead">Dựng từ Use Case chính thức <b>UC-10: Xem phân tích thống kê hoạt động thể chất</b>
+                        với 3 làn (Swimlanes): Người dùng, Phân hệ smartphone và Dịch vụ bản đồ.</p>
+                </div>
+
+                <div class="card sage">
+                    <h3><span data-icon="workflow"></span>Luận cứ sử dụng cặp thanh song song Fork và Join</h3>
+                    <p>Sơ đồ áp dụng một cặp <b>Fork</b> và <b>Join</b> tại làn <i>Phân hệ smartphone</i> vì sau khi xác
+                        thực dữ liệu hợp lệ, hai nhóm tác vụ sau diễn ra hoàn toàn độc lập:</p>
+                    <ul>
+                        <li><b>Nhánh 1 (Xử lý nội bộ):</b> Phân hệ smartphone tự tính toán các số liệu tổng quát (tổng
+                            calo theo <code>BR-01</code>, độ cao thay đổi theo <code>BR-02</code>, quãng đường và thời
+                            gian).</li>
+                        <li><b>Nhánh 2 (Giao tiếp hệ thống ngoài):</b> Phân hệ smartphone gửi mảng tọa độ GPS sang
+                            <i>Dịch vụ bản đồ</i> để dựng hình ảnh bản đồ lộ trình (có xử lý timeout 3 giây theo
+                            <code>3a</code>).
+                        </li>
+                    </ul>
+                    <p style="margin-bottom:0">Hai nhánh này không phụ thuộc kết quả của nhau, và thanh <b>Join</b> đồng
+                        bộ hóa cả hai trước khi hiển thị màn hình phân tích hoàn chỉnh.</p>
+                </div>
+
+                <!-- ACTIVITY DIAGRAM SVG (BỐ CỤC 3 LÀN THOÁNG ĐÃNG, KHẮC PHỤC HOÀN TOÀN LỖI CHỒNG CHÉO) -->
+                <div class="diagram">
+                    <svg viewBox="0 0 1000 1240" role="img"
+                        aria-label="Activity Diagram cho UC-10 với bố cục 3 swimlane chuẩn mực hoàn toàn không chồng chéo">
+                        <defs>
+                            <marker id="act-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="9" refY="5"
+                                markerWidth="9" markerHeight="9" orient="auto">
+                                <path d="M0 0L10 5L0 10z" fill="#40281d" />
+                            </marker>
+                        </defs>
+
+                        <!-- Khung 3 Swimlanes (Tổng rộng 970px: 245px - 480px - 245px) -->
+                        <rect x="15" y="15" width="245" height="1210" fill="none" stroke="#d9caba" stroke-width="1.5" />
+                        <rect x="260" y="15" width="480" height="1210" fill="none" stroke="#d9caba"
+                            stroke-width="1.5" />
+                        <rect x="740" y="15" width="245" height="1210" fill="none" stroke="#d9caba"
+                            stroke-width="1.5" />
+
+                        <!-- Header 3 Swimlanes -->
+                        <rect x="15" y="15" width="245" height="46" fill="#f2e8da" stroke="#d9caba"
+                            stroke-width="1.5" />
+                        <text class="txt-actor" x="138" y="43" text-anchor="middle">Người dùng</text>
+
+                        <rect x="260" y="15" width="480" height="46" fill="#f2e8da" stroke="#d9caba"
+                            stroke-width="1.5" />
+                        <text class="txt-actor" x="500" y="43" text-anchor="middle">Phân hệ smartphone</text>
+
+                        <rect x="740" y="15" width="245" height="46" fill="#f2e8da" stroke="#d9caba"
+                            stroke-width="1.5" />
+                        <text class="txt-actor" x="862" y="43" text-anchor="middle">Dịch vụ bản đồ</text>
+
+                        <!-- ================= BƯỚC 1: KHỞI ĐẦU TẠI LÀN NGƯỜI DÙNG ================= -->
+                        <circle cx="138" cy="80" r="11" fill="#40281d" />
+                        <path class="arrow" d="M138 91V113" marker-end="url(#act-arrow)" />
+
+                        <rect class="box" x="48" y="115" width="180" height="42" rx="12" />
+                        <text class="txt-uc" x="138" y="141" text-anchor="middle">Chọn hoạt động cần xem</text>
+
+                        <!-- Chuyển tiếp sang Phân hệ smartphone: Bước 2 -->
+                        <path class="arrow" d="M228 136H388" marker-end="url(#act-arrow)" />
+
+                        <!-- ================= BƯỚC 2: ĐỌC DỮ LIỆU & KIỂM TRA ================= -->
+                        <rect class="box" x="390" y="115" width="220" height="42" rx="12" />
+                        <text class="txt-uc" x="500" y="141" text-anchor="middle">Đọc dữ liệu hoạt động</text>
+
+                        <path class="arrow" d="M500 157V176" marker-end="url(#act-arrow)" />
+
+                        <!-- Decision 1: Dữ liệu hợp lệ? (Luồng 2e) -->
+                        <polygon points="500,178 520,192 500,206 480,192" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.8" />
+
+                        <!-- Nhánh 2e: Đường kẻ ở y=192, Nhãn đặt phía trên đường kẻ y=167-187 (Không bao giờ chạm/cắt ngang) -->
+                        <path class="arrow" d="M480 192H340V228" marker-end="url(#act-arrow)" />
+                        <rect class="badge-bg err" x="355" y="167" width="112" height="20" rx="5" />
+                        <text class="txt-stereo" x="411" y="181" text-anchor="middle" fill="#a24b3d">[dữ liệu bị
+                            lỗi]</text>
+
+                        <rect class="box err" x="265" y="230" width="150" height="42" rx="10" />
+                        <text class="txt-uc" x="340" y="256" text-anchor="middle" fill="#a24b3d">Báo lỗi dữ liệu
+                            hỏng</text>
+
+                        <path class="arrow" d="M340 272V288" marker-end="url(#act-arrow)" />
+                        <circle cx="340" cy="302" r="12" fill="none" stroke="#a24b3d" stroke-width="2.5" />
+                        <circle cx="340" cy="302" r="7" fill="#a24b3d" />
+                        <text class="txt-stereo" x="340" y="328" text-anchor="middle" fill="#a24b3d">Kết thúc (Thất
+                            bại)</text>
+
+                        <!-- Nhánh hợp lệ: Đường kẻ dọc x=500, Nhãn đặt sang phải x=512-622 (Tách rời đường kẻ) -->
+                        <path class="arrow" d="M500 206V348" marker-end="url(#act-arrow)" />
+                        <rect class="badge-bg pass" x="512" y="255" width="110" height="20" rx="5" />
+                        <text class="txt-stereo" x="567" y="269" text-anchor="middle" fill="#68765d">[dữ liệu hợp
+                            lệ]</text>
+
+                        <!-- ================= CẶP THANH FORK VÀ JOIN XỬ LÝ SONG SONG ================= -->
+                        <!-- Thanh Fork song song (Nhãn đặt phía trên bên trái x=335, mũi tên đi vào giữa x=500 không bị đè) -->
+                        <text class="txt-stereo" x="335" y="343" text-anchor="start"
+                            fill="#70472f">&lt;&lt;fork&gt;&gt;</text>
+                        <rect x="330" y="350" width="340" height="7" rx="3.5" fill="#40281d" />
+
+                        <!-- Nhánh song song A (Trái): Xử lý tính toán nội bộ -->
+                        <path class="arrow" d="M380 357V383" marker-end="url(#act-arrow)" />
+                        <rect class="box" x="300" y="385" width="160" height="50" rx="12" />
+                        <text class="txt-uc" x="380" y="407" text-anchor="middle">Tính thống kê tổng quát</text>
+                        <text class="small" x="380" y="424" text-anchor="middle">(calo, độ cao, km, phút)</text>
+                        <!-- Nhánh A đi thẳng xuống thanh Join không bị bất kỳ đối tượng nào cắt ngang -->
+                        <path class="arrow" d="M380 435V613" marker-end="url(#act-arrow)" />
+
+                        <!-- Nhánh song song B (Phải): Gửi tọa độ & gọi Dịch vụ bản đồ -->
+                        <path class="arrow" d="M620 357V383" marker-end="url(#act-arrow)" />
+                        <rect class="box" x="540" y="385" width="160" height="46" rx="12" />
+                        <text class="txt-uc" x="620" y="413" text-anchor="middle">Gửi tọa độ lộ trình</text>
+
+                        <!-- Chuyển tiếp sang làn Dịch vụ bản đồ -->
+                        <path class="arrow" d="M700 408H768" marker-end="url(#act-arrow)" />
+                        <rect class="box alt" x="770" y="385" width="184" height="46" rx="12" />
+                        <text class="txt-uc" x="862" y="413" text-anchor="middle">Tạo bản đồ lộ trình</text>
+
+                        <!-- Phản hồi từ Dịch vụ bản đồ về Decision 2 -->
+                        <path class="arrow" d="M862 431V465H642" marker-end="url(#act-arrow)" />
+
+                        <!-- Decision 2: Kiểm tra bản đồ (Luồng 3a) -->
+                        <polygon points="620,451 640,465 620,479 600,465" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.8" />
+
+                        <!-- Nhánh 3a: Đường kẻ ở y=465, Nhãn đặt phía trên y=439-459 (Không bao giờ chạm/cắt ngang) -->
+                        <path class="arrow" d="M600 465H500V498" marker-end="url(#act-arrow)" />
+                        <rect class="badge-bg err" x="495" y="439" width="110" height="20" rx="5" />
+                        <text class="txt-stereo" x="550" y="453" text-anchor="middle" fill="#a24b3d">[lỗi / quá hạn
+                            3s]</text>
+
+                        <!-- Hộp xử lý ngoại tuyến thiết kế 2 dòng thoáng đãng, rộng 170px không bị tràn viền -->
+                        <rect class="box err" x="415" y="500" width="170" height="48" rx="10" />
+                        <text class="txt-uc" x="500" y="521" text-anchor="middle" fill="#a24b3d">Ẩn bản đồ lộ
+                            trình</text>
+                        <text class="small" x="500" y="538" text-anchor="middle" fill="#a24b3d">(báo chế độ ngoại
+                            tuyến)</text>
+                        <path class="arrow" d="M500 548V575H598" marker-end="url(#act-arrow)" />
+
+                        <!-- Nhánh thành công: Đường kẻ dọc x=620, Nhãn đặt sang phải x=632-720 (Tách rời đường kẻ) -->
+                        <path class="arrow" d="M620 479V559" marker-end="url(#act-arrow)" />
+                        <rect class="badge-bg pass" x="632" y="508" width="88" height="20" rx="5" />
+                        <text class="txt-stereo" x="676" y="522" text-anchor="middle" fill="#68765d">[thành công]</text>
+
+                        <!-- Merge gom kết quả bản đồ (Đặt phía trên Join bar) -->
+                        <polygon points="620,561 640,575 620,589 600,575" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.8" />
+                        <path class="arrow" d="M620 589V613" marker-end="url(#act-arrow)" />
+
+                        <!-- Thanh Join đồng bộ hóa 2 nhánh (Nhãn đặt phía trên bên trái x=335, không chạm mũi tên) -->
+                        <text class="txt-stereo" x="335" y="608" text-anchor="start"
+                            fill="#70472f">&lt;&lt;join&gt;&gt;</text>
+                        <rect x="330" y="615" width="340" height="7" rx="3.5" fill="#40281d" />
+
+                        <!-- ================= BƯỚC 4: HIỂN THỊ KẾT QUẢ TỔNG QUÁT ================= -->
+                        <path class="arrow" d="M500 622V643" marker-end="url(#act-arrow)" />
+                        <rect class="box" x="365" y="645" width="270" height="50" rx="12" />
+                        <text class="txt-uc" x="500" y="667" text-anchor="middle">Hiển thị lộ trình &amp; thống
+                            kê</text>
+                        <text class="small" x="500" y="684" text-anchor="middle">(bản đồ, calo, độ cao, km, phút)</text>
+
+                        <!-- ================= ĐÁNH GIÁ MỤC TIÊU (LUỒNG 5a, 5b) ================= -->
+                        <path class="arrow" d="M500 695V714" marker-end="url(#act-arrow)" />
+
+                        <!-- Decision 3: Có đặt mục tiêu không? (Luồng 5a) -->
+                        <polygon points="500,714 520,728 500,742 480,728" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.8" />
+
+                        <!-- Nhánh có đặt mục tiêu: Đường kẻ dọc x=500, Nhãn đặt sang phải x=512-624 (Tách rời đường kẻ) -->
+                        <path class="arrow" d="M500 742V778" marker-end="url(#act-arrow)" />
+                        <rect class="badge-bg" x="512" y="746" width="112" height="20" rx="5" />
+                        <text class="txt-stereo" x="568" y="760" text-anchor="middle" fill="#70472f">[có đặt mục
+                            tiêu]</text>
+
+                        <rect class="box" x="405" y="780" width="190" height="42" rx="10" />
+                        <text class="txt-uc" x="500" y="806" text-anchor="middle">Đối chiếu với mục tiêu</text>
+
+                        <!-- Decision 4: Đạt hay chưa đạt mục tiêu? (Luồng 5b) -->
+                        <path class="arrow" d="M500 822V838" marker-end="url(#act-arrow)" />
+                        <polygon points="500,838 520,852 500,866 480,852" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.8" />
+
+                        <!-- Nhánh đạt mục tiêu: Đường kẻ ở y=852, Nhãn đặt phía trên y=826-846 (Tách rời) -->
+                        <path class="arrow" d="M480 852H400V880" marker-end="url(#act-arrow)" />
+                        <rect class="badge-bg pass" x="390" y="826" width="100" height="20" rx="5" />
+                        <text class="txt-stereo" x="440" y="840" text-anchor="middle" fill="#68765d">[đạt mục
+                            tiêu]</text>
+
+                        <rect class="box alt" x="315" y="882" width="170" height="42" rx="10" />
+                        <text class="txt-uc" x="400" y="908" text-anchor="middle">Báo hoàn thành mục tiêu</text>
+                        <path class="arrow" d="M400 924V950H478" marker-end="url(#act-arrow)" />
+
+                        <!-- Nhánh chưa đạt mục tiêu (5b): Đường kẻ ở y=852, Nhãn đặt phía trên y=826-846 (Tách rời) -->
+                        <path class="arrow" d="M520 852H600V880" marker-end="url(#act-arrow)" />
+                        <rect class="badge-bg err" x="522" y="826" width="76" height="20" rx="5" />
+                        <text class="txt-stereo" x="560" y="840" text-anchor="middle" fill="#a24b3d">[chưa đạt]</text>
+
+                        <rect class="box" x="515" y="882" width="170" height="42" rx="10" />
+                        <text class="txt-uc" x="600" y="908" text-anchor="middle">Hiển thị lời khuyên</text>
+                        <path class="arrow" d="M600 924V950H522" marker-end="url(#act-arrow)" />
+
+                        <!-- Merge Goal 1: Gom đạt / chưa đạt -->
+                        <polygon points="500,936 520,950 500,964 480,950" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.8" />
+                        <path class="arrow" d="M500 964V971" marker-end="url(#act-arrow)" />
+
+                        <!-- Nhánh 5a: Đường kẻ ở y=728, Nhãn đặt phía trên y=702-722 (Tách rời) -->
+                        <path class="arrow" d="M480 728H290V985H478" marker-end="url(#act-arrow)" />
+                        <rect class="badge-bg neutral" x="320" y="702" width="130" height="20" rx="5" />
+                        <text class="txt-stereo" x="385" y="716" text-anchor="middle" fill="#70472f">[không có mục
+                            tiêu]</text>
+
+                        <!-- Merge Goal 2: Gom luồng không mục tiêu và tiếp tục xuống Người dùng -->
+                        <polygon points="500,971 520,985 500,999 480,985" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.8" />
+
+                        <!-- Chuyển mạch sang làn Người dùng -->
+                        <path class="arrow" d="M500 999V1018H138V1032" marker-end="url(#act-arrow)" />
+
+                        <!-- ================= BƯỚC 6 & 7: TÙY CHỌN XEM CHI TIẾT HOẶC ĐÓNG (LUỒNG 6a) ================= -->
+                        <!-- Decision 5 (Làn Người dùng): Xem chi tiết hay đóng? -->
+                        <polygon points="138,1032 158,1046 138,1060 118,1046" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.8" />
+
+                        <!-- Nhánh chọn xem chi tiết: Đường kẻ dọc x=138, Nhãn đặt sang phải x=148-244 (Tách rời) -->
+                        <path class="arrow" d="M138 1060V1085" marker-end="url(#act-arrow)" />
+                        <rect class="badge-bg pass" x="148" y="1060" width="96" height="20" rx="5" />
+                        <text class="txt-stereo" x="196" y="1074" text-anchor="middle" fill="#68765d">[xem chi
+                            tiết]</text>
+
+                        <rect class="box" x="48" y="1087" width="180" height="42" rx="10" />
+                        <text class="txt-uc" x="138" y="1113" text-anchor="middle">Yêu cầu xem tốc độ/nhịp tim</text>
+
+                        <!-- Bước 7: Phân hệ smartphone hiển thị chi tiết km & biểu đồ -->
+                        <path class="arrow" d="M228 1108H368" marker-end="url(#act-arrow)" />
+                        <rect class="box" x="370" y="1083" width="260" height="50" rx="12" />
+                        <text class="txt-uc" x="500" y="1105" text-anchor="middle">Hiển thị TB, chi tiết từng km</text>
+                        <text class="small" x="500" y="1122" text-anchor="middle">&amp; biểu đồ biến thiên theo thời
+                            gian</text>
+                        <path class="arrow" d="M500 1133V1166" marker-end="url(#act-arrow)" />
+
+                        <!-- Nhánh 6a: Người dùng đóng màn hình: Đường kẻ ở y=1046, Nhãn đặt phía trên y=1020-1040 (Tách rời) -->
+                        <path class="arrow" d="M118 1046H35V1180H478" marker-end="url(#act-arrow)" />
+                        <rect class="badge-bg neutral" x="48" y="1020" width="54" height="20" rx="5" />
+                        <text class="txt-stereo" x="75" y="1034" text-anchor="middle" fill="#70472f">[đóng]</text>
+
+                        <!-- Merge kết thúc thành công -->
+                        <polygon points="500,1166 520,1180 500,1194 480,1180" fill="#fffdf8" stroke="#70472f"
+                            stroke-width="1.8" />
+                        <path class="arrow" d="M520 1180H614" marker-end="url(#act-arrow)" />
+
+                        <!-- Điểm kết thúc thành công (Final Activity Node) -->
+                        <circle cx="630" cy="1180" r="14" fill="none" stroke="#68765d" stroke-width="2.5" />
+                        <circle cx="630" cy="1180" r="8" fill="#68765d" />
+                        <text class="txt-stereo" x="630" y="1210" text-anchor="middle" fill="#68765d">Kết thúc (Thành
+                            công)</text>
+                    </svg>
+                </div>
+
+                <h3>Bảng truy vết từ Đặc tả (UC-10) sang Activity Diagram</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:38%">Trong bản đặc tả (UC-10)</th>
+                                <th style="width:62%">Trong Activity Diagram tương ứng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>Luồng ngoại lệ <code>2e</code>:</b> Dữ liệu lỗi cấu trúc hoặc thời gian bằng 0
+                                    tại Bước 2.</td>
+                                <td><b>Decision 1</b>: Nhánh guard <code>[dữ liệu bị lỗi]</code> rẽ sang hành động
+                                    <i>"Báo lỗi dữ liệu hỏng"</i> và kết thúc tại <b>Kết thúc (Thất bại)</b>; nhánh
+                                    <code>[dữ liệu hợp lệ]</code> đi vào thanh <b>Fork</b>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Luồng thay thế <code>3a</code>:</b> Dịch vụ bản đồ quá 3 giây không phản hồi hoặc
+                                    mất mạng (theo <code>GĐ-04</code>).</td>
+                                <td><b>Decision 2</b>: Nhánh guard <code>[lỗi / quá hạn 3s]</code> dẫn tới <i>"Ẩn bản đồ
+                                        &amp; báo ngoại tuyến"</i>, sau đó gom với nhánh <code>[thành công]</code> tại
+                                    nút <b>Merge bản đồ</b> trước khi vào thanh <b>Join</b>.</td>
+                            </tr>
+                            <tr>
+                                <td><b>Luồng thay thế <code>5a</code>:</b> Hoạt động không gắn với lịch biểu có mục tiêu
+                                    (theo <code>GĐ-05</code>).</td>
+                                <td><b>Decision 3</b>: Nhánh guard <code>[không có mục tiêu]</code> đi vòng qua bước đối
+                                    chiếu và gom thẳng vào nút <b>Merge mục tiêu</b>; nhánh
+                                    <code>[có đặt mục tiêu]</code> đi vào <i>"Đối chiếu với mục tiêu"</i>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Luồng thay thế <code>5b</code>:</b> Kết quả thực tế chưa đạt mục tiêu đã đặt
+                                    (theo <code>BR-03</code>, <code>GĐ-00</code>).</td>
+                                <td><b>Decision 4</b>: Nhánh guard <code>[chưa đạt]</code> rẽ sang <i>"Hiển thị lời
+                                        khuyên"</i>; nhánh <code>[đạt mục tiêu]</code> rẽ sang <i>"Báo hoàn thành mục
+                                        tiêu"</i>. Cả hai gom lại tại nút <b>Merge mục tiêu</b>.</td>
+                            </tr>
+                            <tr>
+                                <td><b>Luồng thay thế <code>6a</code>:</b> Người dùng đóng giao diện mà không xem chi
+                                    tiết tốc độ/nhịp tim.</td>
+                                <td><b>Decision 5</b>: Nhánh guard <code>[đóng]</code> đi thẳng xuống nút <b>Merge kết
+                                        thúc</b> tới điểm <b>Kết thúc (Thành công)</b>; nhánh
+                                    <code>[xem chi tiết]</code> đi qua hành động yêu cầu và hiển thị chi tiết rồi mới
+                                    gom vào <b>Merge kết thúc</b>.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- SCRIPT BIỂU TƯỢNG VÀ CUỘN ĐIỀU HƯỚNG OFFLINE 100% -->
+    <script>
+        /* Bộ icon SVG Lucide nhúng inline chạy offline không cần mạng */
+        const ICONS = {
+            'circle-check': '<circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" />',
+            'circle-help': '<circle cx="12" cy="12" r="10" /> <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /> <path d="M12 17h.01" />',
+            'git-compare': '<circle cx="18" cy="18" r="3" /> <circle cx="6" cy="6" r="3" /> <path d="M13 6h3a2 2 0 0 1 2 2v7" /> <path d="M11 18H8a2 2 0 0 1-2-2V9" />',
+            'layers': '<path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" /> <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" /> <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" />',
+            'lightbulb': '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" />',
+            'list-checks': '<path d="M13 5h8" /> <path d="M13 12h8" /> <path d="M13 19h8" /> <path d="m3 17 2 2 4-4" /> <path d="m3 7 2 2 4-4" />',
+            'pencil-line': '<path d="M13 21h8" /> <path d="m15 5 4 4" /> <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />',
+            'repeat': '<path d="m17 2 4 4-4 4" /> <path d="M3 11v-1a4 4 0 0 1 4-4h14" /> <path d="m7 22-4-4 4-4" /> <path d="M21 13v1a4 4 0 0 1-4 4H3" />',
+            'triangle-alert': '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" />',
+            'workflow': '<rect width="8" height="8" x="3" y="3" rx="2" /> <path d="M7 11v4a2 2 0 0 0 2 2h4" /> <rect width="8" height="8" x="13" y="13" rx="2" />'
+        };
+        const icon = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
+        function hydrateIcons(root = document) {
+            root.querySelectorAll('[data-icon]').forEach(e => { e.outerHTML = icon(e.dataset.icon); });
+        }
+        hydrateIcons();
+
+        /* Điều hướng & thanh tiến trình */
+        (function () {
+            const $$ = s => [...document.querySelectorAll(s)];
+            const links = $$('#nav a.lnk');
+            const bar = document.getElementById('progress');
+            const upd = () => {
+                const h = document.documentElement;
+                if (bar) bar.style.width = (100 * h.scrollTop / (h.scrollHeight - h.clientHeight || 1)) + '%';
+            };
+            addEventListener('scroll', upd, { passive: true });
+            upd();
+
+            const secs = links.map(a => document.querySelector(a.getAttribute('href')));
+            const io = new IntersectionObserver(es => es.forEach(e => {
+                if (e.isIntersecting) links.forEach((a, i) => a.classList.toggle('on', secs[i] === e.target));
+            }), { rootMargin: '-30% 0px -60% 0px' });
+            secs.forEach(s => s && io.observe(s));
+        })();
+    </script>
+</body>
+
+</html>
