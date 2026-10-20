@@ -9,9 +9,9 @@
 
 | Thành viên | Vai trò | Bài | Phạm vi chính |
 |---|---|---|---|
-| **TV-A** | Làm prototype | Tuần 6 | Chạy prompt chuẩn cho bài sức khoẻ và bài sàn đấu giá; ghi nhật ký; làm slide và báo cáo 8 phút |
+| **Mạnh + Phát** | Làm prototype | Tuần 6 | Chạy prompt chuẩn cho bài sức khoẻ và bài sàn đấu giá; ghi nhật ký; làm slide và báo cáo 8 phút |
 | **Vương Hữu Khang (TV-B)** | Phân tích phân hệ smartwatch | Tuần 5 | Các phần liên quan đến đồng hồ thông minh; state chart "Hoạt động thể chất" |
-| **TV-C** | Phân tích phân hệ smartphone | Tuần 5 | Các phần liên quan đến điện thoại; activity diagram; bảng giả định |
+| **Lâm Duy Minh** | Phân tích phân hệ smartphone | Tuần 5 | Các phần liên quan đến điện thoại; activity diagram; bảng giả định |
 
 **Cách hiểu phân công:** tuần 5 có một bộ sản phẩm chung (một sơ đồ use case, hai đặc tả, một activity diagram, một state chart). Vương Hữu Khang (TV-B) và TV-C cùng làm bộ đó, mỗi người chịu trách nhiệm một phân hệ. TV-A độc lập với tuần 5 về mặt thời gian, nhưng phải đối chiếu với tuần 5 khi viết báo cáo.
 
