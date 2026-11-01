@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>PA02_Nhom04_MoTaBaiToanVaYeuCau_Khang</title>
+<style>
+    body {
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 13pt;
+        line-height: 1.45;
+        color: #0f172a;
+        max-width: 960px;
+        margin: 40px auto;
+        padding: 0 30px;
+        background-color: #ffffff;
+    }
+    h1 {
+        color: #1e3a8a;
+        font-size: 20pt;
+        border-bottom: 2px solid #3b82f6;
+        padding-bottom: 8px;
+        margin-top: 36px;
+    }
+    h2 {
+        color: #1e40af;
+        font-size: 16pt;
+        margin-top: 26px;
+        border-bottom: 1px solid #93c5fd;
+        padding-bottom: 5px;
+    }
+    h3 {
+        color: #1e293b;
+        font-size: 14pt;
+        margin-top: 20px;
+    }
+    h4, h5 {
+        color: #334155;
+        font-size: 13pt;
+        margin-top: 16px;
+    }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 18px 0;
+        font-size: 11pt;
+    }
+    th, td {
+        border: 1px solid #cbd5e1;
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+    }
+    th {
+        background-color: #eef2ff;
+        color: #1e3a8a;
+        font-weight: bold;
+    }
+    tr:nth-child(even) {
+        background-color: #f8fafc;
+    }
+    code {
+        background-color: #f1f5f9;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-family: Consolas, monospace;
+        font-size: 11pt;
+    }
+    pre {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 12px;
+        border-radius: 6px;
+        overflow-x: auto;
+    }
+    ul, ol {
+        padding-left: 24px;
+    }
+    li {
+        margin-bottom: 5px;
+    }
+    hr {
+        border: none;
+        border-top: 1px solid #e2e8f0;
+        margin: 24px 0;
+    }
+</style>
+</head>
+<body>
+<h1>BÁO CÁO PHÂN TÍCH YÊU CẦU PHẦN MỀM VERICITE (PA02)</h1>
+<h2>PHẦN VIỆC PHỤ TRÁCH: MỤC 2 &amp; MỤC 3</h2>
+<p><strong>Thành viên thực hiện:</strong> Vương Hữu Khang – MSSV: 24120070<br />
+<strong>Nhóm:</strong> Nhóm 04 – Môn: Nhập môn Công nghệ Phần mềm<br />
+<strong>Đồ án:</strong> VeriCite – Hệ thống kiểm chứng trích dẫn và phát hiện ảo giác học thuật trong văn bản do AI sinh ra<br />
+<strong>Tài liệu tham chiếu:</strong> Biểu mẫu chuẩn <code>Template#1-PhanTich-2019</code>, Phân công nhóm <code>phan-cong-nhom-PA02.md</code>, Đề cương dự án <code>VeriCite.md</code></p>
+<hr />
+<h1>2 Mô tả bài toán</h1>
+<h3>2.1 Phát biểu bài toán</h3>
+<p>Sự bùng nổ của các mô hình ngôn ngữ lớn (LLM) đã mang lại tiện ích to lớn trong việc hỗ trợ soạn thảo nội dung, nhưng đồng thời làm bùng phát vấn nạn nghiêm trọng: <strong>"ảo giác trích dẫn" (citation hallucination)</strong>. Các mô hình LLM thường xuyên tự tạo ra các tài liệu tham khảo hoàn toàn bịa đặt nhưng gán tên tác giả có thật, tạo ra các mã định danh số (DOI) giả mạo hoặc trỏ sang bài báo khác, sai lệch năm xuất bản, gán sai nơi công bố, hoặc tự ý diễn giải sai lệch các câu trích nguyên văn so với tài liệu gốc. Các giải pháp hiện nay chủ yếu dùng chính LLM để kiểm tra LLM (dẫn đến nguy cơ ảo giác lặp lại), chỉ đưa ra điểm số tổng thể mơ hồ mà thiếu giải thích chi tiết sai lệch từng trường, và hoàn toàn không có khả năng tích lũy tri thức về các trích dẫn ma đã phát hiện.</p>
+<p>Hệ thống <strong>VeriCite</strong> được xây dựng trên một nguyên tắc cốt lõi làm nên sự khác biệt: <strong>"LLM chỉ đảm nhận việc nó làm tốt là bóc tách thông tin từ văn bản tự do; việc xác minh tuyệt đối ưu tiên các nguồn dữ liệu học thuật tất định"</strong> (các cơ sở dữ liệu học thuật mở CrossRef, Semantic Scholar, OpenAlex và tệp tài liệu gốc do người dùng cung cấp). Nhờ nguyên tắc này, quá trình kiểm chứng đạt tính tái lập 100%, không bị ảnh hưởng bởi tính ngẫu nhiên hay ảo giác của trí tuệ nhân tạo.</p>
+<p><strong>VeriCite</strong> là một ứng dụng nền tảng web cho phép người dùng đưa vào một trong ba dạng dữ liệu: (1) đoạn văn bản do AI sinh ra, (2) danh mục tài liệu tham khảo, hoặc (3) tệp báo cáo hoàn chỉnh (định dạng PDF hoặc DOCX); cùng tùy chọn tải lên tài liệu nguồn đối chiếu (định dạng PDF) mà văn bản đã trích dẫn. Hệ thống tự động bóc tách nội dung thành từng thực thể độc lập gồm: trích dẫn, câu trích và nhận định học thuật; sau đó đưa qua quy trình kiểm chứng 3 lớp tất định và trả về báo cáo chi tiết. Trong báo cáo, mỗi mục được gán đúng một trong ba nhãn chuẩn học thuật:
+- <em>Đã xác minh</em> (được tô màu xanh lá): Trích dẫn có thật, khớp chính xác bản ghi nguồn hoặc câu trích khớp trung thực với tài liệu đối chiếu.
+- <em>Chưa xác minh được</em> (được tô màu vàng/cam): Không tìm thấy bản ghi trên các CSDL mở (sách, luận văn nội bộ, tài liệu tiếng Việt...) hoặc nhận định chưa có nguồn; hệ thống tuyệt đối không bao giờ quy chụp là bịa khi chưa có căn cứ.
+- <em>Mâu thuẫn với nguồn</em> (được tô màu đỏ): Trích dẫn có thật nhưng sai lệch chi tiết trường (năm, tác giả, tạp chí), DOI sai bài, câu trích bị sửa đổi làm sai lệch nghĩa, hoặc trích dẫn trùng khớp với Kho trích dẫn ma đã được cộng đồng xác nhận là bịa đặt.</p>
+<p>Mỗi nhãn đều đi kèm mã lý do minh bạch, vị trí đoạn văn, liên kết kiểm chứng nguồn gốc trực tiếp và các từ ngữ sai khác được tô sáng trực quan.</p>
+<p><strong>Sáu (06) nghiệp vụ chính của hệ thống bao gồm:</strong>
+1. <strong>Kiểm tra trích dẫn (Lớp 1):</strong> Xác định sự tồn tại thực tế của tài liệu tham khảo thông qua tra cứu tất định trên CrossRef, Semantic Scholar, OpenAlex; đối chiếu chi tiết từng trường (tác giả, năm xuất bản, tiêu đề, nơi đăng/tạp chí, DOI) với bản ghi gốc; kiểm tra đối chiếu nhanh với Kho trích dẫn ma và Danh sách trích dẫn thật đã xác nhận.
+2. <strong>So khớp câu trích (Lớp 2):</strong> Đối chiếu các câu trích dẫn nguyên văn với tài liệu nguồn do người dùng tải lên, xác định đoạn khớp nhất, tính toán độ tương đồng và chỉ rõ vị trí (trang, đoạn); tô sáng các từ ngữ bị thay đổi/sai lệch.
+3. <strong>Đánh dấu nhận định không có nguồn và gợi ý tài liệu (Lớp 3):</strong> Nhận diện các nhận định học thuật không kèm nguồn tham khảo, gán cảnh báo và truy vấn tự động tối đa 5 tài liệu liên quan từ CSDL học thuật mở để người dùng tự đối chiếu (không gọi LLM phán xét đúng sai).
+4. <strong>Báo cáo và lưu trữ:</strong> Trực quan hóa kết quả bằng màu sắc trực tiếp trên văn bản gốc; cung cấp danh mục chi tiết sắp xếp theo mức độ rủi ro; cho phép xuất báo cáo PDF độc lập làm minh chứng học thuật; quản lý lịch sử kiểm tra có thời hạn lưu trữ an toàn.
+5. <strong>Phản hồi và kiểm duyệt:</strong> Cho phép người dùng gửi báo lỗi kết quả kiểm tra kèm chứng cứ; cung cấp giao diện hàng đợi cho Moderator thẩm định và phê duyệt để cập nhật Kho trích dẫn ma và Danh sách trích dẫn thật đã xác nhận.
+6. <strong>Quản trị hệ thống:</strong> Quản lý tài khoản người dùng, phân quyền các vai trò (Sinh viên, Giảng viên, Moderator, Quản trị viên), thiết lập và giám sát hạn mức kiểm tra, theo dõi thống kê lượt dùng và kiểm soát chi phí token API gọi LLM.</p>
+<p><strong>Mục tiêu định lượng:</strong> Trên bộ dữ liệu kiểm thử chuẩn 120 trích dẫn (gồm 60 trích dẫn thật và 60 trích dẫn bịa), hệ thống cam kết đạt các chỉ tiêu: phát hiện ít nhất 90% trích dẫn bịa; tỷ lệ báo nhầm trích dẫn thật thành bịa không vượt quá 5%; và thời gian xử lý một lượt 20 trích dẫn không quá 30 giây.</p>
+<h3>2.2 Môi trường hoạt động</h3>
+<ul>
+<li><strong>Phía người dùng (Client):</strong></li>
+<li>Trình duyệt web hiện đại hỗ trợ chuẩn HTML5 và ES2020: Google Chrome, Microsoft Edge, Mozilla Firefox, Apple Safari (hỗ trợ hai phiên bản phát hành gần nhất).</li>
+<li>Giao diện web responsive thích ứng đa nền tảng: máy tính để bàn (Desktop), máy tính xách tay (Laptop), máy tính bảng (Tablet) và điện thoại thông minh (Mobile với chiều rộng màn hình tối thiểu từ 360px trở lên; trên điện thoại tối ưu trải nghiệm dán văn bản và xem báo cáo).</li>
+<li>Yêu cầu thiết bị có kết nối mạng Internet ổn định; không yêu cầu người dùng cài đặt thêm bất kỳ phần mềm hay tiện ích mở rộng nào.</li>
+<li><strong>Phía máy chủ (Server):</strong></li>
+<li>Hệ điều hành Linux (khuyến nghị phiên bản Ubuntu Server 24.04 LTS 64-bit).</li>
+<li>Nền tảng ứng dụng được đóng gói và vận hành hoàn toàn trong các container Docker qua Docker Compose trên máy chủ ảo (VPS) với cấu hình tối thiểu 2 vCPU, 4 GB RAM và 40 GB dung lượng lưu trữ SSD.</li>
+<li>Mọi luồng truyền thông giữa máy khách và máy chủ đều bắt buộc mã hóa qua giao thức HTTPS (sử dụng chứng chỉ TLS 1.2 trở lên). Máy chủ có kết nối Internet băng thông ổn định để gửi truy vấn ra các API học thuật và dịch vụ LLM bên ngoài.</li>
+<li><strong>Dịch vụ tích hợp bên ngoài (External Services):</strong></li>
+<li>Cơ sở dữ liệu học thuật mở: CrossRef REST API (định danh DOI và bài báo), Semantic Scholar Academic Graph API (tra cứu trích dẫn và bài viết), OpenAlex API (tra cứu học thuật quy mô lớn).</li>
+<li>Nhà cung cấp dịch vụ mô hình ngôn ngữ lớn (LLM Provider API): OpenAI API, Google Gemini API hoặc Anthropic Claude API; hỗ trợ giao thức gọi hàm hoặc xuất dữ liệu JSON có cấu trúc (Structured Outputs/JSON Schema) phục vụ bóc tách thông tin bám sát văn bản gốc.</li>
+</ul>
+<h3>2.3 Ràng buộc thiết kế và triển khai</h3>
+<p>Các ràng buộc kỹ thuật, công nghệ và tiêu chuẩn mà nhóm phát triển cam kết tuân thủ trong suốt vòng đời dự án được tổng hợp tại Bảng 2.1.</p>
+<p><strong>Bảng 2.1.</strong> <em>Các ràng buộc thiết kế và triển khai của hệ thống VeriCite</em></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;"><strong>STT</strong></th>
+<th><strong>Hạng mục</strong></th>
+<th><strong>Lựa chọn công nghệ / Chuẩn quy định</strong></th>
+<th><strong>Lý do lựa chọn &amp; Ràng buộc</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">1</td>
+<td><strong>Giao diện người dùng (Frontend)</strong></td>
+<td>React, TypeScript, Vite, Tailwind CSS</td>
+<td>Xây dựng ứng dụng trang đơn (SPA) mượt mà; bản build tĩnh được Nginx phục vụ trực tiếp, giảm tải tài nguyên CPU/RAM cho VPS 4 GB; TypeScript kiểm soát chặt chẽ kiểu dữ liệu, hạn chế lỗi lúc runtime.</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td><strong>Máy chủ nghiệp vụ (Backend)</strong></td>
+<td>Python 3.12, FastAPI, Uvicorn</td>
+<td>Python sở hữu hệ sinh thái xử lý văn bản và tài liệu khoa học xuất sắc (PyMuPDF, python-docx, RapidFuzz) cùng SDK chính thức của các hãng LLM; FastAPI hỗ trợ bất đồng bộ (asyncio) hiệu năng cao và tự động sinh tài liệu chuẩn OpenAPI.</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td><strong>Cơ sở dữ liệu (Database)</strong></td>
+<td>PostgreSQL 16</td>
+<td>Hệ quản trị CSDL quan hệ chuẩn mực, độ tin cậy và toàn vẹn dữ liệu cao; kiểu dữ liệu JSONB hỗ trợ lưu trữ linh hoạt cấu trúc kết quả phân tích; tích hợp tính năng tìm kiếm toàn văn (Full-text search).</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td><strong>Bộ nhớ đệm &amp; Hàng đợi (Cache &amp; Queue)</strong></td>
+<td>Redis 7, Celery</td>
+<td>Redis lưu đệm (cache) kết quả tra cứu CSDL học thuật để tránh vượt giới hạn gọi API (Rate limit) và tiết kiệm chi phí; Celery quản lý hàng đợi tác vụ xử lý nền cho các lượt kiểm tra dài và kiểm tra hàng loạt, có cơ chế thử lại có giãn cách.</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td><strong>Tích hợp mô hình LLM</strong></td>
+<td>Adapter Pattern, JSON Schema cố định, Thuật toán kiểm tra bám văn bản gốc</td>
+<td>Đóng gói qua lớp trừu tượng (Adapter) để dễ dàng hoán đổi nhà cung cấp LLM; áp dụng schema JSON cố định; áp dụng thuật toán so khớp chuỗi tất định bắt buộc mọi giá trị tách ra phải trùng nguyên văn vị trí trong văn bản gốc.</td>
+</tr>
+<tr>
+<td style="text-align: center;">6</td>
+<td><strong>Đóng gói &amp; Triển khai</strong></td>
+<td>Docker, Docker Compose, Nginx Reverse Proxy, GitHub Actions</td>
+<td>Đảm bảo tính nhất quán tuyệt đối giữa môi trường phát triển cục bộ và môi trường máy chủ demo; tích hợp quy trình CI/CD tự động chạy kiểm thử đơn vị và kiểm thử hồi quy trước mỗi bản phát hành.</td>
+</tr>
+<tr>
+<td style="text-align: center;">7</td>
+<td><strong>Quy trình &amp; Tiêu chuẩn tài liệu</strong></td>
+<td>Mô hình RUP/Scrum lai, Chuẩn mô hình hóa UML 2.5, Chuẩn đặc tả ISO/IEC/IEEE 29148</td>
+<td>Phù hợp với nhóm sinh viên quy mô nhỏ và tiến độ đồ án; tài liệu tuân thủ nghiêm ngặt quy định học thuật của bộ môn và chuẩn mực công nghiệp phần mềm.</td>
+</tr>
+<tr>
+<td style="text-align: center;">8</td>
+<td><strong>An toàn thông tin &amp; Bảo mật</strong></td>
+<td>Nguyên tắc bảo mật OWASP Top 10, Thuật toán băm mật khẩu Argon2id, Mã hóa đường truyền TLS 1.2+</td>
+<td>Bảo vệ dữ liệu cá nhân của người dùng; bảo vệ bản quyền và tính riêng tư của các tài liệu học thuật tải lên; phòng chống tấn công dò quét mật khẩu (brute-force) và tấn công trung gian (MitM).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1>3 Tổng quan yêu cầu</h1>
+<h2>3.1 Danh sách các stakeholder và Sơ đồ ngữ cảnh</h2>
+<h3>3.1.1 Danh sách Stakeholder</h3>
+<p>Dự án xác định rõ 8 nhóm stakeholder trực tiếp và gián tiếp có ảnh hưởng hoặc chịu sự tác động từ hệ thống, được chi tiết hóa tại Bảng 3.1.</p>
+<p><strong>Bảng 3.1.</strong> <em>Danh sách các bên liên quan (Stakeholder) của hệ thống VeriCite</em></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;"><strong>STT</strong></th>
+<th style="text-align: center;"><strong>Mã</strong></th>
+<th><strong>Tên Stakeholder</strong></th>
+<th><strong>Mô tả vai trò trong hệ thống</strong></th>
+<th><strong>Nhu cầu chính đối với hệ thống</strong></th>
+<th style="text-align: center;"><strong>Mức độ ảnh hưởng</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><strong>STK-01</strong></td>
+<td>Giảng viên hướng dẫn đồ án</td>
+<td>Người định hướng nghiệp vụ, thẩm định phạm vi bài toán, theo dõi tiến độ và đánh giá nghiệm thu sản phẩm.</td>
+<td>Sản phẩm giải quyết đúng bài toán thực tế, bám sát phạm vi đề ra; tài liệu kỹ thuật tuân thủ biểu mẫu và chuẩn mực môn học.</td>
+<td style="text-align: center;">Rất cao</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><strong>STK-02</strong></td>
+<td>Sinh viên (Người dùng chính)</td>
+<td>Người dùng trực tiếp sử dụng hệ thống để rà soát bài viết học thuật, tiểu luận, khóa luận do AI hỗ trợ soạn thảo.</td>
+<td>Kiểm tra nhanh chóng xem trích dẫn và câu trích có thật và chính xác hay không trước khi nộp bài; nhận cảnh báo rõ ràng kèm nguồn đối chiếu để sửa lỗi.</td>
+<td style="text-align: center;">Rất cao</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;"><strong>STK-03</strong></td>
+<td>Giảng viên (Người dùng)</td>
+<td>Người dùng sử dụng hệ thống để thẩm tra bài nộp của học viên, đánh giá mức độ trung thực học thuật của danh mục tham khảo.</td>
+<td>Khả năng kiểm tra hàng loạt nhiều bài nộp cùng lúc; báo cáo tổng hợp chỉ rõ bài nào có dấu hiệu ngụy tạo trích dẫn; xuất báo cáo PDF làm chứng cứ.</td>
+<td style="text-align: center;">Cao</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"><strong>STK-04</strong></td>
+<td>Khách (Guest User)</td>
+<td>Người dùng vãng lai truy cập hệ thống lần đầu mà chưa thực hiện đăng ký tài khoản.</td>
+<td>Trải nghiệm nhanh tính năng kiểm tra trích dẫn cơ bản với số lượng giới hạn mà không cần tốn thời gian đăng ký tài khoản.</td>
+<td style="text-align: center;">Thấp</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;"><strong>STK-05</strong></td>
+<td>Moderator (Kiểm duyệt viên)</td>
+<td>Thành viên chuyên trách tiếp nhận, xem xét và xử lý các yêu cầu báo cáo lỗi kết quả kiểm tra do người dùng gửi lên.</td>
+<td>Công cụ quản lý hàng đợi báo lỗi trực quan; xem xét bằng chứng đối chiếu và thực hiện phê duyệt/từ chối để cập nhật Kho trích dẫn ma và Danh sách trích dẫn thật.</td>
+<td style="text-align: center;">Trung bình</td>
+</tr>
+<tr>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;"><strong>STK-06</strong></td>
+<td>Quản trị viên (Administrator)</td>
+<td>Người chịu trách nhiệm vận hành, giám sát hoạt động kỹ thuật, quản lý người dùng và an toàn hệ thống.</td>
+<td>Quản lý danh sách tài khoản, phân quyền vai trò; cấu hình hạn mức kiểm tra; giám sát số lượng token LLM tiêu thụ và chi phí API để không vượt ngân sách.</td>
+<td style="text-align: center;">Trung bình</td>
+</tr>
+<tr>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;"><strong>STK-07</strong></td>
+<td>CSDL học thuật mở (CrossRef, Semantic Scholar, OpenAlex)</td>
+<td>Hệ thống máy chủ bên ngoài cung cấp nguồn dữ liệu thư tịch học thuật tất định làm căn cứ xác minh.</td>
+<td>Các yêu cầu truy vấn từ VeriCite phải tuân thủ nghiêm ngặt điều khoản sử dụng, đúng định dạng và không vượt quá ngưỡng giới hạn tần suất (Rate limit).</td>
+<td style="text-align: center;">Rất cao</td>
+</tr>
+<tr>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;"><strong>STK-08</strong></td>
+<td>Nhà cung cấp dịch vụ LLM (OpenAI, Google, Anthropic)</td>
+<td>Hệ thống trí tuệ nhân tạo bên ngoài cung cấp năng lực bóc tách thông tin có cấu trúc từ văn bản tự do qua API.</td>
+<td>Dữ liệu đầu vào chuẩn xác; quản lý số lượng token gọi trong hạn mức gói cước; thanh toán chi phí tiêu thụ theo quy định dịch vụ.</td>
+<td style="text-align: center;">Trung bình</td>
+</tr>
+</tbody>
+</table>
+<h3>3.1.2 Sơ đồ ngữ cảnh (Context Diagram)</h3>
+<p>Sơ đồ ngữ cảnh mô tả ranh giới hệ thống VeriCite, vị trí tương tác của 5 tác nhân người dùng và 2 tác nhân hệ thống bên ngoài, cùng các luồng dữ liệu vào/ra tương ứng.</p>
+<p style="text-align: center;"><img src="PA02_Nhom04_ContextDiagram.png" alt="Sơ đồ ngữ cảnh VeriCite" style="max-width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);"><br><em>Hình 3.1. Sơ đồ ngữ cảnh (Context Diagram) hệ thống VeriCite</em></p><pre><code class="language-mermaid">flowchart TB
+    subgraph NGƯỜI DÙNG [&quot;Các tác nhân người dùng&quot;]
+        KHACH[&quot;Khách (STK-04)&quot;]
+        SV[&quot;Sinh viên (STK-02)&quot;]
+        GV[&quot;Giảng viên (STK-03)&quot;]
+        MOD[&quot;Moderator (STK-05)&quot;]
+        ADMIN[&quot;Quản trị viên (STK-06)&quot;]
+    end
+
+    SYSTEM((&quot;HỆ THỐNG VERICITE&lt;br/&gt;(Lõi kiểm chứng 3 lớp)&quot;))
+
+    subgraph HỆ THỐNG NGOÀI [&quot;Hệ thống và Dịch vụ bên ngoài&quot;]
+        CSDL[&quot;CSDL Học thuật mở (STK-07)&lt;br/&gt;(CrossRef, Semantic Scholar, OpenAlex)&quot;]
+        LLM[&quot;Nhà cung cấp LLM (STK-08)&lt;br/&gt;(OpenAI / Gemini / Claude)&quot;]
+    end
+
+    %% Luồng tương tác của Khách
+    KHACH -- &quot;1. Dán tối đa 5 trích dẫn dùng thử&quot; --&gt; SYSTEM
+    SYSTEM -- &quot;2. Báo cáo kết quả dùng thử (trực tiếp)&quot; --&gt; KHACH
+
+    %% Luồng tương tác của Sinh viên
+    SV -- &quot;3. Đăng ký, Đăng nhập, Gửi văn bản/tệp nộp, Tải tài liệu nguồn, Chọn chế độ rủi ro, Báo lỗi kết quả&quot; --&gt; SYSTEM
+    SYSTEM -- &quot;4. Báo cáo trực quan (3 nhãn tô màu), Xuất tệp PDF, Lịch sử kiểm tra cá nhân&quot; --&gt; SV
+
+    %% Luồng tương tác của Giảng viên
+    GV -- &quot;5. Tải nhiều tệp bài nộp (tối đa 30 tệp), Yêu cầu kiểm tra hàng loạt&quot; --&gt; SYSTEM
+    SYSTEM -- &quot;6. Bảng tổng hợp kết quả hàng loạt, Báo cáo chi tiết từng bài nộp&quot; --&gt; GV
+
+    %% Luồng tương tác của Moderator
+    MOD -- &quot;7. Xem hàng đợi báo lỗi, Duyệt/Từ chối báo lỗi, Cập nhật kho trích dẫn&quot; --&gt; SYSTEM
+    SYSTEM -- &quot;8. Danh sách báo lỗi cần duyệt, Bằng chứng đối chiếu, Nhật ký kiểm duyệt&quot; --&gt; MOD
+
+    %% Luồng tương tác của Quản trị viên
+    ADMIN -- &quot;9. Quản lý người dùng, Cấp quyền vai trò, Cấu hình hạn mức kiểm tra&quot; --&gt; SYSTEM
+    SYSTEM -- &quot;10. Thống kê lượt kiểm tra, Chi phí token LLM, Tần suất gọi API học thuật&quot; --&gt; ADMIN
+
+    %% Luồng tương tác với Hệ thống ngoài
+    SYSTEM -- &quot;11. Văn bản kiểm tra (Prompt bóc tách kèm JSON Schema)&quot; --&gt; LLM
+    LLM -- &quot;12. Danh sách thực thể bóc tách (JSON kèm vị trí ký tự)&quot; --&gt; SYSTEM
+
+    SYSTEM -- &quot;13. Truy vấn DOI / Tên tác giả / Tiêu đề bài báo / Từ khóa&quot; --&gt; CSDL
+    CSDL -- &quot;14. Bản ghi thư tịch gốc (Metadata, DOI, Abstract, Trạng thái)&quot; --&gt; SYSTEM
+</code></pre>
+<p><strong>Bảng 3.2.</strong> <em>Mô tả chi tiết các luồng dữ liệu trong Sơ đồ ngữ cảnh</em></p>
+<table>
+<thead>
+<tr>
+<th><strong>Tác nhân tương tác</strong></th>
+<th><strong>Luồng dữ liệu vào hệ thống (Input Data Flow)</strong></th>
+<th><strong>Luồng dữ liệu ra tới tác nhân (Output Data Flow)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Khách (STK-04)</strong></td>
+<td>Đoạn văn bản dán trực tiếp chứa tối đa 5 trích dẫn dùng thử (tuân thủ QĐ1).</td>
+<td>Báo cáo kết quả kiểm tra tại chỗ trên màn hình, thể hiện trạng thái xác minh sơ bộ.</td>
+</tr>
+<tr>
+<td><strong>Sinh viên (STK-02)</strong></td>
+<td>Thông tin tài khoản đăng ký/đăng nhập; văn bản cần kiểm tra (dán trực tiếp hoặc tệp PDF/DOCX); tệp tài liệu nguồn đối chiếu (PDF); tùy chọn chế độ rủi ro (<em>Thông thường</em> hoặc <em>Học thuật nghiêm ngặt</em>); yêu cầu báo lỗi kết quả kèm chứng cứ.</td>
+<td>Giao diện báo cáo kết quả chi tiết với văn bản được tô 3 màu nhãn (<em>Đã xác minh</em>, <em>Chưa xác minh được</em>, <em>Mâu thuẫn với nguồn</em>); mã lý do; liên kết nguồn gốc; tệp báo cáo PDF tải về; danh sách lịch sử kiểm tra.</td>
+</tr>
+<tr>
+<td><strong>Giảng viên (STK-03)</strong></td>
+<td>Gói tệp bài nộp của học viên (tải hàng loạt tối đa 30 tệp PDF/DOCX); các tham số kiểm tra lớp học.</td>
+<td>Thanh tiến độ xử lý hàng đợi nền; bảng tổng hợp thống kê kết quả toàn bộ các bài nộp; báo cáo chi tiết cho từng bài nộp của học viên; tệp xuất PDF tổng hợp.</td>
+</tr>
+<tr>
+<td><strong>Moderator (STK-05)</strong></td>
+<td>Quyết định phê duyệt/từ chối báo lỗi; lý do thẩm định; yêu cầu thêm mới, sửa đổi hoặc xóa bỏ bản ghi trong Kho trích dẫn ma và Danh sách trích dẫn thật đã xác nhận.</td>
+<td>Danh sách hàng đợi các báo lỗi đang chờ duyệt; chi tiết văn bản báo lỗi kèm chứng cứ do người dùng cung cấp; bản ghi nguồn đã khớp; nhật ký kiểm duyệt hệ thống.</td>
+</tr>
+<tr>
+<td><strong>Quản trị viên (STK-06)</strong></td>
+<td>Lệnh quản lý tài khoản (khóa/mở khóa); quyết định phân vai (Sinh viên, Giảng viên, Moderator); cấu hình hạn mức kiểm tra (số lượt/ngày, số trích dẫn/lượt); thiết lập ngưỡng cảnh báo ngân sách.</td>
+<td>Bảng điều khiển (Dashboard) thống kê tổng lượt kiểm tra, phân bố số lượng mục theo các nhãn; báo cáo chi phí token LLM ước tính; thống kê tỷ lệ lỗi và thời gian phản hồi của CSDL ngoài; thông báo cảnh báo vượt 80% ngân sách.</td>
+</tr>
+<tr>
+<td><strong>CSDL học thuật mở (STK-07)</strong></td>
+<td>Yêu cầu tra cứu siêu dữ liệu bài báo qua mã định danh DOI hoặc truy vấn tiêu đề, tác giả, năm công bố; truy vấn tìm kiếm tài liệu gợi ý theo từ khóa.</td>
+<td>Tập dữ liệu siêu dữ liệu (metadata) thư tịch gốc chuẩn hóa (tiêu đề, tác giả, năm, tạp chí/hội nghị, DOI chính thức); mã trạng thái phản hồi HTTP.</td>
+</tr>
+<tr>
+<td><strong>Nhà cung cấp LLM (STK-08)</strong></td>
+<td>Nội dung văn bản thô kèm prompt yêu cầu bóc tách và định dạng JSON Schema quy định nghiêm ngặt vị trí ký tự.</td>
+<td>Cấu trúc dữ liệu JSON chứa danh sách trích dẫn, câu trích và nhận định học thuật kèm tọa độ ký tự bám sát nguyên văn văn bản gốc; lượng token đã tiêu thụ.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3.2 Danh sách yêu cầu</h2>
+<h3>Bảng các quy định nghiệp vụ áp dụng trong toàn hệ thống (QĐ1 – QĐ10)</h3>
+<p>Để đảm bảo tính nhất quán giữa các yêu cầu chức năng, đặc tả use case và giao diện người dùng, toàn bộ hệ thống áp dụng thống nhất 10 quy định nghiệp vụ cốt lõi tại Bảng 3.3.</p>
+<p><strong>Bảng 3.3.</strong> <em>Bảng quy định nghiệp vụ hệ thống (QĐ1 – QĐ10)</em></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Mã QĐ</strong></th>
+<th><strong>Tên quy định nghiệp vụ</strong></th>
+<th><strong>Nội dung chi tiết quy định</strong></th>
+<th><strong>Yêu cầu &amp; Use Case liên quan</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>QĐ1</strong></td>
+<td>Hạn mức dùng thử cho khách vãng lai</td>
+<td>Khách vãng lai không cần đăng nhập được thực hiện tối đa 3 lượt kiểm tra trong một ngày (kiểm soát theo địa chỉ IP và phiên làm việc); mỗi lượt kiểm tra tối đa 5 trích dẫn; chỉ hỗ trợ hình thức dán trực tiếp danh mục trích dẫn (không hỗ trợ tải tệp tài liệu nguồn đối chiếu).</td>
+<td>FR-02, U003, SC-05</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>QĐ2</strong></td>
+<td>Giới hạn dữ liệu đầu vào cho một lượt kiểm tra</td>
+<td>Mỗi lượt kiểm tra của người dùng đã đăng nhập chấp nhận văn bản dán trực tiếp tối đa 5.000 từ, hoặc tệp tải lên (PDF, DOCX) tối đa 20 trang hoặc dung lượng không quá 10 MB. Tối đa 50 trích dẫn trong một lượt kiểm tra. Tệp tài liệu nguồn đối chiếu (PDF có lớp văn bản) dung lượng tối đa 50 MB. Vượt quá giới hạn trên, hệ thống từ chối xử lý, nêu rõ chỉ số vượt ngưỡng và không trừ hạn mức của người dùng.</td>
+<td>FR-03, FR-04, U004, SC-01</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>QĐ3</strong></td>
+<td>Giới hạn kiểm tra hàng loạt cho giảng viên</td>
+<td>Tài khoản vai trò Giảng viên được phép tải lên tối đa 30 tệp bài nộp trong một đợt kiểm tra hàng loạt. Tác vụ được đẩy vào hàng đợi xử lý nền (Celery), hiển thị tiến độ tổng thể. Lỗi xử lý tại một tệp cục bộ không được làm gián đoạn hay dừng quá trình xử lý của 29 tệp còn lại.</td>
+<td>FR-13, U009, SC-03</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>QĐ4</strong></td>
+<td>Quy tắc gán nhãn 3 trạng thái và mã lý do</td>
+<td>Mọi mục (trích dẫn, câu trích, nhận định) sau khi kiểm chứng phải được gán đúng một trong ba nhãn chuẩn:<br>• <strong>Đã xác minh</strong> <em>(Verified - Xanh lá)</em>: Tìm thấy bản ghi gốc trùng khớp trên CSDL học thuật; hoặc trùng khớp với Danh sách trích dẫn thật đã xác nhận; hoặc câu trích khớp chính xác/đạt ngưỡng với tài liệu nguồn.<br>• <strong>Chưa xác minh được</strong> <em>(Unverified - Vàng/Cam)</em>: Không tìm thấy bản ghi trên CSDL mở (sách, luận văn, tài liệu tiếng Việt); hoặc CSDL ngoài gặp sự cố mạng/timeout; hoặc nhận định không có tài liệu nguồn đối chiếu. Tuyệt đối không quy chụp là bịa đặt.<br>• <strong>Mâu thuẫn với nguồn</strong> <em>(Conflicted - Đỏ)</em>: Trích dẫn có thật nhưng sai lệch chi tiết trường (năm, tác giả, nơi công bố); DOI trỏ tới bài khác; câu trích sai lệch so với nguồn; hoặc trích dẫn trùng khớp với Kho trích dẫn ma.</td>
+<td>FR-05, FR-06, FR-09, U004, U006</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>QĐ5</strong></td>
+<td>Nguyên tắc gợi ý tài liệu ở Lớp 3</td>
+<td>Với các nhận định học thuật không có nguồn trích dẫn và người dùng không tải tài liệu nguồn đối chiếu, hệ thống sử dụng các từ khóa đã bóc tách để truy vấn tìm kiếm tối đa 5 tài liệu liên quan trên Semantic Scholar và OpenAlex. Tài liệu gợi ý chỉ mang tính chất tham khảo cho người dùng tự tra cứu đối chiếu, <strong>tuyệt đối không bao giờ làm nhãn của nhận định đổi thành <em>Đã xác minh</em></strong>. Lớp 3 không gọi LLM để phán xét đúng/sai.</td>
+<td>FR-08, U004, U006</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>QĐ6</strong></td>
+<td>Ngưỡng so khớp câu trích ở Lớp 2</td>
+<td>Câu trích dẫn nguyên văn được đối chiếu với tài liệu nguồn qua so khớp chính xác và so khớp gần đúng (RapidFuzz/Levenshtein):<br>• Khớp chính xác (100%): Gán nhãn <em>Đã xác minh</em>, chỉ rõ trang và đoạn văn.<br>• Khớp gần đúng đạt ngưỡng tiêu chuẩn từ 90% trở lên (ở chế độ <em>Thông thường</em>): Gán nhãn <em>Đã xác minh</em>.<br>• Khớp một phần từ 70% đến dưới 90% (hoặc không tìm thấy): Gán nhãn <em>Mâu thuẫn với nguồn</em> kèm trích đoạn nguồn gần nhất.<br>• Mọi trường hợp khớp gần đúng dưới 100% bắt buộc phải <strong>tô sáng các từ ngữ bị sai lệch, thay đổi hoặc số liệu bị sửa</strong>.</td>
+<td>FR-07, U004, U005, SC-02</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>QĐ7</strong></td>
+<td>Quy tắc hiển thị báo cáo và chế độ rủi ro</td>
+<td>Hệ thống cung cấp tối thiểu hai chế độ kiểm tra: <em>Thông thường</em> và <em>Học thuật nghiêm ngặt</em>. <strong>Không có bất kỳ chế độ nào được phép ẩn các mục <em>Chưa xác minh được</em> hay <em>Mâu thuẫn với nguồn</em> khỏi báo cáo trên màn hình hoặc tệp xuất PDF</strong> (tránh làm báo cáo trông "sạch" giả tạo). Ở chế độ <em>Học thuật nghiêm ngặt</em>, ngưỡng so khớp câu trích nâng lên 95%, và toàn bộ các mục có nhãn khác <em>Đã xác minh</em> được tự động đưa lên đầu báo cáo thành danh mục ưu tiên xử lý.</td>
+<td>FR-10, FR-11, U006, U007</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>QĐ8</strong></td>
+<td>Chính sách lưu trữ dữ liệu và quyền riêng tư</td>
+<td>Tệp tài liệu người dùng tải lên (văn bản kiểm tra, tài liệu nguồn) chỉ được sử dụng cho phiên kiểm tra của chính họ và được hệ thống tự động xóa vĩnh viễn khỏi máy chủ sau 30 ngày hoặc ngay khi người dùng chủ động xóa lượt kiểm tra. Người dùng A tuyệt đối không xem được dữ liệu của người dùng B. Tuyệt đối không gửi thông tin định danh cá nhân (tên, email) của người dùng sang các dịch vụ LLM bên ngoài.</td>
+<td>FR-12, NFR-05, U008</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>QĐ9</strong></td>
+<td>Quy định bảo mật tài khoản và xác thực</td>
+<td>Mật khẩu tài khoản phải có độ dài tối thiểu từ 8 ký tự trở lên, áp dụng hướng dẫn an toàn NIST SP 800-63B (chặn các mật khẩu phổ biến, dễ đoán, mật khẩu đã bị rò rỉ). Mật khẩu được lưu trữ dưới dạng mã băm Argon2id có salt ngẫu nhiên. Hệ thống tự động khóa tài khoản tạm thời 15 phút sau 5 lần nhập sai mật khẩu liên tiếp nhằm ngăn chặn tấn công brute-force.</td>
+<td>FR-01, NFR-04, U001, U002</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>QĐ10</strong></td>
+<td>Quy trình kiểm duyệt kho trích dẫn ma và trích dẫn thật</td>
+<td>Báo lỗi kết quả từ người dùng được đưa vào hàng đợi kiểm duyệt ở trạng thái "Chờ duyệt" và không làm thay đổi kết quả kiểm tra tự động cho đến khi có quyết định chính thức. Moderator thẩm định chứng cứ:<br>• Chấp nhận báo lỗi "Trích dẫn là bịa": Thêm trích dẫn vào <em>Kho trích dẫn ma</em>.<br>• Chấp nhận báo lỗi "Trích dẫn có thật bị gán sai": Gỡ khỏi Kho trích dẫn ma (nếu có) và thêm vào <em>Danh sách trích dẫn thật đã xác nhận</em> kèm liên kết bằng chứng xác thực.<br>Mọi thao tác can thiệp đều phải được lưu vết trong nhật ký kiểm toán (Audit log) gồm người duyệt, thời điểm và lý do.</td>
+<td>FR-14, FR-15, U010, U011, U012, SC-04</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>3.2.1 Đặc tả yêu cầu chức năng</h3>
+<p>Yêu cầu chức năng của hệ thống VeriCite gồm 17 yêu cầu (FR-01 đến FR-17), được phân chia thành 5 nhóm nghiệp vụ như tổng hợp tại Bảng 3.4.</p>
+<p><strong>Bảng 3.4.</strong> <em>Phân nhóm yêu cầu chức năng của hệ thống VeriCite</em></p>
+<table>
+<thead>
+<tr>
+<th><strong>Nhóm chức năng</strong></th>
+<th><strong>Mã yêu cầu</strong></th>
+<th><strong>Tên yêu cầu chức năng</strong></th>
+<th style="text-align: center;"><strong>Độ ưu tiên (MoSCoW)</strong></th>
+<th style="text-align: center;"><strong>Quy định áp dụng</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Nhóm 1: Quản lý tài khoản</strong></td>
+<td><strong>FR-01</strong></td>
+<td>Đăng ký, đăng nhập và phân quyền theo vai</td>
+<td style="text-align: center;">Must Have</td>
+<td style="text-align: center;">QĐ9</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>FR-02</strong></td>
+<td>Kiểm tra dùng thử cho khách vãng lai</td>
+<td style="text-align: center;">Should Have</td>
+<td style="text-align: center;">QĐ1</td>
+</tr>
+<tr>
+<td><strong>Nhóm 2: Kiểm tra nội dung</strong></td>
+<td><strong>FR-03</strong></td>
+<td>Nhập dữ liệu kiểm tra và tải tài liệu nguồn</td>
+<td style="text-align: center;">Must Have</td>
+<td style="text-align: center;">QĐ2</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>FR-04</strong></td>
+<td>Bóc tách trích dẫn, câu trích và nhận định</td>
+<td style="text-align: center;">Must Have</td>
+<td style="text-align: center;">QĐ2</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>FR-05</strong></td>
+<td>Xác minh sự tồn tại của trích dẫn (Lớp 1)</td>
+<td style="text-align: center;">Must Have</td>
+<td style="text-align: center;">QĐ4</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>FR-06</strong></td>
+<td>Đối chiếu chi tiết các trường trích dẫn (Lớp 1)</td>
+<td style="text-align: center;">Must Have</td>
+<td style="text-align: center;">QĐ4</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>FR-07</strong></td>
+<td>So khớp câu trích với tài liệu nguồn (Lớp 2)</td>
+<td style="text-align: center;">Must Have</td>
+<td style="text-align: center;">QĐ6</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>FR-08</strong></td>
+<td>Đánh dấu nhận định thiếu nguồn và gợi ý tài liệu (Lớp 3)</td>
+<td style="text-align: center;">Should Have</td>
+<td style="text-align: center;">QĐ5</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>FR-09</strong></td>
+<td>Gán nhãn và tổng hợp báo cáo chi tiết</td>
+<td style="text-align: center;">Must Have</td>
+<td style="text-align: center;">QĐ4, QĐ5</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>FR-10</strong></td>
+<td>Tùy chọn chế độ rủi ro kiểm tra</td>
+<td style="text-align: center;">Should Have</td>
+<td style="text-align: center;">QĐ7</td>
+</tr>
+<tr>
+<td><strong>Nhóm 3: Kết quả &amp; Lịch sử</strong></td>
+<td><strong>FR-11</strong></td>
+<td>Xuất báo cáo kết quả định dạng PDF</td>
+<td style="text-align: center;">Must Have</td>
+<td style="text-align: center;">QĐ7</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>FR-12</strong></td>
+<td>Quản lý và tra cứu lịch sử kiểm tra cá nhân</td>
+<td style="text-align: center;">Must Have</td>
+<td style="text-align: center;">QĐ8</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>FR-13</strong></td>
+<td>Kiểm tra bài nộp hàng loạt cho giảng viên</td>
+<td style="text-align: center;">Should Have</td>
+<td style="text-align: center;">QĐ3</td>
+</tr>
+<tr>
+<td><strong>Nhóm 4: Phản hồi &amp; Kiểm duyệt</strong></td>
+<td><strong>FR-14</strong></td>
+<td>Báo lỗi kết quả kiểm tra</td>
+<td style="text-align: center;">Should Have</td>
+<td style="text-align: center;">QĐ10</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>FR-15</strong></td>
+<td>Kiểm duyệt báo lỗi và quản lý kho trích dẫn</td>
+<td style="text-align: center;">Should Have</td>
+<td style="text-align: center;">QĐ10</td>
+</tr>
+<tr>
+<td><strong>Nhóm 5: Quản trị hệ thống</strong></td>
+<td><strong>FR-16</strong></td>
+<td>Quản lý tài khoản người dùng và hạn mức</td>
+<td style="text-align: center;">Should Have</td>
+<td style="text-align: center;">QĐ1, QĐ2, QĐ3</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>FR-17</strong></td>
+<td>Thống kê lượt kiểm tra và giám sát chi phí API</td>
+<td style="text-align: center;">Could Have</td>
+<td style="text-align: center;">—</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>Chi tiết các yêu cầu chức năng (FR-01 đến FR-17)</h4>
+<h5>FR-01: Đăng ký, đăng nhập và phân quyền theo vai</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Quản lý tài khoản</li>
+<li><strong>Độ ưu tiên:</strong> Must Have</li>
+<li><strong>Tác nhân:</strong> Khách (STK-04), Người dùng đã đăng ký (STK-02, STK-03, STK-05, STK-06)</li>
+<li><strong>Quy định liên quan:</strong> QĐ9</li>
+<li><strong>Mô tả:</strong> Hệ thống cung cấp chức năng cho phép người dùng đăng ký tài khoản mới bằng địa chỉ email và mật khẩu hợp lệ theo quy định QĐ9 (độ dài tối thiểu 8 ký tự, không chứa chuỗi dễ đoán hay mật khẩu lộ lọt). Tài khoản đăng ký mới mặc định được gán vai trò Sinh viên. Hệ thống cung cấp chức năng đăng nhập, đăng xuất an toàn; duy trì phiên làm việc bằng JSON Web Token (JWT) có thời hạn; tự động khóa tài khoản tạm thời 15 phút sau 5 lần đăng nhập thất bại liên tiếp nhằm chống brute-force. Hệ thống kiểm soát quyền truy cập tài nguyên nghiêm ngặt ở cấp API dựa trên vai trò người dùng (Role-Based Access Control - RBAC).</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Đăng ký với mật khẩu dưới 8 ký tự hoặc nằm trong danh sách mật khẩu yếu/phổ biến (ví dụ: <code>12345678</code>, <code>password</code>) bị hệ thống từ chối và hiển thị thông báo lý do rõ ràng.</li>
+<li>Đăng ký thành công với mật khẩu hợp lệ, mật khẩu lưu trong cơ sở dữ liệu bắt buộc phải được mã hóa băm bằng thuật toán Argon2id có salt.</li>
+<li>Thực hiện đăng nhập sai 5 lần liên tiếp trên một tài khoản, hệ thống từ chối lượt đăng nhập thứ 6 và hiển thị thông báo khóa tạm thời trong 15 phút.</li>
+<li>Người dùng vai trò Sinh viên gọi trực tiếp API của Quản trị viên hoặc Moderator bị chặn với mã phản hồi HTTP 403 Forbidden.</li>
+</ul>
+<h5>FR-02: Kiểm tra dùng thử cho khách vãng lai</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Quản lý tài khoản</li>
+<li><strong>Độ ưu tiên:</strong> Should Have</li>
+<li><strong>Tác nhân:</strong> Khách (STK-04)</li>
+<li><strong>Quy định liên quan:</strong> QĐ1</li>
+<li><strong>Mô tả:</strong> Hệ thống cho phép người dùng vãng lai chưa có tài khoản trải nghiệm tính năng kiểm tra trích dẫn trực tiếp tại trang chủ. Khách dán tối đa 5 trích dẫn vào ô nhập liệu; hệ thống thực hiện kiểm tra Lớp 1 (xác minh sự tồn tại và đối chiếu trường trích dẫn qua CSDL mở) và trả về kết quả hiển thị trên màn hình. Mỗi địa chỉ IP/phiên làm việc chỉ được thực hiện tối đa 3 lượt kiểm tra trong một ngày. Chức năng dùng thử không hỗ trợ tải tệp tài liệu đối chiếu (Lớp 2), không lưu lịch sử và không hỗ trợ xuất báo cáo PDF.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Khách dán từ 1 đến 5 trích dẫn, hệ thống xử lý và trả về nhãn trạng thái trực tiếp trên giao diện mà không yêu cầu đăng nhập.</li>
+<li>Khách dán nhiều hơn 5 trích dẫn, hệ thống thông báo vượt quá số lượng cho phép của lượt dùng thử và yêu cầu xóa bớt hoặc đăng ký tài khoản.</li>
+<li>Sau 3 lượt dùng thử thành công trong cùng một ngày từ một IP, lượt thứ 4 bị chặn kèm thông báo đã hết hạn mức dùng thử trong ngày và nút điều hướng tới trang Đăng ký.</li>
+</ul>
+<h5>FR-03: Nhập dữ liệu kiểm tra và tải tài liệu nguồn</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Kiểm tra nội dung</li>
+<li><strong>Độ ưu tiên:</strong> Must Have</li>
+<li><strong>Tác nhân:</strong> Sinh viên (STK-02), Giảng viên (STK-03)</li>
+<li><strong>Quy định liên quan:</strong> QĐ2</li>
+<li><strong>Mô tả:</strong> Hệ thống cung cấp giao diện cho người dùng đã đăng nhập nhập dữ liệu kiểm tra thông qua một trong hai hình thức: dán văn bản trực tiếp (tối đa 5.000 từ) hoặc tải lên tệp văn bản (định dạng PDF hoặc DOCX, dung lượng tối đa 10 MB, tối đa 20 trang). Người dùng có thể tùy chọn tải kèm một tệp tài liệu nguồn đối chiếu (định dạng PDF có lớp văn bản, dung lượng tối đa 50 MB) để phục vụ so khớp câu trích (Lớp 2). Hệ thống kiểm tra dung lượng, định dạng tệp và số lượng trích dẫn (tối đa 50 trích dẫn theo QĐ2). Giao diện hiển thị rõ ràng thông báo cảnh báo về việc nội dung văn bản sẽ được gửi tới dịch vụ LLM bên ngoài để bóc tách thông tin và yêu cầu người dùng xác nhận trước khi bắt đầu.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Tải lên tệp không đúng định dạng (ví dụ <code>.txt</code>, <code>.exe</code>) hoặc vượt quá 10 MB bị hệ thống từ chối ngay tại giao diện với thông báo lỗi cụ thể.</li>
+<li>Tệp PDF scan không có lớp văn bản (text layer) khi tải làm tài liệu nguồn đối chiếu bị hệ thống phát hiện và yêu cầu cung cấp tệp có lớp văn bản.</li>
+<li>Khi văn bản vượt quá 5.000 từ hoặc chứa quá 50 trích dẫn, hệ thống từ chối tạo lượt kiểm tra và nêu rõ giới hạn vi phạm theo QĐ2.</li>
+<li>Nút bấm kích hoạt kiểm tra chỉ khả dụng khi người dùng đã đánh dấu vào ô xác nhận đồng ý gửi văn bản tới dịch vụ LLM.</li>
+</ul>
+<h5>FR-04: Bóc tách trích dẫn, câu trích và nhận định</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Kiểm tra nội dung</li>
+<li><strong>Độ ưu tiên:</strong> Must Have</li>
+<li><strong>Tác nhân:</strong> Hệ thống (tự động)</li>
+<li><strong>Quy định liên quan:</strong> QĐ2</li>
+<li><strong>Mô tả:</strong> Hệ thống trích xuất mã định danh số (DOI) bằng biểu thức chính quy (Regex), sau đó gửi văn bản tới dịch vụ LLM kèm prompt chuyên biệt để bóc tách thành danh sách các thực thể theo định dạng JSON Schema cố định, bao gồm:</li>
+<li><em>Trích dẫn (Citations):</em> tác giả, năm, tiêu đề, nơi xuất bản/tạp chí, DOI (nếu có).</li>
+<li><em>Câu trích (Direct quotes):</em> nội dung câu trích nguyên văn trong dấu ngoặc kép hoặc khối trích dẫn, kèm trích dẫn tương ứng.</li>
+<li><em>Nhận định học thuật (Claims):</em> các câu khẳng định học thuật không có trích dẫn đi kèm, kèm theo 2–4 từ khóa tra cứu.
+  Mỗi giá trị bóc tách bắt buộc phải kèm theo tọa độ chỉ số ký tự bắt đầu và kết thúc trong văn bản gốc. Hệ thống chạy thuật toán kiểm tra bám văn bản gốc (Faithfulness validation): bất kỳ trường thông tin nào không trùng khớp nguyên văn với chuỗi ký tự tại tọa độ khai báo sẽ bị loại bỏ và yêu cầu LLM bóc tách lại (tối đa 2 lần). Bước bóc tách tuyệt đối không đưa ra phán xét đúng/sai.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>100% đầu ra bóc tách được lưu trữ đều hợp lệ theo đúng cấu trúc JSON Schema đã quy định.</li>
+<li>Kiểm tra bám văn bản: Nếu giá trị trường bóc tách bị sai khác dù chỉ 1 ký tự so với văn bản gốc tại tọa độ chỉ định, hệ thống phát hiện và kích hoạt gọi lại.</li>
+<li>Dữ liệu trích xuất hoàn toàn không chứa nhận xét hay gán nhãn phán xét đúng/sai của mô hình LLM.</li>
+</ul>
+<h5>FR-05: Xác minh sự tồn tại của trích dẫn (Lớp 1)</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Kiểm tra nội dung</li>
+<li><strong>Độ ưu tiên:</strong> Must Have</li>
+<li><strong>Tác nhân:</strong> Hệ thống (tự động)</li>
+<li><strong>Quy định liên quan:</strong> QĐ4</li>
+<li><strong>Mô tả:</strong> Với từng trích dẫn đã bóc tách, hệ thống chuẩn hóa chuỗi và tính toán mã băm (dấu vân tay trích dẫn) để tra cứu trước trong <em>Kho trích dẫn ma</em> và <em>Danh sách trích dẫn thật đã xác nhận</em>. Nếu trùng khớp với Kho trích dẫn ma, hệ thống gán ngay nhãn <em>Mâu thuẫn với nguồn</em> kèm mã lý do cảnh báo "Đã xác nhận là trích dẫn bịa" mà không cần gọi API ra ngoài. Nếu trùng với Danh sách trích dẫn thật, hệ thống gán nhãn <em>Đã xác minh</em> kèm bằng chứng của Moderator. Nếu không trùng, hệ thống tiến hành tra cứu tất định theo DOI hoặc truy vấn tiêu đề trên CrossRef, Semantic Scholar và OpenAlex. Nếu không tìm thấy ở bất kỳ nguồn nào, hệ thống gán nhãn <em>Chưa xác minh được</em> với mã lý do cảnh báo cao "Không tìm thấy trên các CSDL học thuật mở" và liệt kê các nguồn đã tra cứu. Nếu DOI trỏ sang một bài viết hoàn toàn khác, hệ thống gán nhãn <em>Mâu thuẫn với nguồn</em>.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Trên bộ kiểm thử chuẩn 120 trích dẫn: ít nhất 90% trích dẫn bịa không bị gán nhãn <em>Đã xác minh</em>; không quá 5% trích dẫn thật bị gán nhãn khác <em>Đã xác minh</em>.</li>
+<li>Trích dẫn đã nằm trong Kho trích dẫn ma được nhận diện chính xác ngay cả khi có sai khác nhỏ về chữ hoa/thường hoặc dấu câu, không phát sinh bất kỳ lệnh gọi API ra CSDL ngoài.</li>
+<li>Khi một trích dẫn không tìm thấy trên cả 3 CSDL, hệ thống gán nhãn <em>Chưa xác minh được</em>, tuyệt đối không tự ý gán nhãn <em>Mâu thuẫn với nguồn</em> (trừ khi sai DOI hoặc trùng kho ma).</li>
+</ul>
+<h5>FR-06: Đối chiếu chi tiết các trường trích dẫn (Lớp 1)</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Kiểm tra nội dung</li>
+<li><strong>Độ ưu tiên:</strong> Must Have</li>
+<li><strong>Tác nhân:</strong> Hệ thống (tự động)</li>
+<li><strong>Quy định liên quan:</strong> QĐ4</li>
+<li><strong>Mô tả:</strong> Đối với các trích dẫn tìm thấy bản ghi gốc trên CSDL học thuật mở, hệ thống thực hiện thuật toán so khớp chi tiết từng trường thông tin chính: tên các tác giả, năm xuất bản, tiêu đề bài viết, tên tạp chí/hội nghị và DOI. Nếu tất cả các trường cốt lõi đều trùng khớp (chấp nhận sai khác về cách viết tắt tên tác giả hoặc dấu câu chuẩn hóa), trích dẫn được gán nhãn <em>Đã xác minh</em>. Nếu phát hiện có trường bị sai lệch (ví dụ: đúng tên bài nhưng sai năm xuất bản, bịa tên đồng tác giả, hoặc sai tên tạp chí), hệ thống gán nhãn <em>Mâu thuẫn với nguồn</em>, đồng thời ghi rõ trường bị sai lệch kèm theo giá trị chính xác trích xuất từ bản ghi gốc để người dùng sửa đổi.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Một bài báo có thật nhưng bị sửa năm xuất bản từ 2020 thành 2024: hệ thống gán nhãn <em>Mâu thuẫn với nguồn</em>, chỉ rõ trường "Năm xuất bản" bị sai và hiển thị giá trị đúng là "2020".</li>
+<li>Tên tác giả viết tắt (ví dụ: "A. Vaswani" so với bản gốc "Ashish Vaswani") được hệ thống nhận diện là tương đương và vẫn giữ nhãn <em>Đã xác minh</em>.</li>
+</ul>
+<h5>FR-07: So khớp câu trích với tài liệu nguồn (Lớp 2)</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Kiểm tra nội dung</li>
+<li><strong>Độ ưu tiên:</strong> Must Have</li>
+<li><strong>Tác nhân:</strong> Hệ thống (tự động)</li>
+<li><strong>Quy định liên quan:</strong> QĐ6, QĐ7</li>
+<li><strong>Mô tả:</strong> Khi người dùng có tải lên tệp tài liệu nguồn đối chiếu (PDF có lớp văn bản), hệ thống trích xuất nội dung văn bản từ tệp và thực hiện tìm kiếm từng câu trích dẫn nguyên văn trong tài liệu nguồn. Hệ thống thực hiện so khớp chính xác trước, sau đó áp dụng thuật toán so khớp chuỗi gần đúng (Levenshtein distance/RapidFuzz) theo ngưỡng quy định tại QĐ6:</li>
+<li>Nếu độ tương đồng đạt từ 90% trở lên (ở chế độ <em>Thông thường</em>) hoặc từ 95% trở lên (ở chế độ <em>Học thuật nghiêm ngặt</em> theo QĐ7): gán nhãn <em>Đã xác minh</em>, hiển thị vị trí số trang và đoạn văn khớp trong tệp nguồn.</li>
+<li>Nếu độ tương đồng chỉ đạt từ 70% đến dưới 90% (hoặc dưới 95% ở chế độ nghiêm ngặt): gán nhãn <em>Mâu thuẫn với nguồn</em>, hiển thị đoạn văn bản gốc tương đồng nhất và <strong>tô sáng các từ ngữ bị thay đổi, thêm bớt hoặc làm sai lệch</strong>.</li>
+<li>Nếu độ tương đồng dưới 70% hoặc không tìm thấy câu văn tương tự: gán nhãn <em>Mâu thuẫn với nguồn</em> với lý do "Không tìm thấy nội dung trong tài liệu nguồn đối chiếu".
+  Nếu người dùng không tải tệp tài liệu nguồn, nội dung câu trích được gán nhãn <em>Chưa xác minh được</em> kèm ghi chú "Chưa có tài liệu nguồn để đối chiếu".</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Câu trích hoàn toàn khớp nguyên văn với trang 15 của giáo trình tải lên: hệ thống gán nhãn <em>Đã xác minh</em> và ghi chú "Trang 15".</li>
+<li>Câu trích bị AI cố tình sửa đổi một con số hoặc thay đổi từ khóa quan trọng (độ tương đồng 85%): hệ thống gán nhãn <em>Mâu thuẫn với nguồn</em> và tô màu nổi bật đúng vị trí các từ bị sửa.</li>
+<li>Ở chế độ <em>Học thuật nghiêm ngặt</em>, câu trích đạt độ tương đồng 92% (dưới ngưỡng 95%) bắt buộc phải bị chuyển sang nhãn <em>Mâu thuẫn với nguồn</em>.</li>
+</ul>
+<h5>FR-08: Đánh dấu nhận định thiếu nguồn và gợi ý tài liệu (Lớp 3)</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Kiểm tra nội dung</li>
+<li><strong>Độ ưu tiên:</strong> Should Have</li>
+<li><strong>Tác nhân:</strong> Hệ thống (tự động)</li>
+<li><strong>Quy định liên quan:</strong> QĐ5</li>
+<li><strong>Mô tả:</strong> Đối với các câu nhận định học thuật không được gắn kèm trích dẫn trong văn bản và người dùng không cung cấp tài liệu nguồn đối chiếu, hệ thống tự động gán nhãn <em>Chưa xác minh được</em> kèm thông báo cảnh báo "Nhận định chưa có nguồn đối chiếu". Hệ thống sử dụng 2–4 từ khóa học thuật đã được bóc tách từ nhận định ở bước FR-04 để gửi truy vấn tìm kiếm tự động trên Semantic Scholar và OpenAlex; trả về tối đa 5 tài liệu học thuật liên quan nhất gồm: tiêu đề bài viết, năm công bố, tác giả và liên kết URL/DOI để người dùng tự tra cứu tham khảo. Tuân thủ nghiêm ngặt QĐ5: các tài liệu gợi ý tuyệt đối không làm thay đổi nhãn của nhận định sang <em>Đã xác minh</em>, và quy trình gợi ý Lớp 3 không gọi mô hình LLM để phán xét đúng/sai.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Không có bất kỳ nhận định nào đi qua Lớp 3 được hệ thống tự động chuyển sang nhãn <em>Đã xác minh</em>.</li>
+<li>Nhật ký hệ thống (System logs) chứng minh Lớp 3 không phát sinh bất kỳ lệnh gọi API nào tới nhà cung cấp LLM.</li>
+<li>Kết quả hiển thị đúng cảnh báo và danh sách tối đa 5 tài liệu gợi ý có liên kết mở được trang bài báo gốc.</li>
+</ul>
+<h5>FR-09: Gán nhãn và tổng hợp báo cáo chi tiết</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Kiểm tra nội dung</li>
+<li><strong>Độ ưu tiên:</strong> Must Have</li>
+<li><strong>Tác nhân:</strong> Hệ thống (tự động)</li>
+<li><strong>Quy định liên quan:</strong> QĐ4, QĐ5</li>
+<li><strong>Mô tả:</strong> Hệ thống tổng hợp toàn bộ kết quả thẩm tra từ Lớp 1, Lớp 2 và Lớp 3; gán đúng một nhãn học thuật chuẩn và một mã lý do duy nhất cho từng mục theo quy tắc tại QĐ4 và QĐ5. Hệ thống xây dựng giao diện báo cáo trực quan hai phần:</li>
+<li><em>Khối văn bản trực quan:</em> Hiển thị toàn bộ văn bản gốc với từng đoạn trích dẫn, câu trích và nhận định được tô màu nền tương ứng theo nhãn (<em>Đã xác minh</em>: xanh lá; <em>Chưa xác minh được</em>: vàng/cam; <em>Mâu thuẫn với nguồn</em>: đỏ). Bấm chuột vào đoạn văn bản sẽ cuộn tới mục chi tiết tương ứng.</li>
+<li><em>Danh mục chi tiết từng mục:</em> Hiển thị danh sách các mục được sắp xếp ưu tiên theo mức độ cảnh báo (mục <em>Mâu thuẫn với nguồn</em> và <em>Chưa xác minh được</em> đưa lên trước); mỗi mục nêu rõ: nhãn, mã lý do, lớp kiểm chứng thực hiện, liên kết tới bản ghi gốc CSDL hoặc vị trí trang tài liệu nguồn, và nút "Báo lỗi kết quả". Phần đầu báo cáo có thanh tóm tắt thống kê tổng số lượng và tỷ lệ phần trăm theo từng nhãn.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>100% các mục trong văn bản đều được gán đúng một nhãn duy nhất kèm một mã lý do giải thích.</li>
+<li>Tổng số mục thống kê ở thanh tóm tắt bằng chính xác tổng số mục chi tiết bên dưới.</li>
+<li>Thao tác nhấp chuột vào một đoạn tô màu trên văn bản lập tức kích hoạt mở đúng thẻ thông tin chi tiết của mục đó.</li>
+</ul>
+<h5>FR-10: Tùy chọn chế độ rủi ro kiểm tra</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Kiểm tra nội dung</li>
+<li><strong>Độ ưu tiên:</strong> Should Have</li>
+<li><strong>Tác nhân:</strong> Sinh viên (STK-02), Giảng viên (STK-03)</li>
+<li><strong>Quy định liên quan:</strong> QĐ7</li>
+<li><strong>Mô tả:</strong> Trước khi tiến hành kiểm tra, hệ thống cho phép người dùng lựa chọn một trong hai chế độ rủi ro: <em>Thông thường</em> (Default) hoặc <em>Học thuật nghiêm ngặt</em> (Strict Academic). Chế độ được chọn sẽ lưu cùng lượt kiểm tra và thể hiện rõ trên báo cáo. Ở chế độ <em>Học thuật nghiêm ngặt</em>, ngưỡng so khớp câu trích nguyên văn được nâng lên 95% (theo QĐ6) và toàn bộ các mục có nhãn khác <em>Đã xác minh</em> được tự động đưa lên đầu danh mục báo cáo thành "Danh sách cần xử lý khẩn cấp". Tuân thủ tuyệt đối quy định QĐ7: cả hai chế độ đều hiển thị đầy đủ 100% các mục, không có chế độ nào được ẩn mục khỏi báo cáo hoặc tệp PDF xuất ra.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Cùng một văn bản đầu vào, báo cáo xuất ra ở cả hai chế độ có tổng số lượng mục hoàn toàn bằng nhau (không mục nào bị ẩn).</li>
+<li>Ở chế độ <em>Học thuật nghiêm ngặt</em>, câu trích đạt độ tương đồng 92% bị gán nhãn <em>Mâu thuẫn với nguồn</em>, và toàn bộ mục <em>Mâu thuẫn với nguồn</em> cùng <em>Chưa xác minh được</em> được gom lên đầu báo cáo.</li>
+<li>Thông tin tên chế độ rủi ro được in rõ ràng trên giao diện báo cáo, tệp xuất PDF và danh sách lịch sử.</li>
+</ul>
+<h5>FR-11: Xuất báo cáo kết quả định dạng PDF</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Kết quả &amp; Lịch sử</li>
+<li><strong>Độ ưu tiên:</strong> Must Have</li>
+<li><strong>Tác nhân:</strong> Sinh viên (STK-02), Giảng viên (STK-03)</li>
+<li><strong>Quy định liên quan:</strong> QĐ7</li>
+<li><strong>Mô tả:</strong> Hệ thống cho phép người dùng đã đăng nhập xuất toàn bộ kết quả kiểm tra thành một tệp tài liệu PDF độc lập, phục vụ lưu trữ hoặc đính kèm làm minh chứng khi nộp bài học thuật. Tệp PDF được định dạng trang nghiêm, hiển thị đầy đủ thông tin: Mã định danh lượt kiểm tra (Check ID), thời điểm kiểm tra, tên tài khoản, chế độ rủi ro áp dụng; khối thống kê tóm tắt số lượng mục theo 3 nhãn; danh sách chi tiết từng mục gồm nhãn trạng thái, trích đoạn văn bản, mã lý do, liên kết nguồn gốc mở được và đoạn văn bản đối chiếu; mã phản hồi nhanh (QR Code) để tra cứu xác thực báo cáo trên hệ thống. Tuân thủ QĐ7, tệp PDF không ẩn bất kỳ mục nào.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Tệp PDF xuất ra hiển thị tiếng Việt hoàn toàn đúng font chữ, không lỗi dấu hoặc định dạng bảng.</li>
+<li>Số lượng mục, trạng thái nhãn và mã lý do trong tệp PDF khớp chính xác 100% với giao diện báo cáo web.</li>
+<li>Các đường link liên kết nguồn ngoài trong tệp PDF có thể nhấp chuột trực tiếp để mở trình duyệt tới trang gốc.</li>
+</ul>
+<h5>FR-12: Quản lý và tra cứu lịch sử kiểm tra cá nhân</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Kết quả &amp; Lịch sử</li>
+<li><strong>Độ ưu tiên:</strong> Must Have</li>
+<li><strong>Tác nhân:</strong> Sinh viên (STK-02), Giảng viên (STK-03)</li>
+<li><strong>Quy định liên quan:</strong> QĐ8</li>
+<li><strong>Mô tả:</strong> Hệ thống tự động lưu trữ thông tin các lượt kiểm tra của người dùng đã đăng nhập vào lịch sử cá nhân. Người dùng có thể xem danh sách lịch sử gồm: thời điểm kiểm tra, tên tệp/tiêu đề lượt kiểm tra, chế độ rủi ro, tóm tắt số lượng mục theo từng nhãn; cho phép nhấp vào để mở lại báo cáo chi tiết hoặc tải lại tệp PDF. Người dùng có quyền chủ động xóa một lượt kiểm tra khỏi lịch sử. Tuân thủ QĐ8, các tệp văn bản và tài liệu nguồn tải lên sẽ được tiến trình nền của hệ thống tự động xóa vĩnh viễn sau 30 ngày (chỉ giữ lại dữ liệu siêu dữ liệu báo cáo), hoặc xóa ngay lập tức khi người dùng xóa lượt kiểm tra. Đảm bảo tính riêng tư tuyệt đối: người dùng A không thể xem lịch sử của người dùng B.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Người dùng A đăng nhập không thể thấy hoặc truy cập vào bất kỳ lượt kiểm tra nào của người dùng B (kể cả khi cố tình nhập ID trên thanh địa chỉ URL).</li>
+<li>Khi người dùng bấm xóa một lượt kiểm tra, toàn bộ bản ghi báo cáo và tệp đính kèm trên máy chủ bị xóa vĩnh viễn, không thể khôi phục hay truy cập lại.</li>
+<li>Tiến trình dọn dẹp chạy định kỳ quét và xóa thành công các tệp tài liệu lưu trữ có thời gian quá 30 ngày.</li>
+</ul>
+<h5>FR-13: Kiểm tra bài nộp hàng loạt cho giảng viên</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Kết quả &amp; Lịch sử</li>
+<li><strong>Độ ưu tiên:</strong> Should Have</li>
+<li><strong>Tác nhân:</strong> Giảng viên (STK-03)</li>
+<li><strong>Quy định liên quan:</strong> QĐ3</li>
+<li><strong>Mô tả:</strong> Hệ thống cung cấp giao diện riêng cho tài khoản có vai trò Giảng viên cho phép chọn và tải lên đồng thời tối đa 30 tệp bài nộp của học viên (định dạng PDF hoặc DOCX) trong một đợt kiểm tra theo quy định QĐ3. Hệ thống tiếp nhận gói tệp, sinh tác vụ nền và xử lý tuần tự/song song qua hàng đợi Celery, hiển thị thanh tiến độ phần trăm theo thời gian thực trên màn hình. Khi hoàn tất, hệ thống trả về bảng tổng hợp kết quả toàn lớp gồm: Tên học viên/tên tệp bài nộp, tổng số trích dẫn, số mục <em>Mâu thuẫn với nguồn</em>, số mục <em>Chưa xác minh được</em>, số mục <em>Đã xác minh</em>, và nút bấm mở xem báo cáo chi tiết hoặc xuất PDF riêng cho từng bài. Đảm bảo nguyên tắc cô lập lỗi: một tệp bị lỗi định dạng hoặc hỏng không làm dừng quá trình xử lý của các tệp còn lại trong danh sách.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Giảng viên tải lên danh sách 30 tệp bài nộp, hệ thống tiếp nhận và khởi tạo tiến trình xử lý nền thành công.</li>
+<li>Giả lập đưa vào 1 tệp bị hỏng (corrupted PDF) trong gói 10 tệp: hệ thống đánh dấu tệp đó bị lỗi, 9 tệp còn lại vẫn được xử lý hoàn tất và hiển thị kết quả bình thường trên bảng tổng hợp.</li>
+<li>Bảng tổng hợp hiển thị đầy đủ thống kê của từng bài nộp và cho phép nhấp mở xem báo cáo chi tiết từng bài.</li>
+</ul>
+<h5>FR-14: Báo lỗi kết quả kiểm tra</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Phản hồi &amp; Kiểm duyệt</li>
+<li><strong>Độ ưu tiên:</strong> Should Have</li>
+<li><strong>Tác nhân:</strong> Sinh viên (STK-02), Giảng viên (STK-03)</li>
+<li><strong>Quy định liên quan:</strong> QĐ10</li>
+<li><strong>Mô tả:</strong> Tại giao diện xem báo cáo kết quả chi tiết, bên cạnh mỗi mục (trích dẫn, câu trích) hệ thống cung cấp nút bấm "Báo kết quả sai". Khi nhấp vào, hệ thống hiển thị hộp thoại cho phép người dùng chọn phân loại lỗi (ví dụ: <em>Gán nhãn sai</em>, <em>Bản ghi đối chiếu sai bài</em>, <em>Trích dẫn có thật nhưng bị báo mâu thuẫn</em>, <em>Trích dẫn bịa nhưng được xác minh</em>, <em>Khác</em>), nhập đoạn văn bản giải trình lý do và đính kèm đường dẫn (URL) hoặc tệp minh chứng xác thực. Sau khi gửi, yêu cầu báo lỗi được ghi nhận vào hàng đợi kiểm duyệt với trạng thái "Chờ duyệt". Tuân thủ QĐ10, việc gửi báo lỗi không làm thay đổi kết quả kiểm tra tức thì; người báo lỗi nhận được mã theo dõi và nhận thông báo khi có kết quả duyệt từ Moderator.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Người dùng gửi báo lỗi thành công kèm lý do và chứng cứ; trạng thái báo lỗi được ghi nhận vào hệ thống là "Chờ duyệt".</li>
+<li>Báo cáo kiểm tra của lượt đó không bị tự ý thay đổi nhãn hay nội dung ngay sau khi gửi báo lỗi.</li>
+<li>Người dùng có thể theo dõi danh sách các phản hồi báo lỗi của mình và trạng thái xử lý trong mục thông báo cá nhân.</li>
+</ul>
+<h5>FR-15: Kiểm duyệt báo lỗi và quản lý kho trích dẫn</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Phản hồi &amp; Kiểm duyệt</li>
+<li><strong>Độ ưu tiên:</strong> Should Have</li>
+<li><strong>Tác nhân:</strong> Moderator (STK-05)</li>
+<li><strong>Quy định liên quan:</strong> QĐ10</li>
+<li><strong>Mô tả:</strong> Hệ thống cung cấp bảng điều khiển dành riêng cho vai trò Moderator để quản lý hàng đợi các phản hồi báo lỗi từ người dùng. Moderator có thể xem chi tiết nội dung mục bị báo lỗi, giải trình của người dùng, bằng chứng đính kèm và bản ghi nguồn của hệ thống. Moderator thực hiện thẩm định và đưa ra quyết định:</li>
+<li><em>Chấp nhận báo lỗi "Trích dẫn là bịa":</em> Hệ thống tự động thêm dấu vân tay trích dẫn vào <em>Kho trích dẫn ma</em> để chặn đứng các lượt kiểm tra tương lai.</li>
+<li><em>Chấp nhận báo lỗi "Trích dẫn có thật bị gán sai":</em> Hệ thống tự động gỡ trích dẫn khỏi Kho trích dẫn ma (nếu đang có) và thêm vào <em>Danh sách trích dẫn thật đã xác nhận</em> kèm liên kết bằng chứng xác thực.</li>
+<li><em>Từ chối báo lỗi:</em> Ghi rõ lý do từ chối gửi thông báo phản hồi lại cho người báo.
+  Moderator có quyền trực tiếp tra cứu, chỉnh sửa và gỡ bỏ các bản ghi trong Kho trích dẫn ma và Danh sách trích dẫn thật. Toàn bộ các thao tác phê duyệt, chỉnh sửa đều được ghi nhận vào nhật ký kiểm toán (Audit log) không thể xóa sửa.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Khi Moderator duyệt chấp nhận một trích dẫn là bịa, thực hiện kiểm tra lại chính trích dẫn đó trong một lượt mới: hệ thống gán ngay nhãn <em>Mâu thuẫn với nguồn</em> với cảnh báo "Trùng khớp Kho trích dẫn ma", không phát sinh gọi CSDL ngoài.</li>
+<li>Khi Moderator duyệt chấp nhận một trích dẫn có thật bị báo nhầm, trích dẫn đó được ghi nhận vào Danh sách trích dẫn thật; lượt kiểm tra mới lập tức gán nhãn <em>Đã xác minh</em>.</li>
+<li>Nhật ký kiểm toán ghi nhận đầy đủ ID người duyệt, thời điểm chính xác và lý do duyệt cho từng hành động.</li>
+</ul>
+<h5>FR-16: Quản lý người dùng và hạn mức</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Quản trị hệ thống</li>
+<li><strong>Độ ưu tiên:</strong> Should Have</li>
+<li><strong>Tác nhân:</strong> Quản trị viên (STK-06)</li>
+<li><strong>Quy định liên quan:</strong> QĐ1, QĐ2, QĐ3</li>
+<li><strong>Mô tả:</strong> Hệ thống cung cấp giao diện quản trị cho phép Quản trị viên tra cứu danh sách người dùng, xem chi tiết thông tin tài khoản, thực hiện thao tác khóa hoặc mở khóa tài khoản người dùng, cấp hoặc thu hồi các vai trò đặc quyền (Giảng viên, Moderator). Quản trị viên có quyền cấu hình hạn mức kiểm tra linh hoạt (số lượt kiểm tra tối đa trong ngày, số lượng trích dẫn tối đa trong một lượt) áp dụng chung theo từng nhóm vai trò hoặc áp dụng riêng biệt cho từng tài khoản cá biệt. Khi người dùng đạt tới hạn mức cho phép, hệ thống từ chối tạo lượt kiểm tra mới và gửi thông báo giải thích rõ ràng; các lượt kiểm tra bị lỗi hệ thống nội bộ tuyệt đối không bị khấu trừ vào hạn mức của người dùng.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Tài khoản bị Quản trị viên khóa không thể đăng nhập vào hệ thống; phiên làm việc hiện tại (nếu có) bị vô hiệu hóa ngay lập tức.</li>
+<li>Quản trị viên thay đổi hạn mức của Sinh viên từ 10 lượt/ngày thành 15 lượt/ngày: chính sách mới có hiệu lực ngay lập tức ở lượt kiểm tra kế tiếp của người dùng.</li>
+<li>Một lượt kiểm tra bị lỗi do máy chủ LLM quá tải không làm giảm số lượt kiểm tra còn lại trong ngày của người dùng.</li>
+</ul>
+<h5>FR-17: Thống kê lượt kiểm tra và giám sát chi phí API</h5>
+<ul>
+<li><strong>Nhóm yêu cầu:</strong> Quản trị hệ thống</li>
+<li><strong>Độ ưu tiên:</strong> Could Have</li>
+<li><strong>Tác nhân:</strong> Quản trị viên (STK-06)</li>
+<li><strong>Quy định liên quan:</strong> Không có</li>
+<li><strong>Mô tả:</strong> Hệ thống cung cấp trang thống kê trực quan (Dashboard) cho Quản trị viên theo dõi hoạt động vận hành theo mốc thời gian (hôm nay, 7 ngày qua, 30 ngày qua hoặc khoảng ngày tùy chọn): tổng số lượt kiểm tra đã thực hiện; biểu đồ phân bố số lượng mục theo 3 nhãn (<em>Đã xác minh</em>, <em>Chưa xác minh được</em>, <em>Mâu thuẫn với nguồn</em>); tổng số lượng token LLM đã tiêu thụ và ước tính chi phí quy đổi (USD / VNĐ) so với ngân sách định mức; tần suất và tỷ lệ thành công/lỗi khi gọi các CSDL học thuật mở (CrossRef, Semantic Scholar, OpenAlex). Hệ thống tự động kích hoạt cảnh báo nổi bật trên trang quản trị khi chi phí tiêu thụ token LLM chạm ngưỡng 80% ngân sách trần quy định.</li>
+<li><strong>Tiêu chí kiểm chứng:</strong></li>
+<li>Số liệu thống kê token LLM trên giao diện quản trị khớp chính xác với tổng số token ghi nhận trong nhật ký gọi API hệ thống trong cùng khoảng thời gian.</li>
+<li>Khi chi phí tích lũy giả lập vượt 80% ngân sách (ví dụ vượt 8 USD trên ngân sách 10 USD), giao diện quản trị tự động xuất hiện cảnh báo viền đỏ nổi bật.</li>
+</ul>
+<hr />
+<h3>Biểu mẫu nghiệp vụ chuẩn</h3>
+<h4>Biểu mẫu BM1: Biểu mẫu nhập kiểm tra mới (Form nhập kiểm tra)</h4>
+<p>Biểu mẫu BM1 quy định cấu trúc và ràng buộc dữ liệu tại màn hình Khởi tạo lượt kiểm tra mới (Use Case U004, U005), mô tả chi tiết tại Bảng 3.5.</p>
+<p><strong>Bảng 3.5.</strong> <em>Đặc tả biểu mẫu BM1 – Form nhập kiểm tra mới</em></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;"><strong>STT</strong></th>
+<th><strong>Tên trường dữ liệu</strong></th>
+<th style="text-align: center;"><strong>Kiểu dữ liệu</strong></th>
+<th style="text-align: center;"><strong>Bắt buộc</strong></th>
+<th style="text-align: center;"><strong>Giá trị mặc định</strong></th>
+<th><strong>Quy tắc và Ràng buộc dữ liệu</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">1</td>
+<td><strong>Tiêu đề đợt kiểm tra</strong></td>
+<td style="text-align: center;">Text</td>
+<td style="text-align: center;">Không</td>
+<td style="text-align: center;">"Kiểm tra ngày dd/mm/yyyy"</td>
+<td>Độ dài từ 1 đến 150 ký tự; dùng để hiển thị gợi nhớ trong danh sách lịch sử cá nhân.</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td><strong>Hình thức nhập dữ liệu</strong></td>
+<td style="text-align: center;">Radio Button</td>
+<td style="text-align: center;">Có</td>
+<td style="text-align: center;">"Dán văn bản"</td>
+<td>Một trong hai lựa chọn: <code>Dán văn bản</code> hoặc <code>Tải tệp văn bản</code>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td><strong>Khung dán văn bản kiểm tra</strong></td>
+<td style="text-align: center;">Text Area</td>
+<td style="text-align: center;">Điều kiện</td>
+<td style="text-align: center;">Trống</td>
+<td>Bắt buộc nếu chọn hình thức "Dán văn bản"; độ dài không quá 5.000 từ; chứa văn bản học thuật hoặc danh mục tham khảo.</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td><strong>Tệp văn bản kiểm tra tải lên</strong></td>
+<td style="text-align: center;">File Upload</td>
+<td style="text-align: center;">Điều kiện</td>
+<td style="text-align: center;">Trống</td>
+<td>Bắt buộc nếu chọn "Tải tệp văn bản"; chấp nhận định dạng <code>.pdf</code>, <code>.docx</code>; dung lượng tệp tối đa 10 MB, độ dài tối đa 20 trang (theo QĐ2).</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td><strong>Tệp tài liệu nguồn đối chiếu</strong></td>
+<td style="text-align: center;">File Upload</td>
+<td style="text-align: center;">Không</td>
+<td style="text-align: center;">Trống</td>
+<td>Tùy chọn; chấp nhận định dạng <code>.pdf</code> có lớp văn bản (text layer); dung lượng tối đa 50 MB; dùng để thực hiện đối chiếu câu trích nguyên văn ở Lớp 2.</td>
+</tr>
+<tr>
+<td style="text-align: center;">6</td>
+<td><strong>Chế độ rủi ro kiểm tra</strong></td>
+<td style="text-align: center;">Dropdown / Radio</td>
+<td style="text-align: center;">Có</td>
+<td style="text-align: center;">"Thông thường"</td>
+<td>Chọn một trong hai giá trị: <code>Thông thường</code> (ngưỡng khớp câu trích 90%) hoặc <code>Học thuật nghiêm ngặt</code> (ngưỡng 95%, ưu tiên mục cần xử lý theo QĐ7).</td>
+</tr>
+<tr>
+<td style="text-align: center;">7</td>
+<td><strong>Xác nhận gửi dữ liệu tới LLM</strong></td>
+<td style="text-align: center;">Checkbox</td>
+<td style="text-align: center;">Có</td>
+<td style="text-align: center;">Chưa chọn (False)</td>
+<td>Bắt buộc phải đánh dấu chọn (True) để xác nhận người dùng đã đọc và đồng ý việc văn bản sẽ được chuyển tới dịch vụ LLM bên ngoài để bóc tách thông tin.</td>
+</tr>
+</tbody>
+</table>
+<h4>Biểu mẫu BM2: Biểu mẫu báo cáo kết quả kiểm tra</h4>
+<p>Biểu mẫu BM2 quy định cấu trúc dữ liệu xuất bản và hiển thị trên màn hình Báo cáo kết quả kiểm tra (U006) và Báo cáo PDF xuất ra (U007), mô tả chi tiết tại Bảng 3.6.</p>
+<p><strong>Bảng 3.6.</strong> <em>Đặc tả biểu mẫu BM2 – Báo cáo kết quả kiểm tra VeriCite</em></p>
+<table>
+<thead>
+<tr>
+<th><strong>Thành phần báo cáo</strong></th>
+<th><strong>Tên trường dữ liệu</strong></th>
+<th><strong>Ý nghĩa và Quy cách hiển thị</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Phần 1: Thông tin chung (Header)</strong></td>
+<td>Mã lượt kiểm tra (Check ID)</td>
+<td>Mã chuỗi định danh duy nhất (UUID), ví dụ: <code>VC-2026-04821</code>.</td>
+</tr>
+<tr>
+<td></td>
+<td>Thời điểm thực hiện</td>
+<td>Ngày giờ hoàn tất kiểm tra theo định dạng chuẩn <code>dd/mm/yyyy hh:mm:ss</code>.</td>
+</tr>
+<tr>
+<td></td>
+<td>Người thực hiện</td>
+<td>Tên hiển thị và email tài khoản người dùng đã đăng nhập.</td>
+</tr>
+<tr>
+<td></td>
+<td>Tên tài liệu / Tiêu đề lượt</td>
+<td>Tên tệp đã tải lên hoặc tiêu đề do người dùng tự đặt.</td>
+</tr>
+<tr>
+<td></td>
+<td>Chế độ rủi ro áp dụng</td>
+<td>Thể hiện rõ một trong hai nhãn: <code>Thông thường</code> hoặc <code>Học thuật nghiêm ngặt</code>.</td>
+</tr>
+<tr>
+<td></td>
+<td>Tài liệu nguồn đối chiếu</td>
+<td>Tên tệp tài liệu nguồn đã dùng (hoặc ghi rõ "Không cung cấp").</td>
+</tr>
+<tr>
+<td><strong>Phần 2: Tóm tắt chỉ số (Summary)</strong></td>
+<td>Tổng số mục đã kiểm chứng</td>
+<td>Tổng số lượng trích dẫn, câu trích và nhận định được phát hiện ($N$).</td>
+</tr>
+<tr>
+<td></td>
+<td>Số lượng &amp; Tỷ lệ <em>Đã xác minh</em></td>
+<td>Số lượng mục và tỷ lệ % mang nhãn xanh lá.</td>
+</tr>
+<tr>
+<td></td>
+<td>Số lượng &amp; Tỷ lệ <em>Chưa xác minh được</em></td>
+<td>Số lượng mục và tỷ lệ % mang nhãn vàng/cam.</td>
+</tr>
+<tr>
+<td></td>
+<td>Số lượng &amp; Tỷ lệ <em>Mâu thuẫn với nguồn</em></td>
+<td>Số lượng mục và tỷ lệ % mang nhãn đỏ.</td>
+</tr>
+<tr>
+<td><strong>Phần 3: Trực quan hóa văn bản</strong></td>
+<td>Khung văn bản tô màu</td>
+<td>Toàn văn bản gốc được phân đoạn và tô màu nền trực tiếp theo 3 màu nhãn; cho phép nhấp chuột để cuộn xuống bảng chi tiết.</td>
+</tr>
+<tr>
+<td><strong>Phần 4: Danh mục chi tiết từng mục</strong></td>
+<td>Số thứ tự &amp; Vị trí mục</td>
+<td>Thứ tự mục (Mục #01, #02...) và vị trí chỉ số ký tự trong văn bản.</td>
+</tr>
+<tr>
+<td></td>
+<td>Phân loại mục</td>
+<td>Loại thực thể: <code>Trích dẫn</code>, <code>Câu trích nguyên văn</code>, hoặc <code>Nhận định học thuật</code>.</td>
+</tr>
+<tr>
+<td></td>
+<td>Nội dung trích xuất</td>
+<td>Chuỗi văn bản gốc trích xuất từ bài nộp.</td>
+</tr>
+<tr>
+<td></td>
+<td>Nhãn trạng thái kiểm chứng</td>
+<td>Một trong 3 nhãn: <em>Đã xác minh</em>, <em>Chưa xác minh được</em>, <em>Mâu thuẫn với nguồn</em>.</td>
+</tr>
+<tr>
+<td></td>
+<td>Lớp kiểm chứng thực hiện</td>
+<td>Chỉ rõ lớp nghiệp vụ đã xử lý: <code>Lớp 1 (CSDL học thuật)</code>, <code>Lớp 2 (So khớp nguồn)</code>, hoặc <code>Lớp 3 (Gợi ý tài liệu)</code>.</td>
+</tr>
+<tr>
+<td></td>
+<td>Mã lý do &amp; Giải thích chi tiết</td>
+<td>Mã lý do chuẩn (ví dụ: <code>C01: Khớp bản ghi CSDL</code>, <code>C04: Sai lệch năm xuất bản</code>, <code>Q02: Câu trích sai lệch từ ngữ</code>, <code>N01: Không tìm thấy nguồn</code>) kèm câu giải thích bằng tiếng Việt.</td>
+</tr>
+<tr>
+<td></td>
+<td>Dữ liệu đối chiếu &amp; Tô sáng khác biệt</td>
+<td>Đối với trích dẫn: hiển thị giá trị trường đúng từ bản ghi gốc.<br>Đối với câu trích: hiển thị đoạn văn bản nguồn và tô màu nổi bật các từ bị thay đổi/sai lệch.<br>Đối với nhận định: hiển thị danh sách tối đa 5 tài liệu gợi ý tham khảo.</td>
+</tr>
+<tr>
+<td></td>
+<td>Liên kết kiểm chứng (Source URL)</td>
+<td>Đường dẫn URL/DOI mở trực tiếp bản ghi trên CrossRef, Semantic Scholar hoặc OpenAlex.</td>
+</tr>
+<tr>
+<td></td>
+<td>Thao tác phản hồi</td>
+<td>Nút bấm "Báo kết quả sai" dẫn tới hộp thoại báo lỗi (FR-14).</td>
+</tr>
+<tr>
+<td><strong>Phần 5: Xác thực &amp; Điều hướng</strong></td>
+<td>Mã QR xác thực báo cáo</td>
+<td>Mã QR Code chứa đường dẫn trực tiếp xác thực tính toàn vẹn của báo cáo trên máy chủ VeriCite (dành riêng cho bản PDF).</td>
+</tr>
+<tr>
+<td></td>
+<td>Nút xuất tệp PDF</td>
+<td>Nút bấm tải về bản PDF chính thức theo chuẩn BM2.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>3.2.2 Đặc tả yêu cầu phi chức năng</h3>
+<p>Hệ thống VeriCite xác định 11 yêu cầu phi chức năng (NFR-01 đến NFR-11) với các chỉ số đo lường định lượng nghiêm ngặt nhằm đảm bảo chất lượng, hiệu năng, an toàn và độ tin cậy, được tổng hợp tại Bảng 3.7.</p>
+<p><strong>Bảng 3.7.</strong> <em>Danh sách các yêu cầu phi chức năng (NFR-01 đến NFR-11)</em></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Mã NFR</strong></th>
+<th><strong>Tên yêu cầu phi chức năng</strong></th>
+<th style="text-align: center;"><strong>Phân nhóm chất lượng</strong></th>
+<th style="text-align: center;"><strong>Độ ưu tiên (MoSCoW)</strong></th>
+<th><strong>Tiêu chí đo lường định lượng cốt lõi</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>NFR-01</strong></td>
+<td>Thời gian xử lý kiểm tra</td>
+<td style="text-align: center;">Hiệu năng (Performance)</td>
+<td style="text-align: center;">Must Have</td>
+<td>Lượt kiểm tra 20 trích dẫn (Lớp 1 &amp; Lớp 2) hoàn tất $\le 30$ giây trong ít nhất 95% trường hợp.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>NFR-02</strong></td>
+<td>Độ chính xác phát hiện trích dẫn</td>
+<td style="text-align: center;">Chất lượng (Accuracy)</td>
+<td style="text-align: center;">Must Have</td>
+<td>Phát hiện $\ge 90\%$ trích dẫn bịa; tỷ lệ báo nhầm trích dẫn thật thành bịa $\le 5\%$ trên bộ kiểm thử 120 trích dẫn.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>NFR-03</strong></td>
+<td>Khả năng chịu tải đồng thời</td>
+<td style="text-align: center;">Hiệu năng &amp; Chịu tải</td>
+<td style="text-align: center;">Should Have</td>
+<td>Phục vụ đồng thời 30 người dùng hoạt động cùng lúc không phát sinh lỗi; 95% yêu cầu giao diện phản hồi $\le 3$ giây.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>NFR-04</strong></td>
+<td>Bảo mật truyền tải và mật khẩu</td>
+<td style="text-align: center;">An toàn thông tin (Security)</td>
+<td style="text-align: center;">Must Have</td>
+<td>100% kết nối qua HTTPS (TLS 1.2+); mật khẩu băm Argon2id; khóa tài khoản 15 phút sau 5 lần sai.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>NFR-05</strong></td>
+<td>Bảo vệ tài liệu và kiểm soát truy cập</td>
+<td style="text-align: center;">Quyền riêng tư (Privacy)</td>
+<td style="text-align: center;">Must Have</td>
+<td>Tệp tải lên tự động xóa vĩnh viễn sau 30 ngày; cô lập dữ liệu người dùng tuyệt đối (HTTP 403 khi truy cập chéo).</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>NFR-06</strong></td>
+<td>Tính minh bạch của kết quả</td>
+<td style="text-align: center;">Khả năng truy vết (Traceability)</td>
+<td style="text-align: center;">Must Have</td>
+<td>100% mục có mã lý do giải thích bằng tiếng Việt và liên kết nguồn; lưu vết phiên bản mô hình và thời điểm.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>NFR-07</strong></td>
+<td>Tính tái lập của lớp tất định</td>
+<td style="text-align: center;">Độ tin cậy (Reliability)</td>
+<td style="text-align: center;">Must Have</td>
+<td>Lớp 1, 2, 3 không gọi LLM; cùng một đầu vào và nguồn đối chiếu cho ra kết quả trùng khớp 100% giữa các lần chạy.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>NFR-08</strong></td>
+<td>Khả năng chịu lỗi dịch vụ bên ngoài</td>
+<td style="text-align: center;">Độ tin cậy (Fault Tolerance)</td>
+<td style="text-align: center;">Must Have</td>
+<td>CSDL ngoài lỗi thì gán <em>Chưa xác minh được</em>, không bao giờ quy kết là bịa; LLM lỗi thì báo lỗi phiên, không tạo rác.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>NFR-09</strong></td>
+<td>Khả năng sử dụng và giao diện</td>
+<td style="text-align: center;">Khả dụng (Usability)</td>
+<td style="text-align: center;">Should Have</td>
+<td>Giao diện tiếng Việt 100%, responsive từ 360px; ít nhất 8/10 người dùng mới tự hoàn tất kiểm tra trong 5 phút.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>NFR-10</strong></td>
+<td>Kiểm soát chi phí gọi API</td>
+<td style="text-align: center;">Quản trị chi phí (Cost)</td>
+<td style="text-align: center;">Should Have</td>
+<td>Lưu đệm Redis tránh gọi lặp CSDL; chỉ bước bóc tách gọi LLM; chi phí phát triển &amp; kiểm thử không vượt 10 USD.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>NFR-11</strong></td>
+<td>Sao lưu và khôi phục dữ liệu</td>
+<td style="text-align: center;">Lưu trữ dữ liệu (Recovery)</td>
+<td style="text-align: center;">Should Have</td>
+<td>Sao lưu CSDL tự động hằng ngày, lưu giữ 7 bản sao gần nhất; thời gian mất mát dữ liệu tối đa (RPO) $\le 24$ giờ.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>Chi tiết các yêu cầu phi chức năng (NFR-01 đến NFR-11)</h4>
+<h5>NFR-01: Thời gian xử lý kiểm tra</h5>
+<ul>
+<li><strong>Phân nhóm:</strong> Hiệu năng hệ thống (Performance)</li>
+<li><strong>Mức độ ưu tiên:</strong> Must Have</li>
+<li><strong>Mô tả:</strong> Trong bối cảnh người dùng chờ đợi kết quả trực tiếp trên màn hình trình duyệt, một lượt kiểm tra thông thường gồm 20 trích dẫn (không tính thời gian chạy Lớp 3) phải hoàn tất toàn bộ quy trình bóc tách và đối chiếu trong thời gian không quá 30 giây. Trong suốt thời gian xử lý, giao diện phải hiển thị thanh tiến độ sinh động phản ánh các công đoạn đang diễn ra (Bóc tách văn bản $\rightarrow$ Tra cứu CSDL học thuật $\rightarrow$ So khớp tài liệu nguồn $\rightarrow$ Tổng hợp báo cáo).</li>
+<li><strong>Tiêu chí kiểm chứng định lượng:</strong></li>
+<li>Chạy thử nghiệm 20 lượt kiểm tra độc lập, mỗi lượt chứa 20 trích dẫn học thuật với bộ nhớ đệm Redis ở trạng thái trống: có ít nhất 19/20 lượt (tỷ lệ $\ge 95\%$) hoàn tất và hiển thị báo cáo đầy đủ trong thời gian $\le 30$ giây.</li>
+</ul>
+<h5>NFR-02: Độ chính xác phát hiện trích dẫn</h5>
+<ul>
+<li><strong>Phân nhóm:</strong> Chất lượng phần mềm (Accuracy &amp; Quality)</li>
+<li><strong>Mức độ ưu tiên:</strong> Must Have</li>
+<li><strong>Mô tả:</strong> Hệ thống phải đạt độ tin cậy khoa học cao trong việc phân biệt giữa trích dẫn có thật và trích dẫn do AI bịa đặt. Trên bộ dữ liệu kiểm thử chuẩn gồm 120 trích dẫn (60 trích dẫn có thật từ nhiều nguồn bài báo, sách, giáo trình tiếng Việt và 60 trích dẫn ảo giác do ChatGPT/Claude tự tạo ra), hệ thống phải phát hiện và ngăn chặn việc gán nhãn sai lệch.</li>
+<li><strong>Tiêu chí kiểm chứng định lượng:</strong></li>
+<li>Tỷ lệ phát hiện trích dẫn bịa (Recall trên tập trích dẫn ảo giác): ít nhất 90% trích dẫn bịa (tối thiểu 54/60 mục) không bị gán nhãn nhầm thành <em>Đã xác minh</em>.</li>
+<li>Tỷ lệ báo nhầm trích dẫn thật (False Positive Rate): không vượt quá 5% số trích dẫn có thật (tối đa 3/60 mục) bị gán nhãn thành <em>Mâu thuẫn với nguồn</em>.</li>
+<li>Kết quả kiểm thử trên toàn bộ tập dữ liệu mẫu được nghiệm thu và xác nhận đạt chỉ tiêu tại mốc đồ án M4.</li>
+</ul>
+<h5>NFR-03: Khả năng chịu tải đồng thời</h5>
+<ul>
+<li><strong>Phân nhóm:</strong> Hiệu năng &amp; Khả năng chịu tải (Scalability &amp; Concurrency)</li>
+<li><strong>Mức độ ưu tiên:</strong> Should Have</li>
+<li><strong>Mô tả:</strong> Hệ thống phải đáp ứng ổn định nhu cầu truy cập cùng lúc của quy mô một lớp học đại học (tương đương 30 sinh viên cùng truy cập và thực hiện kiểm tra trước thời hạn nộp bài). Các lượt kiểm tra dài hoặc kiểm tra hàng loạt được điều phối xử lý qua hàng đợi tác vụ nền Celery để đảm bảo máy chủ không bị nghẽn và giao diện người dùng luôn phản hồi mượt mà.</li>
+<li><strong>Tiêu chí kiểm chứng định lượng:</strong></li>
+<li>Thực hiện kiểm thử tải (Stress test) giả lập 30 phiên người dùng tương tác đồng thời liên tục trong 10 phút: tỷ lệ lỗi HTTP 5xx đạt 0%, và ít nhất 95% các yêu cầu điều hướng giao diện có thời gian phản hồi dưới 3 giây.</li>
+</ul>
+<h5>NFR-04: Bảo mật truyền tải và mật khẩu</h5>
+<ul>
+<li><strong>Phân nhóm:</strong> An toàn thông tin (Security)</li>
+<li><strong>Mức độ ưu tiên:</strong> Must Have</li>
+<li><strong>Mô tả:</strong> Toàn bộ các kết nối truyền thông giữa máy khách và máy chủ bắt buộc phải được mã hóa qua HTTPS với giao thức TLS 1.2 trở lên, cấu hình chuyển hướng tự động toàn bộ lưu lượng HTTP sang HTTPS. Mật khẩu người dùng tuyệt đối không được lưu dưới dạng văn bản thô (plain-text), chỉ được lưu trữ dưới dạng chuỗi băm bằng thuật toán Argon2id với độ phức tạp cao kèm salt ngẫu nhiên riêng cho từng tài khoản. Áp dụng cơ chế khóa tạm thời tài khoản 15 phút sau 5 lần đăng nhập thất bại liên tiếp nhằm chống tấn công vét cạn.</li>
+<li><strong>Tiêu chí kiểm chứng định lượng:</strong></li>
+<li>Quét an toàn giao thức HTTPS bằng công cụ chuyên dụng (SSL Labs hoặc testssl.sh) đạt điểm đánh giá từ cấp A trở lên.</li>
+<li>Kiểm tra trực tiếp trong bảng <code>users</code> của cơ sở dữ liệu PostgreSQL: 100% bản ghi mật khẩu đều là chuỗi băm định dạng <code>$argon2id$</code>.</li>
+<li>Giả lập kịch bản tấn công gửi 6 yêu cầu đăng nhập sai mật khẩu liên tiếp: tài khoản bị khóa lập tức tại lần thứ 5 và từ chối xử lý ở lần thứ 6 trong vòng 15 phút.</li>
+</ul>
+<h5>NFR-05: Bảo vệ tài liệu và kiểm soát truy cập</h5>
+<ul>
+<li><strong>Phân nhóm:</strong> Quyền riêng tư và bảo mật dữ liệu (Privacy &amp; Access Control)</li>
+<li><strong>Mức độ ưu tiên:</strong> Must Have</li>
+<li><strong>Mô tả:</strong> Bài nộp và tài liệu học thuật của người dùng là tài sản học thuật riêng tư. Hệ thống thực thi phân quyền truy cập nghiêm ngặt ở tầng cơ sở dữ liệu và API: người dùng A tuyệt đối không thể đọc, chỉnh sửa hoặc xóa tệp và báo cáo kiểm tra của người dùng B. Tệp văn bản kiểm tra và tài liệu nguồn tải lên máy chủ sẽ được tiến trình tự động dọn dẹp xóa vĩnh viễn sau 30 ngày hoặc ngay khi người dùng chủ động xóa lượt kiểm tra. Khi gửi văn bản tới dịch vụ LLM để bóc tách, hệ thống tuyệt đối loại bỏ các trường định danh cá nhân (tên người dùng, email, mã số sinh viên).</li>
+<li><strong>Tiêu chí kiểm chứng định lượng:</strong></li>
+<li>Người dùng A sử dụng mã Check ID của người dùng B để gọi trực tiếp API <code>GET /api/reports/{id}</code>: máy chủ chặn đứng và trả về mã lỗi HTTP 403 Forbidden hoặc 404 Not Found, đồng thời ghi log cảnh báo an ninh.</li>
+<li>Rà soát toàn bộ nhật ký gói tin gửi sang API của nhà cung cấp LLM: 100% nội dung không chứa chuỗi ký tự thể hiện email hoặc họ tên của người dùng.</li>
+</ul>
+<h5>NFR-06: Tính minh bạch của kết quả</h5>
+<ul>
+<li><strong>Phân nhóm:</strong> Khả năng truy vết và giải thích (Traceability &amp; Explainability)</li>
+<li><strong>Mức độ ưu tiên:</strong> Must Have</li>
+<li><strong>Mô tả:</strong> Mọi kết luận gán nhãn đưa ra trên hệ thống VeriCite đều phải minh bạch và có căn cứ khoa học rõ ràng, giúp người dùng hiểu chính xác vì sao một mục bị coi là lỗi để tự đối chiếu lại. Mỗi mục được phân tích bắt buộc phải có mã lý do giải thích bằng tiếng Việt, ghi rõ lớp nghiệp vụ đã kiểm chứng và liên kết mở trực tiếp tới nguồn tham khảo hoặc trích đoạn đối chiếu trong tệp gốc. Mỗi lượt kiểm tra đều lưu kèm siêu dữ liệu về phiên bản prompt bóc tách, phiên bản mô hình LLM và dấu thời gian tra cứu CSDL để phục vụ việc tái hiện giải trình khi có khiếu nại.</li>
+<li><strong>Tiêu chí kiểm chứng định lượng:</strong></li>
+<li>Lấy mẫu ngẫu nhiên 50 mục kết quả bất kỳ trong cơ sở dữ liệu: 100% mục đều có đầy đủ mã lý do, mô tả lý do bằng tiếng Việt và chỉ định rõ lớp kiểm chứng (Lớp 1, 2 hoặc 3).</li>
+<li>100% các mục mang nhãn <em>Đã xác minh</em> ở Lớp 1 đều chứa liên kết URL/DOI truy cập được tới bản ghi thư tịch gốc của bài báo.</li>
+</ul>
+<h5>NFR-07: Tính tái lập của lớp tất định</h5>
+<ul>
+<li><strong>Phân nhóm:</strong> Độ tin cậy hệ thống (Reliability &amp; Determinism)</li>
+<li><strong>Mức độ ưu tiên:</strong> Must Have</li>
+<li><strong>Mô tả:</strong> Để đảm bảo tính công bằng và nhất quán trong học thuật, các lớp kiểm chứng cốt lõi của hệ thống (Lớp 1: Tra cứu CSDL học thuật; Lớp 2: So khớp câu trích; Lớp 3: Tìm kiếm tài liệu gợi ý) bắt buộc phải hoạt động theo nguyên tắc tất định (Deterministic), tuyệt đối không gọi mô hình LLM để phán xét suy luận đúng/sai. Với cùng một tập đầu vào đã bóc tách và cùng dữ liệu nguồn đối chiếu, việc chạy lại quy trình kiểm chứng phải luôn cho ra kết quả gán nhãn và mã lý do trùng khớp 100%.</li>
+<li><strong>Tiêu chí kiểm chứng định lượng:</strong></li>
+<li>Chạy lặp lại 3 lần trên cùng một bộ dữ liệu 50 trích dẫn với trạng thái lưu đệm cố định: 100% kết quả phân loại nhãn và mã lý do ở cả 3 lần chạy hoàn toàn trùng khớp từng ký tự.</li>
+<li>Kiểm tra toàn bộ mã nguồn và nhật ký thực thi của Lớp 1, Lớp 2 và Lớp 3: xác nhận không có bất kỳ dòng lệnh nào khởi tạo kết nối hay gửi prompt tới API LLM.</li>
+</ul>
+<h5>NFR-08: Khả năng chịu lỗi dịch vụ bên ngoài</h5>
+<ul>
+<li><strong>Phân nhóm:</strong> Độ tin cậy và khả năng chịu lỗi (Fault Tolerance)</li>
+<li><strong>Mức độ ưu tiên:</strong> Must Have</li>
+<li><strong>Mô tả:</strong> Hệ thống phải vận hành ổn định trước các sự cố thường gặp từ dịch vụ bên thứ ba (CSDL học thuật ngoài bị nghẽn mạng, quá tải giới hạn tần suất 429 Too Many Requests, lỗi máy chủ 503 Service Unavailable, hoặc API LLM bị quá thời gian chờ Timeout). Khi gặp lỗi CSDL học thuật, hệ thống kích hoạt cơ chế thử lại có giãn cách (Exponential Backoff); nếu vẫn thất bại, hệ thống gán nhãn <em>Chưa xác minh được</em> với lý do "Không thể kết nối CSDL ngoài để tra cứu", tuyệt đối không bao giờ suy diễn trích dẫn là bịa đặt. Khi dịch vụ LLM gặp lỗi không thể bóc tách, toàn bộ lượt kiểm tra chuyển sang trạng thái "Lỗi xử lý" và hoàn lại hạn mức cho người dùng, không tạo ra dữ liệu kết quả dở dang.</li>
+<li><strong>Tiêu chí kiểm chứng định lượng:</strong></li>
+<li>Giả lập ngắt kết nối hoặc phản hồi lỗi HTTP 503 từ máy chủ CrossRef: trích dẫn liên quan được ghi nhận mã lý do "Sự cố kết nối CSDL", nhãn giữ nguyên là <em>Chưa xác minh được</em>, không bị gán nhãn <em>Mâu thuẫn với nguồn</em>.</li>
+<li>Giả lập thời gian chờ gọi LLM vượt quá 60 giây (Timeout): lượt kiểm tra được đánh dấu trạng thái thất bại, không phát sinh dữ liệu rác trong bảng kết quả và hạn mức của người dùng không bị khấu trừ.</li>
+</ul>
+<h5>NFR-09: Khả năng sử dụng và giao diện</h5>
+<ul>
+<li><strong>Phân nhóm:</strong> Khả dụng và trải nghiệm người dùng (Usability)</li>
+<li><strong>Mức độ ưu tiên:</strong> Should Have</li>
+<li><strong>Mô tả:</strong> Toàn bộ giao diện người dùng được thiết kế bằng tiếng Việt chuẩn xác, giao diện hiện đại, trực quan, hỗ trợ thiết kế thích ứng (Responsive) hiển thị mượt mà trên màn hình máy tính để bàn, máy tính bảng và điện thoại di động (độ phân giải chiều rộng từ 360px trở lên). Bố cục giao diện đơn giản, rõ ràng, cho phép người dùng mới lần đầu tiếp cận có thể dễ dàng hiểu cách nhập dữ liệu kiểm tra và đọc hiểu tường tận báo cáo kết quả mà không cần phải đọc tài liệu hướng dẫn sử dụng.</li>
+<li><strong>Tiêu chí kiểm chứng định lượng:</strong></li>
+<li>Tiến hành thử nghiệm chấp nhận người dùng (UAT) trên nhóm 10 sinh viên chưa từng sử dụng VeriCite: ít nhất 8/10 sinh viên tự hoàn thành một lượt kiểm tra văn bản và giải thích được ý nghĩa 3 nhãn màu trên báo cáo kết quả trong vòng dưới 5 phút mà không cần bất kỳ sự trợ giúp nào.</li>
+<li>Giao diện hiển thị đúng chuẩn, không bị vỡ khung hay lỗi bố cục trên hai phiên bản phát hành gần nhất của các trình duyệt Chrome, Edge, Firefox và Safari.</li>
+</ul>
+<h5>NFR-10: Kiểm soát chi phí gọi API</h5>
+<ul>
+<li><strong>Phân nhóm:</strong> Quản trị chi phí vận hành (Cost Management)</li>
+<li><strong>Mức độ ưu tiên:</strong> Should Have</li>
+<li><strong>Mô tả:</strong> Do ngân sách tài chính đồ án có hạn (ngân sách tiền mặt khoảng 1 triệu đồng, tương đương khoảng 40 USD), hệ thống phải áp dụng triệt để các biện pháp kỹ thuật nhằm tối ưu hóa chi phí gọi API. Hệ thống áp dụng cơ chế lưu đệm Redis cho mọi kết quả tra cứu CSDL học thuật (với thời gian TTL hợp lý) để tránh gọi trùng lặp; chỉ sử dụng LLM duy nhất ở bước bóc tách văn bản thô theo prompt ngắn gọn; Lớp 3 chỉ thực hiện truy vấn khi nhận định hoàn toàn không có nguồn. Toàn bộ chi phí tiêu thụ token LLM trong suốt các giai đoạn phát triển và kiểm thử đồ án bắt buộc phải được kiểm soát không vượt quá 10 USD. Thiết lập giới hạn chi tiêu cứng (Hard limit) trên trang quản trị của nhà cung cấp LLM để ngăn ngừa rủi ro vượt ngân sách ngoài ý muốn.</li>
+<li><strong>Tiêu chí kiểm chứng định lượng:</strong></li>
+<li>Báo cáo thống kê chi phí API tại mốc nghiệm thu đồ án M4 ghi nhận tổng số tiền tiêu thụ token LLM lũy kế không vượt quá 10 USD.</li>
+<li>Thực hiện kiểm tra lại cùng một danh mục trích dẫn lần thứ hai liên tiếp: hệ thống tái sử dụng kết quả trong bộ nhớ đệm Redis, nhật ký ghi nhận số lượng lệnh gọi API ra CSDL ngoài là 0.</li>
+</ul>
+<h5>NFR-11: Sao lưu và khôi phục dữ liệu</h5>
+<ul>
+<li><strong>Phân nhóm:</strong> Quản trị lưu trữ và phục hồi (Data Recovery &amp; Backup)</li>
+<li><strong>Mức độ ưu tiên:</strong> Should Have</li>
+<li><strong>Mô tả:</strong> Để phòng ngừa sự cố mất mát dữ liệu tài khoản, lịch sử kiểm tra và đặc biệt là Kho trích dẫn ma đã được tích lũy công phu qua thời gian, hệ thống phải thiết lập tiến trình tự động sao lưu toàn bộ cơ sở dữ liệu PostgreSQL định kỳ hằng ngày vào khung giờ thấp điểm (02:00 sáng). Hệ thống duy trì lưu giữ tối thiểu 7 bản sao lưu gần nhất. Quy trình khôi phục dữ liệu từ bản sao lưu phải được văn bản hóa và diễn tập thử nghiệm, đảm bảo khả năng khôi phục hoạt động hệ thống bình thường với lượng dữ liệu tổn thất tối đa không vượt quá 24 giờ (RPO $\le 24$ giờ).</li>
+<li><strong>Tiêu chí kiểm chứng định lượng:</strong></li>
+<li>Tiến hành diễn tập khôi phục thử nghiệm một bản sao lưu ngẫu nhiên vào môi trường cơ sở dữ liệu kiểm thử (Staging): toàn bộ cấu trúc bảng và dữ liệu được phục hồi nguyên vẹn và hoạt động bình thường.</li>
+<li>Thư mục lưu trữ bản sao lưu ghi nhận liên tục sự hiện diện của đầy đủ 7 tệp sao lưu tương ứng với 7 ngày gần nhất.</li>
+</ul>
+<hr />
+<p><em>Báo cáo được hoàn thiện theo đúng phân công trong <code>phan-cong-nhom-PA02.md</code> và tuân thủ chặt chẽ biểu mẫu <code>Template#1-PhanTich-2019</code>.</em></p>
+</body>
+</html>
