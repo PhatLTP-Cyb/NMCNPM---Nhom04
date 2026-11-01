@@ -1,0 +1,17 @@
+sequenceDiagram
+  participant A as An
+  participant B as Bình
+  participant C as Chi (người mới)
+  Note over A,C: Server đã sập từ đầu
+  A->>B: Bắt tay thủ công (copy/paste mã)
+  A-->>B: DataChannel mở
+  A->>C: Bắt tay thủ công (copy/paste mã)
+  A-->>C: DataChannel mở + danh sách peer [Bình]
+  C->>A: signal{to: Bình, offer}
+  A->>B: chuyển tiếp offer
+  B->>A: signal{to: Chi, answer}
+  A->>C: chuyển tiếp answer
+  C-->>B: DataChannel mở (trực tiếp) → full mesh
+  B-->>A: upsert task
+  B-->>C: upsert task
+  Note over A,C: Server sống lại → POST /api/tasks/sync (LWW) ghi về SQLite

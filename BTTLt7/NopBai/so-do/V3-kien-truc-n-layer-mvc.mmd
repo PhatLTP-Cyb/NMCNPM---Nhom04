@@ -1,0 +1,20 @@
+flowchart TB
+  subgraph Client["Trình duyệt (MVC)"]
+    V["View<br/>view.js · index.html · style.css<br/>Kanban 2 cột"]
+    C["Controller<br/>controller.js"]
+    M["Model<br/>model.js"]
+    API["api.js"]
+    V <--> C
+    C --> M
+    M --> API
+  end
+  subgraph Server["Server Node/Express (N-Layer)"]
+    P["Presentation<br/>taskRoutes.js"]
+    BL["Business Logic<br/>taskService.js"]
+    DA["Data Access<br/>sqliteTaskRepository.js<br/>(jsonTaskRepository.js)"]
+    P --> BL --> DA
+  end
+  API -- "HTTP REST" --> P
+  DA --> DB[("tasks.db")]
+  MIG["scripts/migrate-json-to-sqlite.js"] -- "đọc" --> J[("tasks.json")]
+  MIG -- "INSERT OR IGNORE" --> DB

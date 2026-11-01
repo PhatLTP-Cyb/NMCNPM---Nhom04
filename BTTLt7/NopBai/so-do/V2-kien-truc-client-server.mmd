@@ -1,0 +1,4 @@
+flowchart LR
+  A["Trình duyệt A<br/>index.html + script<br/>polling 2s"] -- "HTTP REST /api/tasks" --> S
+  B["Trình duyệt B<br/>index.html + script<br/>polling 2s"] -- "HTTP REST /api/tasks" --> S
+  S["Server Node/Express<br/>server.js<br/>0.0.0.0:3000"] -- "đọc/ghi (atomic)" --> F[("tasks.json")]
