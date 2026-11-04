@@ -46,11 +46,11 @@
 
 | Hạng mục | Người chính | Người hỗ trợ | Đầu ra | Hạn / Đã xong |
 |---|---|---|---|---|
-| Chốt danh sách actor và 15 use case | Lâm Duy Minh | Lê Tấn Phát (duyệt) | Bảng 2.1 đã chốt, gửi nhóm | ____ |
-| Sơ đồ use case tổng thể | Lâm Duy Minh | Vương Hữu Khang (rà soát) | Ảnh PNG độ phân giải cao và tệp gốc (StarUML hoặc draw.io) | ____ |
-| Đặc tả U001, U002, U003 | Lâm Duy Minh | — | 3 bảng đặc tả theo mẫu | ____ |
-| Đặc tả U004 Kiểm tra nội dung (UC lớn nhất) | Lâm Duy Minh | Vương Hữu Khang | Bảng đặc tả từ SC-01 | ____ |
-| Đặc tả U005, U008, U009 | Lâm Duy Minh | — | 3 bảng đặc tả, U005 từ SC-02, U009 từ SC-03 | ____ |
+| Chốt danh sách actor và 15 use case | Lâm Duy Minh | Lê Tấn Phát (duyệt) | Bảng 2.1 đã chốt, gửi nhóm | Đã xong (04/11/2026) |
+| Sơ đồ use case tổng thể | Lâm Duy Minh | Vương Hữu Khang (rà soát) | Ảnh PNG độ phân giải cao và tệp gốc (StarUML hoặc draw.io) | Đã xong (04/11/2026) |
+| Đặc tả U001, U002, U003 | Lâm Duy Minh | — | 3 bảng đặc tả theo mẫu | Đã xong (04/11/2026) |
+| Đặc tả U004 Kiểm tra nội dung (UC lớn nhất) | Lâm Duy Minh | Vương Hữu Khang | Bảng đặc tả từ SC-01 | Đã xong (04/11/2026) |
+| Đặc tả U005, U008, U009 | Lâm Duy Minh | — | 3 bảng đặc tả, U005 từ SC-02, U009 từ SC-03 | Đã xong (04/11/2026) |
 
 ### 2.3. Đặc tả use case kết quả, phản hồi, quản trị (Tạ Quang Mạnh)
 
