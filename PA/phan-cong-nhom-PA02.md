@@ -70,6 +70,7 @@
 | Mục 3.2.1 – Yêu cầu chức năng chia 5 nhóm, bảng QĐ1–QĐ10 | Vương Hữu Khang | Lâm Duy Minh | Danh sách FR-01–FR-17 có đánh số, phân nhóm | Đã xong (02/11/2026) |
 | Biểu mẫu BM1 (form nhập kiểm tra), BM2 (báo cáo kết quả), nếu kịp | Vương Hữu Khang | Lê Tấn Phát (khớp với wireframe) | 2 biểu mẫu | Đã xong (02/11/2026) |
 | Mục 3.2.2 – Yêu cầu phi chức năng | Vương Hữu Khang | — | NFR-01–NFR-11, giữ tiêu chí đo | Đã xong (02/11/2026) |
+| Sơ đồ trạng thái (State Charts) Lượt kiểm tra, Báo lỗi, Tài khoản, Trích dẫn trong kho | Vương Hữu Khang | — | 4 sơ đồ .drawio, 4 ảnh .png kèm 4 bảng chuyển trạng thái (PA02_Nhom04_StateCharts_Khang.md) | Đã xong (05/11/2026) |
 
 ### 2.5. Mục 5 prototype, tổng hợp và kiểm tra cuối (Lê Tấn Phát)
 
