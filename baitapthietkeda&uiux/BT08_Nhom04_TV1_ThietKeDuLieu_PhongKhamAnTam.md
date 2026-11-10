@@ -89,6 +89,8 @@ erDiagram
 > 1. **Trường `don_gia_ap_dung` trong bảng `lich_hen` (CÓ LƯU CỨNG):** Mặc dù bảng `chuyen_khoa` đã lưu `don_gia_kham_tai_cho` và `don_gia_kham_truc_tuyen`, bảng `lich_hen` vẫn lưu trường `don_gia_ap_dung` tại thời điểm đặt lịch vì giá khám của phòng khám có thể thay đổi theo thời gian. Nếu không lưu lại đơn giá lúc đặt, các lịch hẹn cũ và đối soát hoàn tiền sẽ bị sai lệch khi Quản lý cập nhật bảng giá mới.
 > 2. **Trường `so_cho_da_dat` và `so_cho_dang_giu` trong bảng `khung_gio_kham` (CÓ LƯU SẴN):** Về mặt lý thuyết có thể tính bằng lệnh `COUNT(*)` trên bảng `lich_hen`. Tuy nhiên, để đáp ứng yêu cầu hiệu năng `NFR-01` (phản hồi $\le 3$ giây) và `NFR-02` (50 người dùng đồng thời kiểm tra chỗ trống và khóa dòng chống đặt trùng `FR-03`), việc lưu trực tiếp 2 bộ đếm này ngay trên dòng `khung_gio_kham` giúp hệ quản trị CSDL kiểm tra ràng buộc `so_cho_da_dat + so_cho_dang_giu <= gioi_han_benh_nhan` tức thời trong 1 câu lệnh `UPDATE` nguyên tử (Atomic).
 > 3. **Trường `so_lan_vang_mat` trong bảng `benh_nhan` (CÓ LƯU SẴN):** Được cập nhật tăng thêm 1 mỗi khi lượt khám chuyển sang trạng thái `Vắng mặt`, giúp màn hình Tiếp nhận / Đặt lịch hộ (Level 4) hiển thị ngay cảnh báo cho nhân viên mà không phải quét toàn bộ lịch sử lịch hẹn.
+>
+> **Ghi chú kỹ thuật về `UNIQUE` trên cột cho phép `NULL`:** Trong SQL Server, ràng buộc `UNIQUE` thông thường chỉ chấp nhận một giá trị `NULL`. Vì vậy các cột vừa `UNIQUE` vừa cho phép `NULL` (`benh_nhan.ma_tai_khoan`, `benh_nhan.so_cccd`, `giao_dich_hoan_tien.ma_gd_hoan_cong_tt`) được hiện thực bằng chỉ mục duy nhất có lọc `CREATE UNIQUE INDEX ... WHERE <cột> IS NOT NULL`, để nhiều bệnh nhân chưa có tài khoản/CCCD vẫn lưu được.
 
 ---
 
@@ -128,12 +130,12 @@ erDiagram
 | :--- | :--- | :--- | :--- |
 | `ma_benh_nhan` | Số tự tăng | `PK`, `NOT NULL` | Khóa chính tự sinh định danh hồ sơ bệnh nhân |
 | `ma_code_bn` | Chuỗi (15) | `UNIQUE`, `NOT NULL` | Mã nghiệp vụ bệnh nhân có định dạng `BN0001` |
-| `ma_tai_khoan` | Số nguyên | `FK -> tai_khoan(ma_tai_khoan)`, `UNIQUE`, `NULL` | Tài khoản liên kết (Cho phép `NULL` khi bệnh nhân chỉ gọi điện đặt lịch qua tiếp nhận - `ASM-03`) |
+| `ma_tai_khoan` | Số nguyên | `FK -> tai_khoan(ma_tai_khoan)`, `UNIQUE` (khi khác `NULL`), `NULL` | Tài khoản liên kết (Cho phép `NULL` khi bệnh nhân chỉ gọi điện đặt lịch qua tiếp nhận - `ASM-03`); hiện thực bằng chỉ mục duy nhất có lọc `UX_benh_nhan_tai_khoan` |
 | `ho_ten` | Chuỗi Unicode (100) | `NOT NULL` | Họ và tên đầy đủ của bệnh nhân (`FR-07`) |
 | `so_dien_thoai` | Chuỗi (10) | `UNIQUE`, `NOT NULL`, `CHECK (LEN = 10, bắt đầu bằng '0')` | Số điện thoại liên lạc, dùng để nhận diện bệnh nhân cũ (`Q-05`), xác thực (`ASM-11`) và nhận thông báo (` mục 1.12.2`) |
 | `ngay_sinh` | Ngày tháng | `NOT NULL`, `CHECK (< Ngày hiện tại)` | Ngày tháng năm sinh của bệnh nhân (hiển thị `d/M/yyyy`) |
 | `gioi_tinh` | Chuỗi Unicode (10) | `NOT NULL`, `CHECK IN (N'Nam', N'Nữ', N'Khác')` | Giới tính hành chính của bệnh nhân |
-| `so_cccd` | Chuỗi (12) | `UNIQUE`, `NULL` | Số Căn cước công dân (12 chữ số, không bắt buộc khi mới đặt qua điện thoại) |
+| `so_cccd` | Chuỗi (12) | `UNIQUE` (khi khác `NULL`), `NULL` | Số Căn cước công dân (12 chữ số, không bắt buộc khi mới đặt qua điện thoại); hiện thực bằng chỉ mục duy nhất có lọc `UX_benh_nhan_cccd` |
 | `dia_chi` | Chuỗi Unicode (255) | `NULL` | Địa chỉ cư trú của bệnh nhân |
 | `la_benh_nhan_moi` | Luận lý (Boolean) | `NOT NULL`, `DEFAULT 1` | `1` nếu chưa từng hoàn thành lượt khám nào tại phòng khám (giúp Bác sĩ biết cần chuẩn bị hồ sơ mới theo `FR-09`); chuyển về `0` sau lần khám hoàn thành đầu tiên |
 | `so_lan_vang_mat` | Số nguyên | `NOT NULL`, `DEFAULT 0`, `CHECK >= 0` | Tổng số lần đặt lịch nhưng không đến khám (`No-show`), dùng để cảnh báo trên màn hình Level 4 (`Q-04`, `Q-EX02`) |
@@ -222,7 +224,7 @@ erDiagram
 | Field | Kiểu dữ liệu | Ràng buộc | Mô tả |
 | :--- | :--- | :--- | :--- |
 | `ma_hoan_tien` | Số tự tăng | `PK`, `NOT NULL` | Khóa chính tự sinh |
-| `ma_gd_hoan_cong_tt` | Chuỗi (50) | `UNIQUE`, `NULL` | Mã giao dịch hoàn tiền do Cổng thanh toán cấp (`NULL` khi đang chờ cổng xử lý) |
+| `ma_gd_hoan_cong_tt` | Chuỗi (50) | `UNIQUE` (khi khác `NULL`), `NULL` | Mã giao dịch hoàn tiền do Cổng thanh toán cấp (`NULL` khi đang chờ cổng xử lý); hiện thực bằng chỉ mục duy nhất có lọc `UX_gd_hoan_ma_cong` |
 | `ma_giao_dich_goc` | Số nguyên | `FK -> giao_dich_thanh_toan(ma_giao_dich)`, `UNIQUE`, `NOT NULL` | Giao dịch thanh toán gốc cần hoàn (Ràng buộc `UNIQUE` đảm bảo mỗi giao dịch chỉ được hoàn tối đa 1 lần theo `NFR-08`) |
 | `so_tien_hoan` | Số thực cố định (18,0) | `NOT NULL`, `CHECK > 0` | Số tiền hoàn trả (Bằng 100% số tiền đã thanh toán theo `ASM-05`, `FR-17`) |
 | `ly_do_hoan` | Chuỗi Unicode (255) | `NOT NULL` | Lý do hoàn tiền (VD: `Bác sĩ hủy lịch do nghỉ đột xuất`, `Thanh toán muộn sau khi hết hạn giữ chỗ`) |
@@ -342,7 +344,7 @@ Bảng này chứng minh mọi quy định nghiệp vụ trong Mini-SRS đều �
 - [x] **100% field có kiểu dữ liệu, chuỗi có độ dài, tiền dùng kiểu số cố định:** Tất cả 11 bảng đều dùng đúng quy ước kiểu dữ liệu (`Số tự tăng`, `Chuỗi (n)`, `Chuỗi Unicode (n)`, `Văn bản dài`, `Ngày tháng`, `Ngày giờ`, `Số nguyên`, `Số thực cố định (18,0)`, `Luận lý (Boolean)`). Không dùng `FLOAT` cho tiền.
 - [x] **Mỗi bảng có khóa chính; mọi khóa ngoại ghi rõ bảng tham chiếu và cùng kiểu:** Mọi khóa ngoại (`FK`) đều có kiểu `Số nguyên` khớp với khóa chính `Số tự tăng` (`INT`) của bảng đích.
 - [x] **Mọi ô trên mọi biểu mẫu đều truy ra được field nguồn:** Đã lập Bảng ánh xạ 4.1 cho toàn bộ 08 màn hình/biểu mẫu chính ở mức Level 4.
-- [x] **Mọi quy định có ràng buộc hoặc tham số tương ứng; đổi quy định không cần sửa cấu trúc bảng:** Đã tách bảng `chuyen_khoa` và bảng `tham_so` (7 tham số quy định), lập Bảng ánh xạ 4.2.
+- [x] **Mọi quy định có ràng buộc hoặc tham số tương ứng; đổi quy định không cần sửa cấu trúc bảng:** Đã tách bảng `chuyen_khoa` và bảng `tham_so` (8 tham số quy định), lập Bảng ánh xạ 4.2.
 - [x] **Sơ đồ và bảng đặc tả khớp nhau (cùng tên bảng, cùng field):** Sơ đồ `BT08_Nhom04_TV1_SoDoDuLieu_PhongKhamAnTam.png` và `.drawio` được sinh trực tiếp từ đúng 11 bảng và danh sách thuộc tính trong tài liệu này.
 - [x] **Có script SQL tạo bảng và 5–10 dòng dữ liệu mẫu mỗi bảng cho Người 3 làm wireframe:** Xem tệp đính kèm `BT08_Nhom04_TV1_CSDL_PhongKhamAnTam.sql`.
 

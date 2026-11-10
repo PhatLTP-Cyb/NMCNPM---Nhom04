@@ -5,6 +5,11 @@
 -- Hệ quản trị CSDL mục tiêu: Microsoft SQL Server (T-SQL)
 -- ============================================================================
 
+-- Bắt buộc cho chỉ mục duy nhất có lọc (filtered index); SSMS bật sẵn, sqlcmd thì không
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
+GO
+
 -- Xóa các bảng theo thứ tự ngược khóa ngoại nếu đã tồn tại
 IF OBJECT_ID('nhat_ky_he_thong', 'U') IS NOT NULL DROP TABLE nhat_ky_he_thong;
 IF OBJECT_ID('thong_bao', 'U') IS NOT NULL DROP TABLE thong_bao;
@@ -76,9 +81,17 @@ CREATE TABLE benh_nhan (
     CONSTRAINT UQ_benh_nhan_code UNIQUE (ma_code_bn),
     CONSTRAINT UQ_benh_nhan_sdt UNIQUE (so_dien_thoai),
     CONSTRAINT FK_benh_nhan_tai_khoan FOREIGN KEY (ma_tai_khoan) REFERENCES tai_khoan(ma_tai_khoan),
+    CONSTRAINT CK_benh_nhan_sdt CHECK (so_dien_thoai LIKE '0[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'),
+    CONSTRAINT CK_benh_nhan_ngay_sinh CHECK (ngay_sinh < CAST(GETDATE() AS DATE)),
     CONSTRAINT CK_benh_nhan_gioi_tinh CHECK (gioi_tinh IN (N'Nam', N'Nữ', N'Khác')),
     CONSTRAINT CK_benh_nhan_vang_mat CHECK (so_lan_vang_mat >= 0)
 );
+GO
+
+-- UNIQUE cho cột cho phép NULL: SQL Server chỉ chấp nhận 1 giá trị NULL trong ràng buộc UNIQUE thông thường,
+-- nên dùng chỉ mục duy nhất có lọc (filtered unique index) để nhiều bệnh nhân chưa có tài khoản / CCCD vẫn hợp lệ.
+CREATE UNIQUE INDEX UX_benh_nhan_tai_khoan ON benh_nhan(ma_tai_khoan) WHERE ma_tai_khoan IS NOT NULL;
+CREATE UNIQUE INDEX UX_benh_nhan_cccd ON benh_nhan(so_cccd) WHERE so_cccd IS NOT NULL;
 GO
 
 -- ============================================================================
@@ -125,6 +138,7 @@ CREATE TABLE khung_gio_kham (
     CONSTRAINT UQ_khung_gio_bac_si UNIQUE (ma_bac_si, ngay_kham, gio_bat_dau),
     CONSTRAINT FK_khung_gio_bac_si FOREIGN KEY (ma_bac_si) REFERENCES bac_si(ma_bac_si),
     CONSTRAINT CK_khung_gio_ca CHECK (ca_lam_viec IN (N'Ca sáng', N'Ca chiều')),
+    CONSTRAINT CK_khung_gio_gio CHECK (gio_ket_thuc > gio_bat_dau), -- So sánh chuỗi 'HH:mm' cùng độ dài cho kết quả đúng thứ tự thời gian
     CONSTRAINT CK_khung_gio_hinh_thuc CHECK (hinh_thuc_mo IN (N'Tại phòng khám', N'Trực tuyến', N'Cả hai')),
     CONSTRAINT CK_khung_gio_gioi_han CHECK (gioi_han_benh_nhan > 0),
     CONSTRAINT CK_khung_gio_so_cho CHECK (so_cho_da_dat >= 0 AND so_cho_dang_giu >= 0 AND (so_cho_da_dat + so_cho_dang_giu <= gioi_han_benh_nhan)),
@@ -209,6 +223,10 @@ CREATE TABLE giao_dich_hoan_tien (
 );
 GO
 
+-- Mã hoàn tiền của cổng thanh toán là duy nhất khi đã có (NULL khi cổng chưa cấp mã)
+CREATE UNIQUE INDEX UX_gd_hoan_ma_cong ON giao_dich_hoan_tien(ma_gd_hoan_cong_tt) WHERE ma_gd_hoan_cong_tt IS NOT NULL;
+GO
+
 -- ============================================================================
 -- 9. BẢNG thong_bao (Lịch sử thông báo bệnh nhân - FR-04, FR-18, SC-04 4a)
 -- ============================================================================
@@ -271,7 +289,7 @@ GO
 -- DỮ LIỆU MẪU (5 - 10 DÒNG MỖI BẢNG ĐỂ THÀNH VIÊN 3 DÙNG VẼ WIREFRAME LEVEL 4)
 -- ============================================================================
 
--- 1. Dữ liệu mẫu bảng tham_so (7 quy định động)
+-- 1. Dữ liệu mẫu bảng tham_so (8 quy định động)
 INSERT INTO tham_so (ma_tham_so, ten_tham_so, gia_tri, don_vi_tinh, mo_ta_quy_dinh) VALUES
 ('THOI_LUONG_KHUNG_GIO_PHUT', N'Thời lượng tiêu chuẩn 1 khung giờ khám', 20, N'Phút', N'ASM-12, Q-01: Mỗi khung giờ khám kéo dài 20 phút'),
 ('SO_BN_TOI_DA_MOI_KHUNG', N'Số bệnh nhân tối đa mặc định mỗi khung giờ', 3, N'Bệnh nhân', N'FR-03, ASM-02: Giới hạn mặc định khi tạo khung giờ mới'),
@@ -279,7 +297,8 @@ INSERT INTO tham_so (ma_tham_so, ten_tham_so, gia_tri, don_vi_tinh, mo_ta_quy_di
 ('HAN_CHOT_DOI_HUY_GIO', N'Hạn chót cho phép đổi hoặc hủy lịch trước giờ hẹn', 4, N'Giờ', N'FR-05, FR-06, Q-03: Bệnh nhân chỉ được tự đổi/hủy trước giờ khám tối thiểu 4 giờ'),
 ('SO_LAN_DOI_TOI_DA', N'Số lần được phép đổi lịch tối đa cho 1 lịch hẹn', 2, N'Lần', N'FR-05, Q-03: Mỗi mã lịch hẹn chỉ được đổi tối đa 2 lần'),
 ('NGUONG_TRE_HEN_TOI_DA_PHUT', N'Thời gian đến trễ tối đa trước khi chuyển cuối ca', 15, N'Phút', N'FR-10, Q-04: Quá 15 phút tính từ giờ hẹn sẽ ghi nhận Đến trễ'),
-('SO_LAN_VANG_MAT_CANH_BAO', N'Ngưỡng số lần vắng mặt (No-show) cảnh báo tiếp nhận', 2, N'Lần', N'Q-04, Q-EX02: Hiển thị cảnh báo đỏ trên màn hình Level 4 khi bệnh nhân vắng mặt >= 2 lần');
+('SO_LAN_VANG_MAT_CANH_BAO', N'Ngưỡng số lần vắng mặt (No-show) cảnh báo tiếp nhận', 2, N'Lần', N'Q-04, Q-EX02: Hiển thị cảnh báo đỏ trên màn hình Level 4 khi bệnh nhân vắng mặt >= 2 lần'),
+('DON_GIA_KHAM_TRUC_TUYEN_MAC_DINH', N'Đơn giá khám trực tuyến mặc định khi mở chuyên khoa mới', 150000, N'VNĐ', N'FR-15, Q-10: Giá gợi ý điền sẵn cho chuyên khoa mới; giá áp dụng thực tế lấy từ chuyen_khoa.don_gia_kham_truc_tuyen');
 
 -- 2. Dữ liệu mẫu bảng tai_khoan (12 tài khoản: 1 Quản lý, 6 Bác sĩ, 2 Tiếp nhận, 3 Bệnh nhân)
 INSERT INTO tai_khoan (ten_dang_nhap, mat_khau_bam, vai_tro, trang_thai) VALUES

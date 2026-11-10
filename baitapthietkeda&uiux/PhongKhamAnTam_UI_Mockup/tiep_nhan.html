@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiếp Nhận Bệnh Nhân - An Tâm Clinic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Navbar -->
+    <nav class="bg-blue-700 text-white p-4 shadow-md flex justify-between items-center">
+        <div class="text-xl font-bold"><i class="fas fa-heartbeat mr-2"></i>Phòng Khám An Tâm</div>
+        <div class="space-x-4">
+            <a href="tiep_nhan.html" class="font-bold underline">Tiếp nhận</a>
+            <a href="phieu_kham.html" class="hover:text-blue-200">Khám bệnh</a>
+            <a href="404_error.html" class="hover:text-blue-200">Thu ngân</a>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto p-6 mt-4">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Danh Sách Tiếp Nhận (Hôm nay)</h1>
+            <div class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg font-semibold border border-yellow-300">
+                <i class="fas fa-users mr-2"></i>Đã tiếp nhận: 28/40 (Còn 12 chỗ)
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Cột trái: Form tiếp nhận (Level 1, 2) -->
+            <div class="col-span-1 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h2 class="text-lg font-semibold border-b pb-2 mb-4">Thêm Bệnh Nhân</h2>
+                <form>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại (Nhập để tìm cũ)</label>
+                        <input type="text" class="w-full border-gray-300 border rounded px-3 py-2 focus:ring-blue-500" value="0901234567">
+                        <p class="text-xs text-green-600 mt-1"><i class="fas fa-check-circle"></i> Đã tìm thấy thông tin bệnh nhân cũ</p>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Họ và Tên</label>
+                        <input type="text" class="w-full border-gray-300 border rounded px-3 py-2 bg-gray-50" value="Nguyễn Văn A" readonly>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Giới tính</label>
+                            <select class="w-full border-gray-300 border rounded px-3 py-2 bg-gray-50" disabled>
+                                <option selected>Nam</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Năm sinh</label>
+                            <input type="number" class="w-full border-gray-300 border rounded px-3 py-2 bg-gray-50" value="1985" readonly>
+                        </div>
+                    </div>
+                    <button type="button" class="w-full bg-blue-700 text-white font-bold py-2 px-4 rounded hover:bg-blue-800 transition">
+                        Lưu & Cấp Số
+                    </button>
+                </form>
+            </div>
+
+            <!-- Cột phải: Lưới danh sách (Level 3) -->
+            <div class="col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h2 class="text-lg font-semibold border-b pb-2 mb-4">Đang chờ khám</h2>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-600 text-sm">
+                            <th class="p-3 border-b">STT</th>
+                            <th class="p-3 border-b">Mã BN</th>
+                            <th class="p-3 border-b">Họ Tên</th>
+                            <th class="p-3 border-b">Năm Sinh</th>
+                            <th class="p-3 border-b">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-3 border-b font-bold">1</td>
+                            <td class="p-3 border-b">BN001</td>
+                            <td class="p-3 border-b">Trần Thị B</td>
+                            <td class="p-3 border-b">1990</td>
+                            <td class="p-3 border-b"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Đang khám</span></td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-3 border-b font-bold">2</td>
+                            <td class="p-3 border-b">BN002</td>
+                            <td class="p-3 border-b">Nguyễn Văn A</td>
+                            <td class="p-3 border-b">1985</td>
+                            <td class="p-3 border-b"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">Chờ khám</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

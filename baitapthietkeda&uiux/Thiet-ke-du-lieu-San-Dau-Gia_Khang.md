@@ -61,13 +61,13 @@ Hệ thống sàn đấu giá trực tuyến được phân rã thành 10 bảng
 
 ## 4. BẢNG ĐẶC TẢ CHI TIẾT THÀNH PHẦN DỮ LIỆU (THEO MẪU LT07, SLIDE 9)
 
-> **Quy ước chuẩn hóa kiểu dữ liệu áp dụng:**
-> - Khóa chính tự sinh: `INT` (Identity / Auto Increment).
-> - Mã nghiệp vụ định dạng: `VARCHAR(n)` kèm `UNIQUE`, `NOT NULL`.
-> - Chuỗi văn bản tiếng Việt: `NVARCHAR(n)`, văn bản dài dùng `NVARCHAR(MAX)`.
-> - Tiền tệ (VNĐ): `DECIMAL(18,0)`, tuyệt đối **KHÔNG** sử dụng `FLOAT`.
-> - Thời điểm có giờ phút giây: `DATETIME` đến giây.
-> - Trạng thái: `VARCHAR(n)` kèm mệnh đề `CHECK (...)` liệt kê đầy đủ miền giá trị.
+> **Quy ước chuẩn hóa kiểu dữ liệu áp dụng (theo bảng quy ước chung của Nhóm 04):**
+> - Khóa chính tự sinh: `Số tự tăng` (SQL: `INT IDENTITY`). Khóa ngoại và số lượng: `Số nguyên` (`INT`).
+> - Mã nghiệp vụ định dạng: `Chuỗi (n)` (`VARCHAR(n)`) kèm `UNIQUE`, `NOT NULL`.
+> - Chuỗi văn bản tiếng Việt: `Chuỗi Unicode (n)` (`NVARCHAR(n)`), văn bản dài dùng `Văn bản dài` (`NVARCHAR(MAX)`).
+> - Tiền tệ (VNĐ): `Số thực cố định (18,0)` (`DECIMAL(18,0)`), tuyệt đối **KHÔNG** sử dụng `FLOAT`.
+> - Thời điểm có giờ phút giây: `Ngày giờ` (`DATETIME`) đến giây. Có/không: `Luận lý (Boolean)` (`BIT`).
+> - Trạng thái: `Chuỗi (n)` kèm mệnh đề `CHECK (...)` liệt kê đầy đủ miền giá trị.
 > - Tên bảng và tên trường: `snake_case`, viết chữ thường không dấu.
 
 ### 4.1. Bảng `nguoi_dung`
@@ -75,18 +75,18 @@ Lưu trữ thông tin tài khoản người dùng trên hệ thống sàn đấu
 
 | Field | Kiểu dữ liệu | Ràng buộc | Mô tả |
 | :--- | :--- | :--- | :--- |
-| `id` | INT | PK, Tự tăng | Khóa chính tự sinh nội bộ |
-| `ma_nguoi_dung` | VARCHAR(20) | UNIQUE, NOT NULL | Mã người dùng hiển thị (Ví dụ: `ND000001`) |
-| `ho_ten` | NVARCHAR(100) | NOT NULL | Họ và tên đầy đủ |
-| `email` | VARCHAR(100) | UNIQUE, NOT NULL | Địa chỉ email đăng nhập |
-| `mat_khau_hash` | VARCHAR(255) | NOT NULL | Chuỗi băm mật khẩu bảo mật (Bcrypt/Argon2) |
-| `so_dien_thoai` | VARCHAR(10) | UNIQUE, NOT NULL | Số điện thoại di động (10 chữ số) |
-| `so_cccd` | VARCHAR(12) | UNIQUE, NOT NULL | Số Căn cước công dân định danh cá nhân |
-| `dia_chi` | NVARCHAR(255) | NOT NULL | Địa chỉ cư trú / giao nhận hàng hóa |
-| `diem_uy_tin` | INT | NOT NULL, DEFAULT 100, CHECK $\ge 0$ | Điểm tín nhiệm giao dịch của thành viên |
-| `so_du_vi` | DECIMAL(18,0) | NOT NULL, DEFAULT 0, CHECK $\ge 0$ | Số dư khả dụng trong ví sàn đấu giá (VNĐ) |
-| `trang_thai` | VARCHAR(20) | NOT NULL, DEFAULT 'HOAT_DONG', CHECK IN ('HOAT_DONG', 'TAM_KHOA', 'BI_KHOA', 'CHUA_KICH_HOAT') | Trạng thái hoạt động của tài khoản |
-| `ngay_tao` | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm đăng ký tài khoản |
+| `id` | Số tự tăng | PK, Tự tăng | Khóa chính tự sinh nội bộ |
+| `ma_nguoi_dung` | Chuỗi (20) | UNIQUE, NOT NULL | Mã người dùng hiển thị (Ví dụ: `ND000001`) |
+| `ho_ten` | Chuỗi Unicode (100) | NOT NULL | Họ và tên đầy đủ |
+| `email` | Chuỗi (100) | UNIQUE, NOT NULL | Địa chỉ email đăng nhập |
+| `mat_khau_hash` | Chuỗi (255) | NOT NULL | Chuỗi băm mật khẩu bảo mật (Bcrypt/Argon2) |
+| `so_dien_thoai` | Chuỗi (10) | UNIQUE, NOT NULL | Số điện thoại di động (10 chữ số) |
+| `so_cccd` | Chuỗi (12) | UNIQUE, NOT NULL | Số Căn cước công dân định danh cá nhân |
+| `dia_chi` | Chuỗi Unicode (255) | NOT NULL | Địa chỉ cư trú / giao nhận hàng hóa |
+| `diem_uy_tin` | Số nguyên | NOT NULL, DEFAULT 100, CHECK $\ge 0$ | Điểm tín nhiệm giao dịch của thành viên |
+| `so_du_vi` | Số thực cố định (18,0) | NOT NULL, DEFAULT 0, CHECK $\ge 0$ | Số dư khả dụng trong ví sàn đấu giá (VNĐ) |
+| `trang_thai` | Chuỗi (20) | NOT NULL, DEFAULT 'HOAT_DONG', CHECK IN ('HOAT_DONG', 'TAM_KHOA', 'BI_KHOA', 'CHUA_KICH_HOAT') | Trạng thái hoạt động của tài khoản |
+| `ngay_tao` | Ngày giờ | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm đăng ký tài khoản |
 
 ---
 
@@ -95,13 +95,13 @@ Phân loại ngành hàng, sản phẩm đấu giá (hỗ trợ mô hình phân 
 
 | Field | Kiểu dữ liệu | Ràng buộc | Mô tả |
 | :--- | :--- | :--- | :--- |
-| `id` | INT | PK, Tự tăng | Khóa chính danh mục |
-| `ma_danh_muc` | VARCHAR(20) | UNIQUE, NOT NULL | Mã danh mục nghiệp vụ (Ví dụ: `DM_DIENTU`) |
-| `ten_danh_muc` | NVARCHAR(100) | NOT NULL | Tên danh mục ngành hàng |
-| `danh_muc_cha_id` | INT | NULL, FK $\to$ `danh_muc(id)` | Khóa ngoại trỏ đến danh mục cha (đệ quy) |
-| `mo_ta` | NVARCHAR(500) | NULL | Mô tả tóm tắt danh mục |
-| `thu_tu_hien_thi` | INT | NOT NULL, DEFAULT 0, CHECK $\ge 0$ | Thứ tự ưu tiên sắp xếp trên giao diện |
-| `trang_thai` | VARCHAR(20) | NOT NULL, DEFAULT 'HOAT_DONG', CHECK IN ('HOAT_DONG', 'TAM_AN') | Trạng thái hiển thị danh mục |
+| `id` | Số tự tăng | PK, Tự tăng | Khóa chính danh mục |
+| `ma_danh_muc` | Chuỗi (20) | UNIQUE, NOT NULL | Mã danh mục nghiệp vụ (Ví dụ: `DM_DIENTU`) |
+| `ten_danh_muc` | Chuỗi Unicode (100) | NOT NULL | Tên danh mục ngành hàng |
+| `danh_muc_cha_id` | Số nguyên | NULL, FK $\to$ `danh_muc(id)` | Khóa ngoại trỏ đến danh mục cha (đệ quy) |
+| `mo_ta` | Chuỗi Unicode (500) | NULL | Mô tả tóm tắt danh mục |
+| `thu_tu_hien_thi` | Số nguyên | NOT NULL, DEFAULT 0, CHECK $\ge 0$ | Thứ tự ưu tiên sắp xếp trên giao diện |
+| `trang_thai` | Chuỗi (20) | NOT NULL, DEFAULT 'HOAT_DONG', CHECK IN ('HOAT_DONG', 'TAM_AN') | Trạng thái hiển thị danh mục |
 
 ---
 
@@ -110,17 +110,17 @@ Thông tin chi tiết mặt hàng do người bán đăng tải để đưa vào
 
 | Field | Kiểu dữ liệu | Ràng buộc | Mô tả |
 | :--- | :--- | :--- | :--- |
-| `id` | INT | PK, Tự tăng | Khóa chính sản phẩm |
-| `ma_san_pham` | VARCHAR(20) | UNIQUE, NOT NULL | Mã quản lý sản phẩm (Ví dụ: `SP000001`) |
-| `ten_san_pham` | NVARCHAR(200) | NOT NULL | Tên hiển thị của sản phẩm |
-| `danh_muc_id` | INT | NOT NULL, FK $\to$ `danh_muc(id)` | Khóa ngoại tham chiếu danh mục |
-| `nguoi_ban_id` | INT | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại người bán sở hữu sản phẩm |
-| `mo_ta_chi_tiet` | NVARCHAR(MAX) | NOT NULL | Bài viết mô tả đầy đủ thông số, tính năng |
-| `xuat_xu` | NVARCHAR(100) | NULL | Xuất xứ sản phẩm / Thương hiệu sản xuất |
-| `tinh_trang` | VARCHAR(20) | NOT NULL, CHECK IN ('MOI_100', 'DA_QUA_SU_DUNG', 'LIKE_NEW', 'CO_VAT') | Tình trạng thực tế của sản phẩm |
-| `phuong_thuc_giao_hang` | VARCHAR(30) | NOT NULL, CHECK IN ('CHUYEN_PHAT_NHANH', 'NGUOI_MUA_DEN_LAY', 'MIEN_PHI_GIAO_HANG') | Phương thức giao nhận hàng hóa |
-| `phi_giao_hang` | DECIMAL(18,0) | NOT NULL, DEFAULT 0, CHECK $\ge 0$ | Cước phí chuyển phát ước tính (VNĐ) |
-| `ngay_tao` | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm người bán tạo bài đăng |
+| `id` | Số tự tăng | PK, Tự tăng | Khóa chính sản phẩm |
+| `ma_san_pham` | Chuỗi (20) | UNIQUE, NOT NULL | Mã quản lý sản phẩm (Ví dụ: `SP000001`) |
+| `ten_san_pham` | Chuỗi Unicode (200) | NOT NULL | Tên hiển thị của sản phẩm |
+| `danh_muc_id` | Số nguyên | NOT NULL, FK $\to$ `danh_muc(id)` | Khóa ngoại tham chiếu danh mục |
+| `nguoi_ban_id` | Số nguyên | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại người bán sở hữu sản phẩm |
+| `mo_ta_chi_tiet` | Văn bản dài | NOT NULL | Bài viết mô tả đầy đủ thông số, tính năng |
+| `xuat_xu` | Chuỗi Unicode (100) | NULL | Xuất xứ sản phẩm / Thương hiệu sản xuất |
+| `tinh_trang` | Chuỗi (20) | NOT NULL, CHECK IN ('MOI_100', 'DA_QUA_SU_DUNG', 'LIKE_NEW', 'CO_VAT') | Tình trạng thực tế của sản phẩm |
+| `phuong_thuc_giao_hang` | Chuỗi (30) | NOT NULL, CHECK IN ('CHUYEN_PHAT_NHANH', 'NGUOI_MUA_DEN_LAY', 'MIEN_PHI_GIAO_HANG') | Phương thức giao nhận hàng hóa |
+| `phi_giao_hang` | Số thực cố định (18,0) | NOT NULL, DEFAULT 0, CHECK $\ge 0$ | Cước phí chuyển phát ước tính (VNĐ) |
+| `ngay_tao` | Ngày giờ | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm người bán tạo bài đăng |
 
 ---
 
@@ -129,12 +129,12 @@ Lưu trữ danh sách hình ảnh thực tế của sản phẩm.
 
 | Field | Kiểu dữ liệu | Ràng buộc | Mô tả |
 | :--- | :--- | :--- | :--- |
-| `id` | INT | PK, Tự tăng | Khóa chính hình ảnh |
-| `san_pham_id` | INT | NOT NULL, FK $\to$ `san_pham(id)` ON DELETE CASCADE | Khóa ngoại trỏ đến sản phẩm |
-| `duong_dan_anh` | VARCHAR(500) | NOT NULL | Đường dẫn URL file ảnh lưu trên Cloud/CDN |
-| `la_anh_chinh` | BIT | NOT NULL, DEFAULT 0 | Cờ đánh dấu ảnh đại diện chính của sản phẩm |
-| `thu_tu` | INT | NOT NULL, DEFAULT 1, CHECK $\ge 1$ | Thứ tự hiển thị trong bộ sưu tập ảnh |
-| `ngay_tao` | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm tải ảnh lên |
+| `id` | Số tự tăng | PK, Tự tăng | Khóa chính hình ảnh |
+| `san_pham_id` | Số nguyên | NOT NULL, FK $\to$ `san_pham(id)` ON DELETE CASCADE | Khóa ngoại trỏ đến sản phẩm |
+| `duong_dan_anh` | Chuỗi (500) | NOT NULL | Đường dẫn URL file ảnh lưu trên Cloud/CDN |
+| `la_anh_chinh` | Luận lý (Boolean) | NOT NULL, DEFAULT 0 | Cờ đánh dấu ảnh đại diện chính của sản phẩm |
+| `thu_tu` | Số nguyên | NOT NULL, DEFAULT 1, CHECK $\ge 1$ | Thứ tự hiển thị trong bộ sưu tập ảnh |
+| `ngay_tao` | Ngày giờ | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm tải ảnh lên |
 
 ---
 
@@ -143,27 +143,27 @@ Thực thể trọng tâm chứa thông tin phiên đấu giá, quy tắc tài c
 
 | Field | Kiểu dữ liệu | Ràng buộc | Mô tả |
 | :--- | :--- | :--- | :--- |
-| `id` | INT | PK, Tự tăng | Khóa chính phiên đấu giá |
-| `ma_phien` | VARCHAR(20) | UNIQUE, NOT NULL | Mã phiên đấu giá hiển thị (Ví dụ: `PDG000001`) |
-| `san_pham_id` | INT | UNIQUE, NOT NULL, FK $\to$ `san_pham(id)` | Khóa ngoại tham chiếu 1-1 với sản phẩm |
-| `gia_khoi_diem` | DECIMAL(18,0) | NOT NULL, CHECK $> 0$ | Mức giá bắt đầu phiên đấu giá (VNĐ) |
-| `buoc_gia` | DECIMAL(18,0) | NOT NULL, CHECK $> 0$ | Bước giá tối thiểu cho mỗi lần trả giá (VNĐ) |
-| `gia_ban_toi_thieu` | DECIMAL(18,0) | NULL, CHECK IS NULL OR $\ge$ `gia_khoi_diem` | Giá sàn bảo lưu bí mật của người bán (Reserve Price) |
-| `gia_mua_ngay` | DECIMAL(18,0) | NULL, CHECK IS NULL OR $> \text{gia\_khoi\_diem}$ | Mức giá mua đứt để kết thúc phiên ngay lập tức |
-| `gia_hien_tai` | DECIMAL(18,0) | NOT NULL, CHECK $\ge$ `gia_khoi_diem` | *Trường dẫn xuất:* Giá cao nhất hiện tại (cache) |
-| `so_luot_tra_gia` | INT | NOT NULL, DEFAULT 0, CHECK $\ge 0$ | *Trường dẫn xuất:* Tổng số lượt trả giá đã đặt |
-| `nguoi_dan_dau_id` | INT | NULL, FK $\to$ `nguoi_dung(id)` | *Trường dẫn xuất:* Người đang đặt mức giá cao nhất |
-| `thoi_gian_bat_dau` | DATETIME | NOT NULL | Thời điểm chính thức mở phiên trả giá |
-| `thoi_gian_ket_thuc` | DATETIME | NOT NULL, CHECK $>$ `thoi_gian_bat_dau` | Thời điểm kết thúc hiện tại của phiên |
-| `thoi_gian_ket_thuc_goc` | DATETIME | NOT NULL | Thời điểm kết thúc ban đầu (trước khi gia hạn) |
-| `so_lan_gia_han` | INT | NOT NULL, DEFAULT 0, CHECK BETWEEN 0 AND 10 | Số lần phiên đã được tự động gia hạn thêm 5 phút |
-| `yeu_cau_dat_coc` | BIT | NOT NULL, DEFAULT 0 | Yêu cầu người tham gia phải nộp cọc trước hay không |
-| `so_tien_coc` | DECIMAL(18,0) | NOT NULL, DEFAULT 0, CHECK $\ge 0$ | Số tiền đặt cọc cần nộp nếu có yêu cầu (VNĐ) |
-| `trang_thai` | VARCHAR(20) | NOT NULL, DEFAULT 'CHO_DUYET', CHECK IN ('CHO_DUYET', 'SAP_DIEN_RA', 'DANG_DIEN_RA', 'DA_KET_THUC', 'DA_HUY') | Trạng thái vòng đời của phiên đấu giá |
-| `ly_do_ket_thuc` | VARCHAR(30) | NULL, CHECK IS NULL OR IN ('HET_GIO_CO_NGUOI_THANG', 'HET_GIO_KHONG_DAT_GIA_SAN', 'KHONG_CO_LUOT_TRA_GIA', 'MUA_NGAY', 'NGUOI_BAN_HUY', 'HE_THONG_HUY') | Lý do phiên chuyển sang kết thúc hoặc hủy |
-| `nguoi_thang_id` | INT | NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại người chiến thắng phiên đấu giá |
-| `gia_thang` | DECIMAL(18,0) | NULL, CHECK IS NULL OR $\ge$ `gia_khoi_diem` | Mức giá chốt thắng cuộc chung cuộc (VNĐ) |
-| `ngay_tao` | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm lập phiên đấu giá trên hệ thống |
+| `id` | Số tự tăng | PK, Tự tăng | Khóa chính phiên đấu giá |
+| `ma_phien` | Chuỗi (20) | UNIQUE, NOT NULL | Mã phiên đấu giá hiển thị (Ví dụ: `PDG000001`) |
+| `san_pham_id` | Số nguyên | UNIQUE, NOT NULL, FK $\to$ `san_pham(id)` | Khóa ngoại tham chiếu 1-1 với sản phẩm |
+| `gia_khoi_diem` | Số thực cố định (18,0) | NOT NULL, CHECK $> 0$ | Mức giá bắt đầu phiên đấu giá (VNĐ) |
+| `buoc_gia` | Số thực cố định (18,0) | NOT NULL, CHECK $> 0$ | Bước giá tối thiểu cho mỗi lần trả giá (VNĐ) |
+| `gia_ban_toi_thieu` | Số thực cố định (18,0) | NULL, CHECK IS NULL OR $\ge$ `gia_khoi_diem` | Giá sàn bảo lưu bí mật của người bán (Reserve Price) |
+| `gia_mua_ngay` | Số thực cố định (18,0) | NULL, CHECK IS NULL OR $> \text{gia\_khoi\_diem}$ | Mức giá mua đứt để kết thúc phiên ngay lập tức |
+| `gia_hien_tai` | Số thực cố định (18,0) | NOT NULL, CHECK $\ge$ `gia_khoi_diem` | *Trường dẫn xuất:* Giá cao nhất hiện tại (cache) |
+| `so_luot_tra_gia` | Số nguyên | NOT NULL, DEFAULT 0, CHECK $\ge 0$ | *Trường dẫn xuất:* Tổng số lượt trả giá đã đặt |
+| `nguoi_dan_dau_id` | Số nguyên | NULL, FK $\to$ `nguoi_dung(id)` | *Trường dẫn xuất:* Người đang đặt mức giá cao nhất |
+| `thoi_gian_bat_dau` | Ngày giờ | NOT NULL | Thời điểm chính thức mở phiên trả giá |
+| `thoi_gian_ket_thuc` | Ngày giờ | NOT NULL, CHECK $>$ `thoi_gian_bat_dau` | Thời điểm kết thúc hiện tại của phiên |
+| `thoi_gian_ket_thuc_goc` | Ngày giờ | NOT NULL | Thời điểm kết thúc ban đầu (trước khi gia hạn) |
+| `so_lan_gia_han` | Số nguyên | NOT NULL, DEFAULT 0, CHECK BETWEEN 0 AND 10 | Số lần phiên đã được tự động gia hạn thêm 5 phút |
+| `yeu_cau_dat_coc` | Luận lý (Boolean) | NOT NULL, DEFAULT 0 | Yêu cầu người tham gia phải nộp cọc trước hay không |
+| `so_tien_coc` | Số thực cố định (18,0) | NOT NULL, DEFAULT 0, CHECK $\ge 0$ | Số tiền đặt cọc cần nộp nếu có yêu cầu (VNĐ) |
+| `trang_thai` | Chuỗi (20) | NOT NULL, DEFAULT 'CHO_DUYET', CHECK IN ('CHO_DUYET', 'SAP_DIEN_RA', 'DANG_DIEN_RA', 'DA_KET_THUC', 'DA_HUY') | Trạng thái vòng đời của phiên đấu giá |
+| `ly_do_ket_thuc` | Chuỗi (30) | NULL, CHECK IS NULL OR IN ('HET_GIO_CO_NGUOI_THANG', 'HET_GIO_KHONG_DAT_GIA_SAN', 'KHONG_CO_LUOT_TRA_GIA', 'MUA_NGAY', 'NGUOI_BAN_HUY', 'HE_THONG_HUY') | Lý do phiên chuyển sang kết thúc hoặc hủy |
+| `nguoi_thang_id` | Số nguyên | NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại người chiến thắng phiên đấu giá |
+| `gia_thang` | Số thực cố định (18,0) | NULL, CHECK IS NULL OR $\ge$ `gia_khoi_diem` | Mức giá chốt thắng cuộc chung cuộc (VNĐ) |
+| `ngay_tao` | Ngày giờ | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm lập phiên đấu giá trên hệ thống |
 
 ---
 
@@ -172,14 +172,14 @@ Lịch sử chi tiết các lần đưa ra giá của người mua.
 
 | Field | Kiểu dữ liệu | Ràng buộc | Mô tả |
 | :--- | :--- | :--- | :--- |
-| `id` | INT | PK, Tự tăng | Khóa chính lượt trả giá |
-| `phien_dau_gia_id` | INT | NOT NULL, FK $\to$ `phien_dau_gia(id)` | Khóa ngoại tham chiếu phiên đấu giá |
-| `nguoi_tra_id` | INT | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại người đặt giá (thành viên mua) |
-| `gia_tra` | DECIMAL(18,0) | NOT NULL, CHECK $> 0$ | Mức giá người mua đưa ra (VNĐ) |
-| `thoi_gian_tra` | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm hệ thống ghi nhận lượt ra giá (đến giây) |
-| `la_mua_ngay` | BIT | NOT NULL, DEFAULT 0 | Cờ đánh dấu lượt ra giá kích hoạt Mua ngay |
-| `trang_thai` | VARCHAR(20) | NOT NULL, DEFAULT 'HOP_LE', CHECK IN ('HOP_LE', 'BI_VUOT_GIA', 'THANG_CUOC', 'BI_HUY') | Trạng thái hiệu lực của lượt trả giá |
-| `ip_nguoi_tra` | VARCHAR(45) | NULL | Địa chỉ IPv4/IPv6 nhằm kiểm soát gian lận |
+| `id` | Số tự tăng | PK, Tự tăng | Khóa chính lượt trả giá |
+| `phien_dau_gia_id` | Số nguyên | NOT NULL, FK $\to$ `phien_dau_gia(id)` | Khóa ngoại tham chiếu phiên đấu giá |
+| `nguoi_tra_id` | Số nguyên | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại người đặt giá (thành viên mua) |
+| `gia_tra` | Số thực cố định (18,0) | NOT NULL, CHECK $> 0$ | Mức giá người mua đưa ra (VNĐ) |
+| `thoi_gian_tra` | Ngày giờ | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm hệ thống ghi nhận lượt ra giá (đến giây) |
+| `la_mua_ngay` | Luận lý (Boolean) | NOT NULL, DEFAULT 0 | Cờ đánh dấu lượt ra giá kích hoạt Mua ngay |
+| `trang_thai` | Chuỗi (20) | NOT NULL, DEFAULT 'HOP_LE', CHECK IN ('HOP_LE', 'BI_VUOT_GIA', 'THANG_CUOC', 'BI_HUY') | Trạng thái hiệu lực của lượt trả giá |
+| `ip_nguoi_tra` | Chuỗi (45) | NULL | Địa chỉ IPv4/IPv6 nhằm kiểm soát gian lận |
 
 ---
 
@@ -188,11 +188,11 @@ Quản lý danh sách sản phẩm yêu thích (Watchlist) của người dùng.
 
 | Field | Kiểu dữ liệu | Ràng buộc | Mô tả |
 | :--- | :--- | :--- | :--- |
-| `id` | INT | PK, Tự tăng | Khóa chính theo dõi |
-| `nguoi_dung_id` | INT | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại người dùng theo dõi |
-| `phien_dau_gia_id` | INT | NOT NULL, FK $\to$ `phien_dau_gia(id)` | Khóa ngoại phiên đấu giá được quan tâm |
-| `ngay_theo_doi` | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm nhấn theo dõi phiên |
-| `nhan_thong_bao` | BIT | NOT NULL, DEFAULT 1 | Cờ bật/tắt nhận chuông báo biến động giá |
+| `id` | Số tự tăng | PK, Tự tăng | Khóa chính theo dõi |
+| `nguoi_dung_id` | Số nguyên | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại người dùng theo dõi |
+| `phien_dau_gia_id` | Số nguyên | NOT NULL, FK $\to$ `phien_dau_gia(id)` | Khóa ngoại phiên đấu giá được quan tâm |
+| `ngay_theo_doi` | Ngày giờ | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm nhấn theo dõi phiên |
+| `nhan_thong_bao` | Luận lý (Boolean) | NOT NULL, DEFAULT 1 | Cờ bật/tắt nhận chuông báo biến động giá |
 | *Ràng buộc nhóm* | — | `UNIQUE(nguoi_dung_id, phien_dau_gia_id)` | Mỗi người dùng chỉ theo dõi 1 phiên tối đa 1 lần |
 
 ---
@@ -202,19 +202,19 @@ Quản lý các luồng tiền thanh toán (cọc, hoàn cọc, hóa đơn mua h
 
 | Field | Kiểu dữ liệu | Ràng buộc | Mô tả |
 | :--- | :--- | :--- | :--- |
-| `id` | INT | PK, Tự tăng | Khóa chính giao dịch |
-| `ma_giao_dich` | VARCHAR(30) | UNIQUE, NOT NULL | Mã giao dịch tài chính hệ thống (Ví dụ: `GD202611080001`) |
-| `phien_dau_gia_id` | INT | NOT NULL, FK $\to$ `phien_dau_gia(id)` | Khóa ngoại phiên đấu giá phát sinh giao dịch |
-| `nguoi_thuc_hien_id` | INT | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại người chi trả hoặc thụ hưởng |
-| `loai_giao_dich` | VARCHAR(30) | NOT NULL, CHECK IN ('DAT_COC', 'HOAN_COC', 'TICH_THU_COC', 'THANH_TOAN_HOA_DON', 'PHI_DANG_SAN_PHAM', 'RUT_TIEN_BAN') | Bản chất loại giao dịch tài chính |
-| `so_tien` | DECIMAL(18,0) | NOT NULL, CHECK $> 0$ | Số tiền giao dịch thực tế (VNĐ) |
-| `phuong_thuc` | VARCHAR(30) | NOT NULL, CHECK IN ('VI_SAN', 'VNPAY', 'MOMO', 'CHUYEN_KHOAN_NGAN_HANG') | Phương thức thanh toán được sử dụng |
-| `ma_giao_dich_cong` | VARCHAR(100) | NULL | Mã tham chiếu đối soát từ cổng thanh toán bên ngoài |
-| `trang_thai` | VARCHAR(20) | NOT NULL, DEFAULT 'CHO_XU_LY', CHECK IN ('CHO_XU_LY', 'THANH_CONG', 'THAT_BAI', 'DA_HUY') | Tình trạng xử lý giao dịch |
-| `han_chot_thanh_toan` | DATETIME | NULL | Mốc hết hạn 48 giờ đối với hóa đơn mua hàng |
-| `thoi_gian_thanh_toan` | DATETIME | NULL | Thời điểm thanh toán thực tế thành công |
-| `ghi_chu` | NVARCHAR(255) | NULL | Ghi chú giải trình giao dịch |
-| `ngay_tao` | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm khởi tạo bản ghi giao dịch |
+| `id` | Số tự tăng | PK, Tự tăng | Khóa chính giao dịch |
+| `ma_giao_dich` | Chuỗi (30) | UNIQUE, NOT NULL | Mã giao dịch tài chính hệ thống (Ví dụ: `GD202611080001`) |
+| `phien_dau_gia_id` | Số nguyên | NOT NULL, FK $\to$ `phien_dau_gia(id)` | Khóa ngoại phiên đấu giá phát sinh giao dịch |
+| `nguoi_thuc_hien_id` | Số nguyên | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại người chi trả hoặc thụ hưởng |
+| `loai_giao_dich` | Chuỗi (30) | NOT NULL, CHECK IN ('DAT_COC', 'HOAN_COC', 'TICH_THU_COC', 'THANH_TOAN_HOA_DON', 'PHI_DANG_SAN_PHAM', 'RUT_TIEN_BAN') | Bản chất loại giao dịch tài chính |
+| `so_tien` | Số thực cố định (18,0) | NOT NULL, CHECK $> 0$ | Số tiền giao dịch thực tế (VNĐ) |
+| `phuong_thuc` | Chuỗi (30) | NOT NULL, CHECK IN ('VI_SAN', 'VNPAY', 'MOMO', 'CHUYEN_KHOAN_NGAN_HANG') | Phương thức thanh toán được sử dụng |
+| `ma_giao_dich_cong` | Chuỗi (100) | NULL | Mã tham chiếu đối soát từ cổng thanh toán bên ngoài |
+| `trang_thai` | Chuỗi (20) | NOT NULL, DEFAULT 'CHO_XU_LY', CHECK IN ('CHO_XU_LY', 'THANH_CONG', 'THAT_BAI', 'DA_HUY') | Tình trạng xử lý giao dịch |
+| `han_chot_thanh_toan` | Ngày giờ | NULL | Mốc hết hạn 48 giờ đối với hóa đơn mua hàng |
+| `thoi_gian_thanh_toan` | Ngày giờ | NULL | Thời điểm thanh toán thực tế thành công |
+| `ghi_chu` | Chuỗi Unicode (255) | NULL | Ghi chú giải trình giao dịch |
+| `ngay_tao` | Ngày giờ | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm khởi tạo bản ghi giao dịch |
 
 ---
 
@@ -223,14 +223,14 @@ Lưu trữ đánh giá uy tín hai chiều sau khi phiên đấu giá hoàn tấ
 
 | Field | Kiểu dữ liệu | Ràng buộc | Mô tả |
 | :--- | :--- | :--- | :--- |
-| `id` | INT | PK, Tự tăng | Khóa chính bản ghi đánh giá |
-| `phien_dau_gia_id` | INT | NOT NULL, FK $\to$ `phien_dau_gia(id)` | Khóa ngoại phiên đấu giá đã kết thúc thành công |
-| `nguoi_danh_gia_id` | INT | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại thành viên thực hiện gửi đánh giá |
-| `nguoi_bi_danh_gia_id` | INT | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại thành viên được đánh giá |
-| `vai_tro_nguoi_danh_gia` | VARCHAR(20) | NOT NULL, CHECK IN ('NGUOI_MUA', 'NGUOI_BAN') | Vai trò của người gửi nhận xét trong phiên |
-| `so_sao` | INT | NOT NULL, CHECK BETWEEN 1 AND 5 | Số sao đánh giá độ hài lòng (1 đến 5 sao) |
-| `nhan_xet` | NVARCHAR(1000) | NOT NULL | Nội dung phản hồi, nhận xét cụ thể |
-| `thoi_gian_danh_gia` | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm gửi đánh giá (chỉ đọc, không cho sửa) |
+| `id` | Số tự tăng | PK, Tự tăng | Khóa chính bản ghi đánh giá |
+| `phien_dau_gia_id` | Số nguyên | NOT NULL, FK $\to$ `phien_dau_gia(id)` | Khóa ngoại phiên đấu giá đã kết thúc thành công |
+| `nguoi_danh_gia_id` | Số nguyên | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại thành viên thực hiện gửi đánh giá |
+| `nguoi_bi_danh_gia_id` | Số nguyên | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại thành viên được đánh giá |
+| `vai_tro_nguoi_danh_gia` | Chuỗi (20) | NOT NULL, CHECK IN ('NGUOI_MUA', 'NGUOI_BAN') | Vai trò của người gửi nhận xét trong phiên |
+| `so_sao` | Số nguyên | NOT NULL, CHECK BETWEEN 1 AND 5 | Số sao đánh giá độ hài lòng (1 đến 5 sao) |
+| `nhan_xet` | Chuỗi Unicode (1000) | NOT NULL | Nội dung phản hồi, nhận xét cụ thể |
+| `thoi_gian_danh_gia` | Ngày giờ | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm gửi đánh giá (chỉ đọc, không cho sửa) |
 | *Ràng buộc nhóm* | — | `UNIQUE(phien_dau_gia_id, nguoi_danh_gia_id)` | Mỗi người tham gia chỉ được đánh giá 1 lần duy nhất |
 
 ---
@@ -240,14 +240,14 @@ Hộp thư thông báo thời gian thực gửi đến người dùng.
 
 | Field | Kiểu dữ liệu | Ràng buộc | Mô tả |
 | :--- | :--- | :--- | :--- |
-| `id` | INT | PK, Tự tăng | Khóa chính thông báo |
-| `nguoi_nhan_id` | INT | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại người dùng nhận thông báo |
-| `phien_dau_gia_id` | INT | NULL, FK $\to$ `phien_dau_gia(id)` | Khóa ngoại phiên đấu giá liên quan (nếu có) |
-| `tieu_de` | NVARCHAR(200) | NOT NULL | Tiêu đề thông báo ngắn gọn |
-| `noi_dung` | NVARCHAR(1000) | NOT NULL | Nội dung chi tiết thông báo |
-| `loai_thong_bao` | VARCHAR(30) | NOT NULL, CHECK IN ('BI_VUOT_GIA', 'THANG_DAU_GIA', 'PHIEN_SAP_KET_THUC', 'XAC_NHAN_DAT_GIA', 'THANH_TOAN_THANH_CONG', 'HOAN_TIEN_COC', 'PHIEN_BI_HUY') | Phân loại sự kiện thông báo |
-| `da_doc` | BIT | NOT NULL, DEFAULT 0 | Cờ trạng thái đã đọc (1) hay chưa đọc (0) |
-| `thoi_gian_gui` | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm hệ thống gửi thông báo |
+| `id` | Số tự tăng | PK, Tự tăng | Khóa chính thông báo |
+| `nguoi_nhan_id` | Số nguyên | NOT NULL, FK $\to$ `nguoi_dung(id)` | Khóa ngoại người dùng nhận thông báo |
+| `phien_dau_gia_id` | Số nguyên | NULL, FK $\to$ `phien_dau_gia(id)` | Khóa ngoại phiên đấu giá liên quan (nếu có) |
+| `tieu_de` | Chuỗi Unicode (200) | NOT NULL | Tiêu đề thông báo ngắn gọn |
+| `noi_dung` | Chuỗi Unicode (1000) | NOT NULL | Nội dung chi tiết thông báo |
+| `loai_thong_bao` | Chuỗi (30) | NOT NULL, CHECK IN ('BI_VUOT_GIA', 'THANG_DAU_GIA', 'PHIEN_SAP_KET_THUC', 'XAC_NHAN_DAT_GIA', 'THANH_TOAN_THANH_CONG', 'HOAN_TIEN_COC', 'PHIEN_BI_HUY') | Phân loại sự kiện thông báo |
+| `da_doc` | Luận lý (Boolean) | NOT NULL, DEFAULT 0 | Cờ trạng thái đã đọc (1) hay chưa đọc (0) |
+| `thoi_gian_gui` | Ngày giờ | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Thời điểm hệ thống gửi thông báo |
 
 ---
 

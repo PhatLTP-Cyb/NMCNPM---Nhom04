@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>BT08 · Nhóm 04 · Wireframe Phòng khám An Tâm (Level 4)</title>
+<!--
+  Tệp gốc wireframe của Người 3. Mở trực tiếp bằng trình duyệt:
+  - Không có #: xem toàn bộ 20 màn hình liên tiếp.
+  - Có #mh03, #mh11...: chỉ hiện một màn hình (dùng để xuất PNG).
+  Nhãn đen "C1..C4" là chú thích cải tiến theo LT07, không thuộc giao diện thật.
+-->
+<style>
+:root{
+  --pri:#1F5FA8; --pri-soft:#E8F0FA;      /* Màu 1: chủ đạo, điều hướng, nút chính */
+  --ok:#1F7A4D;  --ok-soft:#E7F4EC;       /* Màu 2: thành công, còn chỗ */
+  --warn:#B54708;--warn-soft:#FEF4E6;     /* Màu 3: cảnh báo, chờ xử lý */
+  --bad:#B42318; --bad-soft:#FDECEA;      /* Màu 4: lỗi, hết chỗ, hủy */
+  --ink:#1C2430; --mut:#667085; --line:#D0D5DD; --fill:#F2F4F7;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:30px 0;background:#CBD2DB;font:14px/1.45 "Segoe UI",Arial,sans-serif;color:var(--ink)}
+body.single{padding:0}
+.screen{width:1200px;background:#fff;margin:0 auto 40px;border:1px solid #98A2B3}
+body.single .screen{display:none;margin:0}
+body.single .screen.on{display:block}
+.bar{background:#344054;color:#fff;font-size:12px;padding:5px 12px;display:flex;justify-content:space-between}
+.bar b{letter-spacing:.02em}
+.hdr{display:flex;align-items:center;gap:20px;padding:0 20px;height:52px;border-bottom:3px solid var(--pri)}
+.logo{font-weight:700;color:var(--pri);font-size:16px;white-space:nowrap}
+.logo i{font-style:normal;display:inline-block;width:24px;height:24px;border-radius:5px;background:var(--pri);color:#fff;text-align:center;line-height:24px;margin-right:6px}
+.nav{display:flex;gap:2px;flex:1}
+.nav span{padding:15px 12px;color:var(--mut);font-weight:600;font-size:13px}
+.nav span.on{color:var(--pri);box-shadow:inset 0 -3px 0 var(--pri)}
+.who{font-size:12.5px;color:var(--mut);white-space:nowrap}
+.who b{color:var(--ink)}
+.body{padding:16px 20px 20px}
+.crumb{font-size:12px;color:var(--mut);margin-bottom:4px}
+h1{font-size:19px;margin:0 0 12px;color:#101828}
+h1 small{font-size:13px;color:var(--mut);font-weight:400;margin-left:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.g73{display:grid;grid-template-columns:7fr 3fr;gap:16px}
+.g64{display:grid;grid-template-columns:6fr 4fr;gap:16px}
+.g46{display:grid;grid-template-columns:4fr 6fr;gap:16px}
+.row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.row>.f{flex:1;min-width:120px}
+.sp{height:12px}
+.box{border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.box h4{margin:0 0 10px;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--pri)}
+.f{margin-bottom:10px}
+.f label{display:block;font-size:12px;color:#475467;margin-bottom:3px}
+.f label.req::after{content:" *";color:var(--bad)}
+.in{border:1px solid #98A2B3;border-radius:4px;min-height:32px;padding:6px 9px;background:#fff;position:relative}
+.in.ph{color:#98A2B3}
+.in.ro{background:var(--fill);border:1px dashed #98A2B3}
+.in.sel::after{content:"▾";position:absolute;right:9px;top:6px;color:var(--mut)}
+.in.date::after{content:"▦";position:absolute;right:9px;top:5px;color:var(--mut)}
+.in.srch::after{content:"⌕";position:absolute;right:9px;top:4px;color:var(--mut);font-size:16px}
+.in.area{min-height:58px}
+.in.err{border-color:var(--bad);box-shadow:0 0 0 2px var(--bad-soft)}
+.hint{font-size:11.5px;color:var(--mut);margin-top:3px}
+.hint.bad{color:var(--bad)}
+.radio{display:flex;gap:16px;padding:6px 0}
+.radio span::before{content:"○ ";color:var(--mut)}
+.radio span.on::before{content:"● ";color:var(--pri)}
+.chk span::before{content:"☐ "} .chk span.on::before{content:"☑ ";color:var(--pri)}
+.chk{display:flex;gap:16px;padding:6px 0}
+.btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.btn{display:inline-block;padding:7px 16px;border-radius:4px;border:1px solid #98A2B3;background:#fff;font-weight:600;font-size:13px}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+.btn.dan{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.sm{padding:3px 9px;font-size:12px;font-weight:500}
+.btn.dis{opacity:.45}
+.lnk{color:var(--pri);text-decoration:underline;font-size:12.5px}
+.t{width:100%;border-collapse:collapse;font-size:12.8px}
+.t th{background:var(--fill);text-align:left;padding:6px 8px;border:1px solid var(--line);font-weight:600;white-space:nowrap}
+.t td{padding:6px 8px;border:1px solid #E4E7EC;vertical-align:top}
+.t td:first-child{white-space:nowrap}
+.t tr.hl td{background:var(--warn-soft)}
+.t tr.bad td{background:var(--bad-soft)}
+.t tr.mute td{color:#98A2B3}
+.t td.num{text-align:right;white-space:nowrap}
+.t .in{min-height:26px;padding:3px 7px;font-size:12.5px}
+.t .in.sel::after{top:3px}
+.pill{display:inline-block;padding:0 8px;border-radius:10px;font-size:11.5px;border:1px solid;white-space:nowrap;line-height:18px}
+.pill.ok{color:var(--ok);background:var(--ok-soft);border-color:#A6D8BB}
+.pill.warn{color:var(--warn);background:var(--warn-soft);border-color:#F5C48A}
+.pill.bad{color:var(--bad);background:var(--bad-soft);border-color:#F3B2AB}
+.pill.info{color:var(--pri);background:var(--pri-soft);border-color:#A9C5E8}
+.pill.mute{color:var(--mut);background:var(--fill);border-color:var(--line)}
+.alert{border-left:4px solid;border-radius:0 6px 6px 0;padding:8px 12px;margin:0 0 10px;font-size:13px}
+.alert b{display:block;margin-bottom:2px}
+.alert.bad{border-color:var(--bad);background:var(--bad-soft)}
+.alert.warn{border-color:var(--warn);background:var(--warn-soft)}
+.alert.ok{border-color:var(--ok);background:var(--ok-soft)}
+.alert.info{border-color:var(--pri);background:var(--pri-soft)}
+.lv{display:inline-block;font-size:10px;font-weight:700;color:#fff;background:#101828;border-radius:3px;padding:0 4px;margin-left:5px;vertical-align:1px;line-height:15px}
+.slots{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.slot{border:1.5px solid var(--line);border-radius:6px;padding:6px 4px;text-align:center;font-size:12.5px}
+.slot b{display:block;font-size:13px}
+.slot.free{border-color:#7CC29B;background:var(--ok-soft)}
+.slot.full{background:var(--fill);color:#98A2B3;text-decoration:line-through}
+.slot.hold{border-color:#F5C48A;background:var(--warn-soft)}
+.slot.sel{border-color:var(--pri);background:var(--pri);color:#fff}
+.slot.off{border-style:dashed;color:#98A2B3}
+.kpis{display:flex;gap:10px;margin-bottom:12px}
+.kpi{flex:1;border:1px solid var(--line);border-radius:6px;padding:7px 11px;font-size:12px;color:var(--mut)}
+.kpi b{font-size:21px;display:block;color:var(--ink);line-height:1.2}
+.kpi.ok b{color:var(--ok)} .kpi.warn b{color:var(--warn)} .kpi.bad b{color:var(--bad)} .kpi.pri b{color:var(--pri)}
+.sum{background:var(--pri-soft);border:1px solid #A9C5E8;border-radius:6px;padding:8px 12px;font-size:13px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tile{border:1px solid var(--line);border-radius:8px;padding:12px}
+.tile h5{margin:0 0 6px;font-size:13px;color:var(--pri);text-transform:uppercase;letter-spacing:.04em}
+.tile div{padding:5px 0;border-top:1px solid #EEF0F3;font-size:13.5px}
+.tile div::before{content:"› ";color:var(--pri)}
+.qr{width:150px;height:150px;border:2px dashed #98A2B3;display:flex;align-items:center;justify-content:center;color:var(--mut);margin:6px auto}
+.big{font-size:26px;font-weight:700;color:var(--pri)}
+.cd{font-size:22px;font-weight:700;color:var(--warn)}
+.center{text-align:center}
+.mut{color:var(--mut)}
+.err-page{padding:48px 0 40px;text-align:center}
+.err-code{font-size:64px;font-weight:800;color:var(--pri);line-height:1}
+.err-page h2{margin:10px 0 6px;font-size:22px}
+.err-page p{max-width:620px;margin:6px auto;color:#475467}
+.emerg{max-width:620px;margin:22px auto 0;border:2px solid var(--bad);border-radius:8px;padding:12px 16px;text-align:left;background:var(--bad-soft)}
+.emerg b{color:var(--bad)}
+.dim{background:rgba(16,24,40,.45);padding:30px 0}
+.dialog{width:860px;margin:0 auto;background:#fff;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.dialog .dh{padding:12px 18px;border-bottom:1px solid var(--line);font-weight:700;font-size:15px;display:flex;justify-content:space-between}
+.dialog .db{padding:14px 18px}
+.legend{width:1200px;margin:0 auto 30px;background:#fff;border:1px solid #98A2B3;padding:14px 18px;font-size:13px}
+body.single .legend{display:none}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin:0 4px 0 12px}
+.login{width:400px;margin:50px auto 40px;border:1px solid var(--line);border-radius:10px;padding:26px 28px}
+.banner{background:var(--warn);color:#fff;padding:8px 20px;font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="legend">
+  <b>Bảng màu (4 màu chức năng + thang xám):</b>
+  <span class="sw" style="background:#1F5FA8"></span>Chủ đạo #1F5FA8
+  <span class="sw" style="background:#1F7A4D"></span>Thành công / còn chỗ #1F7A4D
+  <span class="sw" style="background:#B54708"></span>Cảnh báo / chờ #B54708
+  <span class="sw" style="background:#B42318"></span>Lỗi / hết chỗ / hủy #B42318
+  &nbsp;·&nbsp; Ô nền xám viền đứt = chỉ đọc · <span style="color:#B42318">*</span> = bắt buộc · <span class="lv">C1</span>…<span class="lv">C4</span> = chú thích cải tiến (không thuộc giao diện).
+</div>
+
+<!-- ============================================================ MH01 -->
+<section class="screen" id="mh01" data-title="MH01 · Đăng nhập" data-role="(chưa đăng nhập)" data-nav="">
+  <div class="login">
+    <div class="center"><div class="logo" style="font-size:20px"><i>✚</i>Phòng khám An Tâm</div>
+      <p class="mut" style="margin:6px 0 18px">Hệ thống quản lý lịch khám</p></div>
+    <div class="f"><label class="req">Tên đăng nhập</label><div class="in">0987654321</div>
+      <div class="hint">Bệnh nhân: số điện thoại · Nhân viên, bác sĩ: mã do phòng khám cấp</div></div>
+    <div class="f"><label class="req">Mật khẩu</label><div class="in err">••••••••<span style="float:right" class="mut">Hiện</span></div></div>
+    <div class="alert bad"><b>Chưa đăng nhập được</b>Tên đăng nhập hoặc mật khẩu chưa đúng. Vui lòng kiểm tra lại (chú ý bộ gõ tiếng Việt và phím Caps Lock) rồi thử lại.</div>
+    <div class="btn pri" style="display:block;text-align:center">Đăng nhập</div>
+    <p class="center" style="margin:14px 0 0;font-size:12.5px"><span class="lnk">Quên mật khẩu?</span> · Cần hỗ trợ: gọi quầy tiếp nhận</p>
+  </div>
+</section>
+
+<!-- ============================================================ MH02 -->
+<section class="screen" id="mh02" data-title="MH02 · Màn hình chính" data-role="Quản lý · ql_antam" data-nav="Tổng quan">
+  <div class="body">
+    <h1>Xin chào, Quản lý <small>Thứ Ba 10/11/2026 · Ca sáng</small></h1>
+    <div class="g73">
+      <div class="tiles">
+        <div class="tile"><h5>Đặt lịch</h5><div>Đặt lịch khám (MH03)</div><div>Tra cứu lịch hẹn, đổi/hủy (MH05)</div></div>
+        <div class="tile"><h5>Tiếp nhận</h5><div>Tiếp nhận trong ngày (MH09)</div><div>Tra cứu bệnh nhân (MH07)</div><div>Bác sĩ nghỉ đột xuất (MH11)</div></div>
+        <div class="tile"><h5>Khám bệnh</h5><div>Danh sách khám theo ca (MH10)</div></div>
+        <div class="tile"><h5>Thanh toán</h5><div>Giao dịch thanh toán &amp; hoàn tiền (MH15)</div></div>
+        <div class="tile"><h5>Quản lý lịch &amp; quy định</h5><div>Lịch làm việc bác sĩ (MH12)</div><div>Danh mục chuyên khoa (MH13)</div><div>Tham số quy định (MH14)</div></div>
+        <div class="tile"><h5>Hệ thống</h5><div>Tài khoản &amp; phân quyền (MH17)</div><div>Nhật ký hệ thống (MH16)</div></div>
+      </div>
+      <div>
+        <div class="box"><h4>Cần xử lý hôm nay <span class="lv">C4</span></h4>
+          <div class="alert bad"><b>1 giao dịch hoàn tiền lỗi</b>ZALOPAY-20261108-8805 · 140.000 đ · <span class="lnk">Mở MH15</span></div>
+          <div class="alert bad"><b>1 thông báo gửi lỗi</b>LH20261110-008 · Lê Thị Bích Ngọc · 0912345678 · cần gọi điện</div>
+          <div class="alert warn"><b>1 lịch đang giữ chỗ chờ thanh toán</b>LH20261110-003 · hết hạn lúc 07:55</div>
+          <div class="alert info"><b>1 bác sĩ nghỉ hôm nay</b>BS.CKI Phạm Lan Anh · Ca chiều</div>
+        </div>
+        <p class="hint">Nhân viên tiếp nhận chỉ thấy nhóm Đặt lịch, Tiếp nhận, Thanh toán; bác sĩ chỉ thấy Khám bệnh; bệnh nhân thấy Đặt lịch và Lịch hẹn của tôi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ MH03 -->
+<section class="screen" id="mh03" data-title="MH03 · Đặt lịch khám (BM01)" data-role="Nhân viên tiếp nhận · tn_ngocmai" data-nav="Đặt lịch">
+  <div class="body">
+    <div class="crumb">Đặt lịch › Đặt lịch khám</div>
+    <h1>Đặt lịch khám <small>Đặt hộ bệnh nhân gọi điện</small></h1>
+    <div class="g46">
+      <div class="box"><h4>1. Bệnh nhân</h4>
+        <div class="f"><label class="req">Số điện thoại</label><div class="in srch">0987654321</div>
+          <div class="hint">10 chữ số, bắt đầu bằng 0. Nhập xong hệ thống tự tìm hồ sơ cũ.</div></div>
+        <div class="alert ok" style="margin-top:-2px"><b>Đã tìm thấy hồ sơ bệnh nhân cũ</b>Thông tin bên dưới lấy từ hồ sơ, sửa tại MH08 nếu cần.</div>
+        <div class="row"><div class="f"><label>Mã bệnh nhân <span class="lv">C1</span></label><div class="in ro">BN0003</div></div>
+          <div class="f" style="flex:2"><label>Họ tên <span class="lv">C1</span></label><div class="in ro">Trần Quốc Tuấn</div></div></div>
+        <div class="row"><div class="f"><label>Ngày sinh <span class="lv">C1</span></label><div class="in ro">8/2/1979</div></div>
+          <div class="f"><label>Giới tính <span class="lv">C1</span></label><div class="in ro">Nam</div></div></div>
+        <div class="f"><label>Địa chỉ <span class="lv">C1</span></label><div class="in ro">88 Trần Hưng Đạo, Quận 1, TP.HCM</div></div>
+        <div class="alert bad"><b>Bệnh nhân đã vắng mặt 2 lần <span class="lv">C4</span></b>Đạt ngưỡng cảnh báo (2 lần). Nên nhắc bệnh nhân gọi báo trước nếu không đến được.</div>
+        <div class="alert warn"><b>Đang có lịch chưa hoàn tất <span class="lv">C4</span></b>LH20261110-003 · 08:40 10/11/2026 · Trực tuyến · <span class="pill warn">Chờ thanh toán</span></div>
+      </div>
+      <div class="box"><h4>2. Lịch khám</h4>
+        <div class="row">
+          <div class="f"><label class="req">Hình thức khám <span class="lv">C2</span></label><div class="radio"><span class="on">Tại phòng khám</span><span>Trực tuyến</span></div></div>
+          <div class="f"><label class="req">Loại lượt khám <span class="lv">C4</span></label><div class="radio"><span class="on">Hẹn trước</span><span>Khám gấp</span></div></div>
+        </div>
+        <div class="row">
+          <div class="f"><label class="req">Chuyên khoa <span class="lv">C2</span></label><div class="in sel">Nội tổng quát</div></div>
+          <div class="f"><label class="req">Bác sĩ <span class="lv">C1</span></label><div class="in sel">BS.CKII Nguyễn Minh Triết · P.101</div></div>
+        </div>
+        <div class="row">
+          <div class="f"><label class="req">Ngày khám <span class="lv">C2</span></label><div class="in date">10/11/2026</div></div>
+          <div class="f"><label>Đơn giá áp dụng <span class="lv">C1</span></label><div class="in ro"><b>150.000 đ</b> · tại phòng khám</div></div>
+        </div>
+        <label style="font-size:12px;color:#475467">3. Khung giờ · Ca sáng <span class="lv">C3</span> <span class="lv">C4</span></label>
+        <div class="slots" style="margin:4px 0 6px">
+          <div class="slot sel"><b>08:00</b>còn 1/3</div>
+          <div class="slot full"><b>08:20</b>hết chỗ</div>
+          <div class="slot hold"><b>08:40</b>chỉ trực tuyến</div>
+          <div class="slot free"><b>09:00</b>còn 3/3</div>
+          <div class="slot free"><b>09:20</b>còn 3/3</div>
+          <div class="slot off"><b>09:40</b>chưa mở</div>
+        </div>
+        <div class="hint">Số chỗ còn = giới hạn − đã đặt − đang giữ. Khung không mở hình thức đã chọn thì không chọn được.</div>
+        <div class="sp"></div>
+        <div class="f"><label>Lý do khám / triệu chứng</label><div class="in area">Tái khám đau dạ dày, ợ chua về đêm</div></div>
+      </div>
+    </div>
+    <div class="sp"></div>
+    <div class="sum"><b>Tóm tắt <span class="lv">C4</span>:</b> Trần Quốc Tuấn · BS.CKII Nguyễn Minh Triết (Nội tổng quát) · P.101 · 08:00–08:20 Thứ Ba 10/11/2026 · Tại phòng khám · Hẹn trước · 150.000 đ thu tại quầy</div>
+    <div class="btns"><span class="btn">Hủy</span><span class="btn pri">Đặt lịch</span></div>
+  </div>
+</section>
+
+<!-- ============================================================ MH04 -->
+<section class="screen" id="mh04" data-title="MH04 · Thanh toán lịch khám trực tuyến (BM02)" data-role="Bệnh nhân · 0987654321" data-nav="Đặt lịch">
+  <div class="body">
+    <div class="crumb">Đặt lịch › Đặt lịch khám › Thanh toán</div>
+    <h1>Thanh toán để xác nhận lịch khám trực tuyến</h1>
+    <div class="g2">
+      <div class="box"><h4>Lịch khám đang giữ chỗ</h4>
+        <div class="row"><div class="f"><label>Mã lịch hẹn <span class="lv">C1</span></label><div class="in ro">LH20261110-003</div></div>
+          <div class="f"><label>Hình thức <span class="lv">C1</span></label><div class="in ro">Trực tuyến</div></div></div>
+        <div class="row"><div class="f"><label>Bác sĩ <span class="lv">C1</span></label><div class="in ro">BS.CKII Nguyễn Minh Triết</div></div>
+          <div class="f"><label>Chuyên khoa <span class="lv">C1</span></label><div class="in ro">Nội tổng quát</div></div></div>
+        <div class="f"><label>Ngày giờ khám <span class="lv">C1</span></label><div class="in ro">08:40–09:00 · Thứ Ba 10/11/2026</div></div>
+        <div class="f"><label>Số tiền phải thanh toán <span class="lv">C1</span></label><div class="big">120.000 đ</div></div>
+        <div class="alert warn"><b>Chỗ của bạn được giữ đến 07:55 <span class="lv">C4</span></b><span class="cd">06:12</span> còn lại. Hết thời gian mà chưa thanh toán thì chỗ được nhả cho người khác và bạn sẽ nhận tin báo.</div>
+        <div class="alert info"><b>Nếu bác sĩ hủy lịch <span class="lv">C4</span></b>Bạn được hoàn 100% số tiền về đúng phương thức đã thanh toán.</div>
+      </div>
+      <div class="box"><h4>Phương thức thanh toán</h4>
+        <div class="f"><label class="req">Chọn phương thức <span class="lv">C2</span></label>
+          <div class="radio" style="flex-wrap:wrap"><span class="on">Chuyển khoản QR</span><span>Ví điện tử</span><span>Thẻ nội địa</span><span>Thẻ quốc tế</span></div></div>
+        <div class="qr">Mã QR của cổng<br>thanh toán</div>
+        <p class="center mut" style="font-size:12.5px;margin:4px 0 12px">Quét bằng ứng dụng ngân hàng. Nội dung chuyển khoản: <b>LH20261110-003</b></p>
+        <div class="alert info"><b>An toàn thanh toán</b>Phòng khám không lưu số thẻ hay mật khẩu thanh toán của bạn; việc nhập thẻ diễn ra trên trang của cổng thanh toán.</div>
+        <div class="btns"><span class="btn">Hủy giữ chỗ</span><span class="btn pri">Thanh toán 120.000 đ</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ MH05 -->
+<section class="screen" id="mh05" data-title="MH05 · Tra cứu lịch hẹn (BM07)" data-role="Nhân viên tiếp nhận · tn_ngocmai" data-nav="Đặt lịch">
+  <div class="body">
+    <div class="crumb">Đặt lịch › Tra cứu lịch hẹn</div>
+    <h1>Tra cứu lịch hẹn <small>Nhập một hoặc vài tiêu chuẩn, để trống là không lọc</small></h1>
+    <div class="box"><div class="row">
+      <div class="f"><label>Mã lịch hẹn</label><div class="in ph">LH…</div></div>
+      <div class="f"><label>Số điện thoại</label><div class="in ph">0…</div></div>
+      <div class="f"><label>Họ tên bệnh nhân</label><div class="in ph">Chứa chuỗi…</div></div>
+      <div class="f"><label>Trạng thái lịch</label><div class="in sel">Tất cả</div></div>
+      <div class="f"><label>Từ ngày <span class="lv">C2</span></label><div class="in date">8/11/2026</div></div>
+      <div class="f"><label>Đến ngày <span class="lv">C2</span></label><div class="in date">15/11/2026</div></div>
+      <div class="f"><span class="btn pri">Tìm</span></div>
+    </div></div>
+    <div class="sp"></div>
+    <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px"><b>Tìm thấy 8 lịch hẹn</b><span class="hint">Bệnh nhân đăng nhập chỉ thấy lịch của chính mình.</span></div>
+    <table class="t">
+      <tr><th>Mã lịch</th><th>Ngày giờ</th><th>Bệnh nhân</th><th>SĐT</th><th>Bác sĩ</th><th>Hình thức</th><th>Trạng thái lịch</th><th>Thanh toán <span class="lv">C4</span></th><th>Hoàn tiền <span class="lv">C4</span></th><th>Đã đổi <span class="lv">C4</span></th><th>Thao tác</th></tr>
+      <tr><td>LH20261110-001</td><td>08:00 10/11</td><td>Nguyễn Văn An</td><td>0901234567</td><td>Nguyễn Minh Triết</td><td>Tại PK</td><td><span class="pill ok">Đã xác nhận</span></td><td>—</td><td>—</td><td>0/2</td><td><span class="btn sm dis">Đổi</span> <span class="btn sm dis">Hủy</span></td></tr>
+      <tr><td>LH20261110-002</td><td>08:00 10/11</td><td>Lê Thị Bích Ngọc</td><td>0912345678</td><td>Nguyễn Minh Triết</td><td>Trực tuyến</td><td><span class="pill ok">Đã xác nhận</span></td><td><span class="pill ok">Thành công</span></td><td>—</td><td>1/2</td><td><span class="btn sm dis">Đổi</span> <span class="btn sm dis">Hủy</span></td></tr>
+      <tr class="hl"><td>LH20261110-003</td><td>08:40 10/11</td><td>Trần Quốc Tuấn</td><td>0987654321</td><td>Nguyễn Minh Triết</td><td>Trực tuyến</td><td><span class="pill warn">Chờ thanh toán</span></td><td><span class="pill warn">Đang chờ</span></td><td>—</td><td>0/2</td><td><span class="btn sm dis">Đổi</span> <span class="btn sm">Hủy</span></td></tr>
+      <tr><td>LH20261110-004</td><td>08:00 10/11</td><td>Phạm Thị Mai Hương</td><td>0933445566</td><td>Trần Thị Thu Hằng</td><td>Tại PK</td><td><span class="pill ok">Đã xác nhận</span></td><td>—</td><td>—</td><td>0/2</td><td><span class="btn sm dis">Đổi</span> <span class="btn sm dis">Hủy</span></td></tr>
+      <tr><td>LH20261110-005</td><td>08:00 10/11</td><td>Hoàng Minh Khôi</td><td>0944556677</td><td>Lê Hoàng Nam</td><td>Tại PK · Gấp</td><td><span class="pill ok">Đã xác nhận</span></td><td>—</td><td>—</td><td>0/2</td><td><span class="btn sm dis">Đổi</span> <span class="btn sm dis">Hủy</span></td></tr>
+      <tr class="mute"><td>LH20261110-006</td><td>08:20 10/11</td><td>Vũ Thị Thanh Tâm</td><td>0977889900</td><td>Trần Thị Thu Hằng</td><td>Trực tuyến</td><td><span class="pill mute">Bệnh nhân hủy</span></td><td><span class="pill warn">Chờ chính sách</span></td><td>—</td><td>0/2</td><td>—</td></tr>
+      <tr class="mute"><td>LH20261110-007</td><td>13:30 10/11</td><td>Nguyễn Văn An</td><td>0901234567</td><td>Phạm Lan Anh</td><td>Trực tuyến</td><td><span class="pill bad">Bác sĩ hủy</span></td><td><span class="pill ok">Thành công</span></td><td><span class="pill ok">Hoàn thành công</span></td><td>0/2</td><td>—</td></tr>
+      <tr class="bad"><td>LH20261110-008</td><td>13:30 10/11</td><td>Lê Thị Bích Ngọc</td><td>0912345678</td><td>Phạm Lan Anh</td><td>Trực tuyến</td><td><span class="pill bad">Bác sĩ hủy</span></td><td><span class="pill ok">Thành công</span></td><td><span class="pill bad">Hoàn lỗi</span></td><td>0/2</td><td>—</td></tr>
+    </table>
+    <p class="hint">Nút Đổi/Hủy mờ khi đã qua hạn chót (4 giờ trước giờ khám), lượt khám đã bắt đầu, hoặc đã đổi đủ 2/2 lần. Rê chuột vào nút mờ để xem lý do. <span class="lv">C4</span></p>
+  </div>
+</section>
+
+<!-- ============================================================ MH06 -->
+<section class="screen" id="mh06" data-title="MH06 · Đổi lịch hẹn (hộp thoại mở từ MH05)" data-role="Bệnh nhân · 0901234567" data-nav="Lịch hẹn của tôi">
+  <div class="dim">
+    <div class="dialog">
+      <div class="dh"><span>Đổi lịch hẹn LH20261112-004</span><span class="mut">✕</span></div>
+      <div class="db">
+        <div class="box" style="background:var(--fill)"><h4>Lịch hiện tại <span class="lv">C1</span></h4>
+          <div class="g4"><div><span class="mut">Bác sĩ</span><br>BS.CKII Nguyễn Minh Triết</div><div><span class="mut">Ngày giờ</span><br>09:00 Thứ Năm 12/11/2026</div><div><span class="mut">Hình thức</span><br>Tại phòng khám · 150.000 đ</div><div><span class="mut">Đã đổi</span><br><b>1/2 lần</b></div></div>
+        </div>
+        <div class="sp"></div>
+        <div class="alert warn"><b>Đây là lần đổi cuối cùng của lịch này <span class="lv">C4</span></b>Mỗi lịch được đổi tối đa 2 lần. Sau lần này, nếu cần thay đổi nữa bạn phải hủy và đặt lịch mới.</div>
+        <div class="row">
+          <div class="f"><label class="req">Bác sĩ <span class="lv">C2</span></label><div class="in sel">BS.CKII Nguyễn Minh Triết · Nội tổng quát</div></div>
+          <div class="f"><label class="req">Ngày khám mới <span class="lv">C2</span></label><div class="in date">13/11/2026</div></div>
+        </div>
+        <label style="font-size:12px;color:#475467">Khung giờ còn chỗ · Tại phòng khám <span class="lv">C3</span></label>
+        <div class="slots" style="margin:4px 0 8px">
+          <div class="slot free"><b>08:00</b>còn 2/3</div><div class="slot sel"><b>08:20</b>còn 3/3</div><div class="slot full"><b>08:40</b>hết chỗ</div>
+          <div class="slot free"><b>09:00</b>còn 1/3</div><div class="slot free"><b>09:20</b>còn 3/3</div><div class="slot free"><b>09:40</b>còn 3/3</div>
+        </div>
+        <div class="sum"><b>Sau khi đổi <span class="lv">C4</span>:</b> 08:20–08:40 Thứ Sáu 13/11/2026 · cùng bác sĩ, cùng phòng P.101 · đơn giá giữ nguyên 150.000 đ. Lịch cũ chỉ được nhả khi lịch mới đã giữ chỗ thành công.</div>
+        <p class="hint">Hạn chót tự đổi: trước giờ khám ít nhất 4 giờ (tham số HAN_CHOT_DOI_HUY_GIO).</p>
+        <div class="btns"><span class="btn">Giữ lịch cũ</span><span class="btn pri">Xác nhận đổi</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ MH07 -->
+<section class="screen" id="mh07" data-title="MH07 · Tra cứu bệnh nhân" data-role="Nhân viên tiếp nhận · tn_ngocmai" data-nav="Tiếp nhận">
+  <div class="body">
+    <div class="crumb">Tiếp nhận › Tra cứu bệnh nhân</div>
+    <h1>Tra cứu bệnh nhân <small>Không bắt buộc nhập hết; để trống là không lọc theo tiêu chuẩn đó</small></h1>
+    <div class="box"><div class="row">
+      <div class="f"><label>Mã bệnh nhân</label><div class="in ph">BN…</div></div>
+      <div class="f" style="flex:1.6"><label>Họ tên (chứa)</label><div class="in">Nguyễn</div></div>
+      <div class="f"><label>Số điện thoại</label><div class="in ph">0…</div></div>
+      <div class="f"><label>Số CCCD</label><div class="in ph">12 chữ số</div></div>
+      <div class="f"><label>Giới tính</label><div class="in sel">Tất cả</div></div>
+      <div class="f"><label>Năm sinh từ</label><div class="in ph">1900</div></div>
+      <div class="f"><label>đến</label><div class="in ph">2026</div></div>
+      <div class="f"><span class="btn pri">Tìm</span> <span class="btn">Xóa lọc</span></div>
+    </div></div>
+    <div class="sp"></div>
+    <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px"><b>Kết quả: 2 bệnh nhân</b><span class="lnk">+ Thêm bệnh nhân mới (MH08)</span></div>
+    <table class="t">
+      <tr><th>Mã BN</th><th>Họ tên</th><th>Ngày sinh</th><th>Giới tính</th><th>Số điện thoại</th><th>CCCD</th><th>Bệnh nhân mới</th><th>Vắng mặt <span class="lv">C4</span></th><th>Lịch sắp tới <span class="lv">C4</span></th><th>Thao tác</th></tr>
+      <tr><td>BN0001</td><td>Nguyễn Văn An</td><td>14/5/1988</td><td>Nam</td><td>0901234567</td><td>079088001234</td><td>Không</td><td>0</td><td>LH20261110-001 · 08:00 10/11</td><td><span class="lnk">Hồ sơ</span> · <span class="lnk">Đặt lịch</span></td></tr>
+      <tr><td>BN0007</td><td>Nguyễn Thị Hồng</td><td>3/9/1970</td><td>Nữ</td><td>0965112233</td><td>—</td><td><span class="pill info">Mới</span></td><td>0</td><td>—</td><td><span class="lnk">Hồ sơ</span> · <span class="lnk">Đặt lịch</span></td></tr>
+    </table>
+    <div class="sp"></div>
+    <p class="mut" style="margin:0 0 6px">Ví dụ kết quả khi lọc theo số điện thoại 0987654321:</p>
+    <table class="t">
+      <tr><th>Mã BN</th><th>Họ tên</th><th>Ngày sinh</th><th>Giới tính</th><th>Số điện thoại</th><th>CCCD</th><th>Bệnh nhân mới</th><th>Vắng mặt</th><th>Lịch sắp tới</th><th>Thao tác</th></tr>
+      <tr class="bad"><td>BN0003</td><td>Trần Quốc Tuấn</td><td>8/2/1979</td><td>Nam</td><td>0987654321</td><td>079079009876</td><td>Không</td><td><span class="pill bad">2 lần</span></td><td>LH20261110-003 · <span class="pill warn">Chờ thanh toán</span></td><td><span class="lnk">Hồ sơ</span> · <span class="lnk">Đặt lịch</span></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ MH08 -->
+<section class="screen" id="mh08" data-title="MH08 · Hồ sơ bệnh nhân" data-role="Nhân viên tiếp nhận · tn_ngocmai" data-nav="Tiếp nhận">
+  <div class="body">
+    <div class="crumb">Tiếp nhận › Tra cứu bệnh nhân › Hồ sơ</div>
+    <h1>Hồ sơ bệnh nhân <small>Chế độ sửa · BN0006</small></h1>
+    <div class="g64">
+      <div class="box"><h4>Thông tin hành chính</h4>
+        <div class="row"><div class="f"><label>Mã bệnh nhân <span class="lv">C2</span></label><div class="in ro">BN0006</div><div class="hint">Tự sinh khi thêm mới</div></div>
+          <div class="f" style="flex:2"><label class="req">Họ tên</label><div class="in">Vũ Thị Thanh Tâm</div></div></div>
+        <div class="row"><div class="f"><label class="req">Số điện thoại</label><div class="in">0977889900</div></div>
+          <div class="f"><label class="req">Ngày sinh</label><div class="in date">30/3/1992</div><div class="hint">d/M/yyyy, trước ngày hôm nay</div></div>
+          <div class="f"><label class="req">Giới tính</label><div class="radio"><span>Nam</span><span class="on">Nữ</span><span>Khác</span></div></div></div>
+        <div class="row"><div class="f"><label>Số CCCD</label><div class="in">079192003344</div><div class="hint">Không bắt buộc · 12 chữ số</div></div>
+          <div class="f" style="flex:2"><label>Địa chỉ</label><div class="in">56 Nguyễn Trãi, Quận 5, TP.HCM</div></div></div>
+        <div class="row"><div class="f"><label>Bệnh nhân mới <span class="lv">C1</span></label><div class="in ro">Có (chưa hoàn thành lượt khám nào)</div></div>
+          <div class="f"><label>Số lần vắng mặt <span class="lv">C1</span></label><div class="in ro">1</div></div>
+          <div class="f"><label>Tài khoản liên kết <span class="lv">C1</span></label><div class="in ro">Chưa có tài khoản</div></div></div>
+        <div class="alert warn"><b>Có thể trùng hồ sơ <span class="lv">C4</span></b>Đã có hồ sơ cùng họ tên và ngày sinh: <b>BN0011 · Vũ Thị Thanh Tâm · 0908776655</b>. <span class="lnk">So sánh</span> trước khi lưu để không tạo hai hồ sơ cho một người.</div>
+        <div class="btns"><span class="btn">Hủy</span><span class="btn pri">Lưu hồ sơ</span></div>
+      </div>
+      <div class="box"><h4>Lịch hẹn của bệnh nhân <span class="lv">C3</span> <span class="lv">C4</span></h4>
+        <table class="t">
+          <tr><th>Mã lịch</th><th>Ngày</th><th>Bác sĩ</th><th>Trạng thái</th></tr>
+          <tr><td>LH20261110-006</td><td>10/11/2026</td><td>Trần Thị Thu Hằng</td><td><span class="pill mute">Bệnh nhân hủy</span></td></tr>
+          <tr><td>LH20261020-014</td><td>20/10/2026</td><td>Trần Thị Thu Hằng</td><td><span class="pill bad">Vắng mặt</span></td></tr>
+        </table>
+        <p class="hint">Danh sách chỉ đọc, xếp mới nhất trước; bấm mã lịch để mở MH05.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ MH09 -->
+<section class="screen" id="mh09" data-title="MH09 · Tiếp nhận trong ngày (BM03)" data-role="Nhân viên tiếp nhận · tn_ngocmai" data-nav="Tiếp nhận">
+  <div class="body">
+    <div class="crumb">Tiếp nhận › Tiếp nhận trong ngày</div>
+    <h1>Tiếp nhận &amp; điều phối <small>Bây giờ 08:20 · Thứ Ba 10/11/2026</small></h1>
+    <div class="row">
+      <div class="f"><label>Ngày khám <span class="lv">C2</span></label><div class="in date">10/11/2026</div></div>
+      <div class="f"><label>Ca <span class="lv">C2</span></label><div class="in sel">Ca sáng</div></div>
+      <div class="f"><label>Bác sĩ</label><div class="in sel">Tất cả</div></div>
+      <div class="f" style="flex:2"><label>Tìm mã lịch / SĐT / tên</label><div class="in srch ph">Gõ để lọc ngay</div></div>
+      <div class="f"><span class="btn pri">+ Đặt lịch / Khám gấp</span></div>
+    </div>
+    <div class="kpis"><span class="lv" style="align-self:center">C4</span>
+      <div class="kpi pri"><b>4</b>Lịch đã xác nhận</div><div class="kpi ok"><b>1</b>Đã đến</div><div class="kpi"><b>2</b>Đang khám</div><div class="kpi warn"><b>1</b>Chưa đến</div><div class="kpi warn"><b>1</b>Chờ thanh toán</div><div class="kpi ok"><b>6</b>Chỗ trống còn lại trong ca</div>
+    </div>
+    <div class="g73">
+      <div>
+        <table class="t">
+          <tr><th>Giờ</th><th>Mã lịch</th><th>Bệnh nhân</th><th>SĐT</th><th>Bác sĩ · Phòng</th><th>Hình thức</th><th>Loại</th><th>Trạng thái khám <span class="lv">C3</span></th></tr>
+          <tr><td>08:00</td><td>LH20261110-001</td><td>Nguyễn Văn An</td><td>0901234567</td><td>Nguyễn Minh Triết · P.101</td><td>Tại PK</td><td>Hẹn trước</td><td><div class="in sel">Đã đến</div></td></tr>
+          <tr class="hl"><td>08:00</td><td>LH20261110-002</td><td>Lê Thị Bích Ngọc <span class="pill info">Mới</span></td><td>0912345678</td><td>Nguyễn Minh Triết · P.101</td><td>Trực tuyến</td><td>Hẹn trước</td><td><div class="in sel">Chưa đến</div><div class="hint bad">Trễ 20 phút (ngưỡng 15) <span class="lv">C4</span></div></td></tr>
+          <tr><td>08:00</td><td>LH20261110-004</td><td>Phạm Thị Mai Hương <span class="pill info">Mới</span></td><td>0933445566</td><td>Trần Thị Thu Hằng · P.102</td><td>Tại PK</td><td>Hẹn trước</td><td><div class="in sel">Đang khám</div></td></tr>
+          <tr><td>08:00</td><td>LH20261110-005</td><td>Hoàng Minh Khôi</td><td>0944556677</td><td>Lê Hoàng Nam · P.103</td><td>Tại PK</td><td><span class="pill bad">Khám gấp</span></td><td><div class="in sel">Đang khám</div></td></tr>
+          <tr class="mute"><td>08:40</td><td>LH20261110-003</td><td>Trần Quốc Tuấn</td><td>0987654321</td><td>Nguyễn Minh Triết · P.101</td><td>Trực tuyến</td><td>Hẹn trước</td><td><span class="pill warn">Chờ thanh toán đến 07:55</span></td></tr>
+        </table>
+        <p class="hint">Đổi trạng thái ngay trên lưới, mỗi dòng lưu riêng và ghi nhật ký người thao tác. Lịch đã hủy ẩn khỏi lưới, xem tại MH05.</p>
+      </div>
+      <div class="box"><h4>Cần gọi điện <span class="lv">C4</span></h4>
+        <div class="alert bad"><b>Thông báo gửi lỗi</b>LH20261110-008 · Lê Thị Bích Ngọc · <b>0912345678</b><br>Báo lịch 13:30 bị hủy do bác sĩ nghỉ.</div>
+        <div class="alert bad"><b>Hoàn tiền lỗi</b>Cùng lịch trên · 140.000 đ · ZALOPAY-20261108-8805</div>
+        <span class="btn sm">Đánh dấu đã gọi</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ MH10 -->
+<section class="screen" id="mh10" data-title="MH10 · Danh sách khám theo ca (BM04)" data-role="Bác sĩ · bs_minhtriet" data-nav="Khám bệnh">
+  <div class="body">
+    <div class="crumb">Khám bệnh › Danh sách khám theo ca</div>
+    <div class="row" style="align-items:flex-start">
+      <div class="f"><label>Bác sĩ <span class="lv">C1</span></label><div class="in ro">BS.CKII Nguyễn Minh Triết · Nội tổng quát</div></div>
+      <div class="f"><label>Phòng <span class="lv">C1</span></label><div class="in ro">P.101</div></div>
+      <div class="f"><label>Ngày <span class="lv">C2</span></label><div class="in date">10/11/2026</div></div>
+      <div class="f"><label>Ca <span class="lv">C2</span></label><div class="in sel">Ca sáng</div></div>
+      <div class="f"><span class="btn">⟳ Tải lại</span></div>
+    </div>
+    <div class="kpis"><span class="lv" style="align-self:center">C4</span>
+      <div class="kpi pri"><b>2</b>Bệnh nhân trong ca</div><div class="kpi ok"><b>1</b>Đã đến, chờ khám</div><div class="kpi warn"><b>1</b>Chưa đến</div><div class="kpi"><b>0</b>Hoàn thành</div><div class="kpi warn"><b>1</b>Bệnh nhân mới cần chuẩn bị hồ sơ</div>
+    </div>
+    <table class="t">
+      <tr><th>Giờ hẹn</th><th>Mã BN</th><th>Họ tên</th><th>Ngày sinh</th><th>Giới tính</th><th>Hình thức</th><th>Lý do khám</th><th>Trạng thái <span class="lv">C3</span></th></tr>
+      <tr><td>08:00</td><td>BN0001</td><td>Nguyễn Văn An</td><td>14/5/1988</td><td>Nam</td><td>Tại phòng khám</td><td>Đau thượng vị âm ỉ 3 ngày, ợ chua</td><td><div class="in sel">Đã đến</div></td></tr>
+      <tr class="hl"><td>08:00</td><td>BN0002</td><td>Lê Thị Bích Ngọc<br><span class="pill warn">Bệnh nhân mới · cần chuẩn bị hồ sơ</span> <span class="lv">C4</span></td><td>22/10/1995</td><td>Nữ</td><td><span class="pill info">Khám trực tuyến</span><br><span class="lnk">Vào phòng khám trực tuyến</span></td><td>Tư vấn kết quả xét nghiệm máu tổng quát</td><td><div class="in sel">Chưa đến</div></td></tr>
+    </table>
+    <p class="hint">Chỉ hiện lịch của bác sĩ đang đăng nhập, xếp theo giờ hẹn. Lịch chờ thanh toán và lịch đã hủy không nằm trong nhóm cần khám. Bác sĩ chỉ chọn được Đang khám, Hoàn thành, Vắng mặt.</p>
+  </div>
+</section>
+
+<!-- ============================================================ MH11 -->
+<section class="screen" id="mh11" data-title="MH11 · Xử lý bác sĩ nghỉ đột xuất (BM05)" data-role="Quản lý · ql_antam" data-nav="Tiếp nhận">
+  <div class="body">
+    <div class="crumb">Tiếp nhận › Bác sĩ nghỉ đột xuất</div>
+    <h1>Xử lý bác sĩ nghỉ đột xuất</h1>
+    <div class="g46">
+      <div class="box"><h4>1. Thông tin nghỉ</h4>
+        <div class="f"><label class="req">Bác sĩ</label><div class="in sel">BS.CKI Phạm Lan Anh · Tai - Mũi - Họng</div></div>
+        <div class="row"><div class="f"><label class="req">Ngày nghỉ <span class="lv">C2</span></label><div class="in date">10/11/2026</div></div>
+          <div class="f"><label class="req">Ca nghỉ</label><div class="chk"><span>Ca sáng</span><span class="on">Ca chiều</span></div></div></div>
+        <div class="f"><label class="req">Lý do nghỉ</label><div class="in area">Công tác bệnh viện tuyến trên</div></div>
+        <div class="alert info"><b>Chưa chuyển lịch sang bác sĩ khác</b>Phòng khám chưa chốt cách chuyển lịch (Q-08); hệ thống hủy lịch, hoàn tiền và báo bệnh nhân đặt lại.</div>
+      </div>
+      <div class="box"><h4>2. Lịch bị ảnh hưởng (xem trước khi xác nhận) <span class="lv">C3</span> <span class="lv">C4</span></h4>
+        <table class="t">
+          <tr><th>Mã lịch</th><th>Giờ</th><th>Bệnh nhân</th><th>SĐT</th><th>Hình thức</th><th>Đã thanh toán</th><th>Sẽ hoàn</th></tr>
+          <tr><td>LH20261110-007</td><td>13:30</td><td>Nguyễn Văn An</td><td>0901234567</td><td>Trực tuyến</td><td class="num">140.000 đ</td><td class="num">140.000 đ</td></tr>
+          <tr><td>LH20261110-008</td><td>13:30</td><td>Lê Thị Bích Ngọc</td><td>0912345678</td><td>Trực tuyến</td><td class="num">140.000 đ</td><td class="num">140.000 đ</td></tr>
+        </table>
+        <div class="sp"></div>
+        <div class="sum"><b>Khi xác nhận <span class="lv">C4</span>:</b> 2 lịch chuyển sang <b>Bác sĩ hủy</b> · 2 bệnh nhân nhận thông báo · hoàn tổng <b>280.000 đ</b> cho 2 giao dịch · 1 khung giờ ca chiều chuyển sang <b>Bác sĩ nghỉ</b>.</div>
+        <div class="btns"><span class="btn">Hủy bỏ</span><span class="btn dan">Xác nhận bác sĩ nghỉ</span></div>
+      </div>
+    </div>
+    <div class="sp"></div>
+    <div class="box"><h4>3. Kết quả lần xử lý gần nhất · 07:30 10/11/2026 · cần gọi điện trực tiếp <span class="lv">C4</span></h4>
+      <table class="t">
+        <tr><th>Mã lịch</th><th>Bệnh nhân</th><th>SĐT</th><th>Thông báo</th><th>Hoàn tiền</th><th>Việc cần làm</th></tr>
+        <tr><td>LH20261110-007</td><td>Nguyễn Văn An</td><td>0901234567</td><td><span class="pill ok">Đã gửi</span></td><td><span class="pill ok">Hoàn thành công</span></td><td class="mut">Không</td></tr>
+        <tr class="bad"><td>LH20261110-008</td><td>Lê Thị Bích Ngọc</td><td><b>0912345678</b></td><td><span class="pill bad">Gửi lỗi</span></td><td><span class="pill bad">Hoàn lỗi</span></td><td>Gọi báo hủy lịch; chuyển hoàn tiền sang xử lý thủ công (MH15)</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ MH12 -->
+<section class="screen" id="mh12" data-title="MH12 · Lịch làm việc bác sĩ (BM06)" data-role="Quản lý · ql_antam" data-nav="Quản lý">
+  <div class="body">
+    <div class="crumb">Quản lý lịch &amp; quy định › Lịch làm việc bác sĩ</div>
+    <h1>Lịch làm việc bác sĩ</h1>
+    <div class="row">
+      <div class="f" style="flex:2"><label class="req">Bác sĩ</label><div class="in sel">BS.CKII Nguyễn Minh Triết</div></div>
+      <div class="f"><label>Chuyên khoa <span class="lv">C1</span></label><div class="in ro">Nội tổng quát</div></div>
+      <div class="f"><label class="req">Ngày</label><div class="in date">10/11/2026</div></div>
+      <div class="f"><label class="req">Ca</label><div class="in sel">Ca sáng</div></div>
+    </div>
+    <div class="box" style="background:var(--fill)"><h4>Tạo nhanh các khung giờ cho ca <span class="lv">C2</span></h4>
+      <div class="row">
+        <div class="f"><label>Giờ bắt đầu ca</label><div class="in">08:00</div></div>
+        <div class="f"><label>Giờ kết thúc ca</label><div class="in">11:00</div></div>
+        <div class="f"><label>Thời lượng mỗi khung</label><div class="in ro">20 phút (tham số)</div></div>
+        <div class="f"><label>Giới hạn BN mỗi khung</label><div class="in">3</div></div>
+        <div class="f"><label>Hình thức mở</label><div class="in sel">Cả hai</div></div>
+        <div class="f"><span class="btn">Sinh 9 khung</span></div>
+      </div>
+    </div>
+    <div class="sp"></div>
+    <table class="t">
+      <tr><th>Giờ bắt đầu</th><th>Giờ kết thúc</th><th>Hình thức mở</th><th>Giới hạn BN</th><th>Đã đặt <span class="lv">C1</span></th><th>Đang giữ <span class="lv">C1</span></th><th>Trạng thái</th><th>Lý do khóa</th></tr>
+      <tr><td><div class="in">08:00</div></td><td><div class="in">08:20</div></td><td><div class="in sel">Cả hai</div></td><td><div class="in">3</div></td><td class="num">2</td><td class="num">0</td><td><div class="in sel">Khả dụng</div></td><td><div class="in"></div></td></tr>
+      <tr class="hl"><td><div class="in">08:20</div></td><td><div class="in">08:40</div></td><td><div class="in sel">Cả hai</div></td><td><div class="in err">2</div></td><td class="num">3</td><td class="num">0</td><td><div class="in sel">Khả dụng</div></td><td><div class="in"></div></td></tr>
+      <tr><td><div class="in">08:40</div></td><td><div class="in">09:00</div></td><td><div class="in sel">Trực tuyến</div></td><td><div class="in">2</div></td><td class="num">1</td><td class="num">1</td><td><div class="in sel">Khả dụng</div></td><td><div class="in"></div></td></tr>
+      <tr><td><div class="in">09:00</div></td><td><div class="in">09:20</div></td><td><div class="in sel">Cả hai</div></td><td><div class="in">3</div></td><td class="num">0</td><td class="num">0</td><td><div class="in sel">Khả dụng</div></td><td><div class="in"></div></td></tr>
+      <tr><td colspan="8" class="mut">… 5 khung còn lại đến 11:00 · <span class="lnk">+ Thêm dòng</span> <span class="lv">C3</span></td></tr>
+    </table>
+    <div class="sp"></div>
+    <div class="alert bad"><b>Khung 08:20–08:40 đã có 3 lịch, không thể giảm giới hạn xuống 2 <span class="lv">C4</span></b>Giới hạn phải ≥ đã đặt + đang giữ (3). Nếu cần giảm, hãy đổi lịch cho 1 bệnh nhân trước. Lịch trong khung: LH20261110-011 Đỗ Văn Hải, LH20261110-012 Ngô Thị Lan, LH20261110-013 Bùi Minh Đức. <span class="lnk">Mở MH05</span></div>
+    <div class="btns"><span class="btn">Hủy thay đổi</span><span class="btn pri">Lưu lịch làm việc</span></div>
+  </div>
+</section>
+
+<!-- ============================================================ MH13 -->
+<section class="screen" id="mh13" data-title="MH13 · Danh mục chuyên khoa" data-role="Quản lý · ql_antam" data-nav="Quản lý">
+  <div class="body">
+    <div class="crumb">Quản lý lịch &amp; quy định › Danh mục chuyên khoa</div>
+    <h1>Danh mục chuyên khoa &amp; đơn giá khám</h1>
+    <div class="g73">
+      <div>
+        <table class="t">
+          <tr><th>Mã</th><th>Tên chuyên khoa</th><th>Giá tại phòng khám</th><th>Giá trực tuyến</th><th>Số bác sĩ <span class="lv">C1</span></th><th>Trạng thái</th></tr>
+          <tr><td>NOI</td><td>Nội tổng quát</td><td class="num">150.000</td><td class="num">120.000</td><td class="num">1</td><td><span class="pill ok">Đang mở</span></td></tr>
+          <tr><td>TIM</td><td>Tim mạch</td><td class="num">200.000</td><td class="num">180.000</td><td class="num">1</td><td><span class="pill ok">Đang mở</span></td></tr>
+          <tr><td>NHI</td><td>Nhi khoa</td><td class="num">150.000</td><td class="num">130.000</td><td class="num">1</td><td><span class="pill ok">Đang mở</span></td></tr>
+          <tr><td>TMH</td><td>Tai - Mũi - Họng</td><td class="num">160.000</td><td class="num">140.000</td><td class="num">1</td><td><span class="pill ok">Đang mở</span></td></tr>
+          <tr><td>DL</td><td>Da liễu</td><td class="num">170.000</td><td class="num">150.000</td><td class="num">1</td><td><span class="pill ok">Đang mở</span></td></tr>
+          <tr><td>SAN</td><td>Sản - Phụ khoa</td><td class="num">200.000</td><td class="num">180.000</td><td class="num">1</td><td><span class="pill ok">Đang mở</span></td></tr>
+        </table>
+        <p class="hint">Bấm một dòng để sửa ở khung bên phải.</p>
+      </div>
+      <div class="box"><h4>Thêm chuyên khoa</h4>
+        <div class="f"><label class="req">Mã chuyên khoa</label><div class="in">MAT</div><div class="hint">Chữ in hoa, không dấu, tối đa 20 ký tự</div></div>
+        <div class="f"><label class="req">Tên chuyên khoa</label><div class="in">Mắt</div></div>
+        <div class="row"><div class="f"><label class="req">Giá tại PK (đ)</label><div class="in">150.000</div></div>
+          <div class="f"><label class="req">Giá trực tuyến (đ) <span class="lv">C2</span></label><div class="in">150.000</div><div class="hint">Điền sẵn theo tham số</div></div></div>
+        <div class="f"><label>Mô tả</label><div class="in area ph">Phạm vi khám, tư vấn…</div></div>
+        <div class="f"><label>Trạng thái <span class="lv">C2</span></label><div class="radio"><span class="on">Đang mở</span><span>Tạm ngưng</span></div></div>
+        <div class="alert info"><b>Đổi giá không ảnh hưởng lịch đã đặt <span class="lv">C4</span></b>Lịch cũ giữ đơn giá tại thời điểm đặt.</div>
+        <div class="btns"><span class="btn">Hủy</span><span class="btn pri">Lưu</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ MH14 -->
+<section class="screen" id="mh14" data-title="MH14 · Tham số quy định" data-role="Quản lý · ql_antam" data-nav="Quản lý">
+  <div class="body">
+    <div class="crumb">Quản lý lịch &amp; quy định › Tham số quy định</div>
+    <h1>Tham số quy định <small>Đổi giá trị ở đây, không cần sửa chương trình</small></h1>
+    <table class="t">
+      <tr><th>Mã tham số <span class="lv">C1</span></th><th>Tên quy định</th><th style="width:120px">Giá trị <span class="lv">C3</span></th><th>Đơn vị</th><th>Ảnh hưởng khi đổi <span class="lv">C4</span></th><th>Cập nhật lần cuối</th></tr>
+      <tr><td>THOI_LUONG_KHUNG_GIO_PHUT</td><td>Thời lượng tiêu chuẩn 1 khung giờ khám</td><td><div class="in">20</div></td><td>Phút</td><td>Chỉ áp dụng cho khung tạo mới ở MH12</td><td>01/11/2026</td></tr>
+      <tr><td>SO_BN_TOI_DA_MOI_KHUNG</td><td>Số bệnh nhân tối đa mặc định mỗi khung giờ</td><td><div class="in">3</div></td><td>Bệnh nhân</td><td>Giá trị điền sẵn khi tạo khung mới</td><td>01/11/2026</td></tr>
+      <tr><td>THOI_GIAN_GIU_CHO_PHUT</td><td>Thời gian giữ chỗ chờ thanh toán trực tuyến</td><td><div class="in">10</div></td><td>Phút</td><td>Áp dụng cho lượt giữ chỗ bắt đầu sau khi lưu</td><td>01/11/2026</td></tr>
+      <tr class="hl"><td>HAN_CHOT_DOI_HUY_GIO</td><td>Hạn chót cho phép đổi hoặc hủy lịch trước giờ hẹn</td><td><div class="in err">4,5</div><div class="hint bad">Nhập số nguyên ≥ 0</div></td><td>Giờ</td><td>Áp dụng ngay cho mọi lịch sắp tới</td><td>01/11/2026</td></tr>
+      <tr><td>SO_LAN_DOI_TOI_DA</td><td>Số lần được phép đổi lịch tối đa cho 1 lịch hẹn</td><td><div class="in">2</div></td><td>Lần</td><td>Lịch đã đổi nhiều hơn mức mới vẫn giữ, chỉ không đổi thêm</td><td>01/11/2026</td></tr>
+      <tr><td>NGUONG_TRE_HEN_TOI_DA_PHUT</td><td>Thời gian đến trễ tối đa trước khi chuyển cuối ca</td><td><div class="in">15</div></td><td>Phút</td><td>Cảnh báo trễ ở MH09</td><td>01/11/2026</td></tr>
+      <tr><td>SO_LAN_VANG_MAT_CANH_BAO</td><td>Ngưỡng số lần vắng mặt cảnh báo tiếp nhận</td><td><div class="in">2</div></td><td>Lần</td><td>Cảnh báo ở MH03, MH07</td><td>01/11/2026</td></tr>
+      <tr><td>DON_GIA_KHAM_TRUC_TUYEN_MAC_DINH</td><td>Đơn giá khám trực tuyến mặc định khi mở chuyên khoa mới</td><td><div class="in">150000</div></td><td>VNĐ</td><td>Giá điền sẵn ở MH13; không đổi giá chuyên khoa đang có</td><td>01/11/2026</td></tr>
+    </table>
+    <div class="btns"><span class="btn">Hủy thay đổi</span><span class="btn pri">Lưu tham số</span></div>
+  </div>
+</section>
+
+<!-- ============================================================ MH15 -->
+<section class="screen" id="mh15" data-title="MH15 · Giao dịch thanh toán & hoàn tiền (BM08)" data-role="Quản lý · ql_antam" data-nav="Thanh toán">
+  <div class="body">
+    <div class="crumb">Thanh toán › Giao dịch thanh toán &amp; hoàn tiền</div>
+    <h1>Theo dõi giao dịch thanh toán &amp; hoàn tiền</h1>
+    <div class="box"><div class="row">
+      <div class="f"><label>Từ ngày <span class="lv">C2</span></label><div class="in date">8/11/2026</div></div>
+      <div class="f"><label>Đến ngày <span class="lv">C2</span></label><div class="in date">10/11/2026</div></div>
+      <div class="f"><label>Loại giao dịch</label><div class="in sel">Tất cả</div></div>
+      <div class="f"><label>Trạng thái</label><div class="in sel">Tất cả</div></div>
+      <div class="f" style="flex:1.5"><label>Mã lịch / mã giao dịch</label><div class="in ph">LH… / VNPAY-…</div></div>
+      <div class="f"><span class="btn pri">Lọc</span></div>
+    </div>
+    <div>Lọc nhanh việc cần xử lý <span class="lv">C4</span>: <span class="pill bad">Hoàn lỗi (1)</span> <span class="pill warn">Đang chờ (1)</span> <span class="pill warn">Chờ chính sách (1)</span></div></div>
+    <div class="sp"></div>
+    <div class="kpis"><span class="lv" style="align-self:center">C4</span><div class="kpi ok"><b>400.000 đ</b>Thu thành công</div><div class="kpi"><b>140.000 đ</b>Đã hoàn</div><div class="kpi bad"><b>140.000 đ</b>Hoàn lỗi</div><div class="kpi warn"><b>300.000 đ</b>Đang chờ / chờ chính sách</div></div>
+    <table class="t">
+      <tr><th>Thời điểm</th><th>Loại</th><th>Mã giao dịch cổng</th><th>Mã lịch</th><th>Bệnh nhân</th><th>Số tiền</th><th>Phương thức</th><th>Trạng thái</th></tr>
+      <tr><td>10/11 07:45</td><td>Thanh toán</td><td>MOMO-20261110-8802</td><td>LH20261110-003</td><td>Trần Quốc Tuấn</td><td class="num">120.000</td><td>Ví điện tử</td><td><span class="pill warn">Đang chờ</span></td></tr>
+      <tr class="bad"><td>10/11 07:30</td><td>Hoàn tiền</td><td>(chưa có mã)</td><td>LH20261110-008</td><td>Lê Thị Bích Ngọc</td><td class="num">140.000</td><td>Về ví điện tử</td><td><span class="pill bad">Hoàn lỗi</span> <span class="lnk">Xử lý thủ công</span></td></tr>
+      <tr><td>10/11 07:30</td><td>Hoàn tiền</td><td>REF-VNPAY-9901</td><td>LH20261110-007</td><td>Nguyễn Văn An</td><td class="num">140.000</td><td>Về chuyển khoản QR</td><td><span class="pill ok">Hoàn thành công</span></td></tr>
+      <tr><td>09/11 10:22</td><td>Thanh toán</td><td>VNPAY-20261109-8801</td><td>LH20261110-002</td><td>Lê Thị Bích Ngọc</td><td class="num">120.000</td><td>Chuyển khoản QR</td><td><span class="pill ok">Thành công</span></td></tr>
+      <tr><td>08/11 16:33</td><td>Thanh toán</td><td>VNPAY-20261108-8803</td><td>LH20261110-006</td><td>Vũ Thị Thanh Tâm</td><td class="num">180.000</td><td>Thẻ nội địa</td><td><span class="pill warn">Chờ chính sách</span></td></tr>
+      <tr><td>08/11 15:12</td><td>Thanh toán</td><td>ZALOPAY-20261108-8805</td><td>LH20261110-008</td><td>Lê Thị Bích Ngọc</td><td class="num">140.000</td><td>Ví điện tử</td><td><span class="pill ok">Thành công</span></td></tr>
+      <tr><td>08/11 11:03</td><td>Thanh toán</td><td>VNPAY-20261108-8804</td><td>LH20261110-007</td><td>Nguyễn Văn An</td><td class="num">140.000</td><td>Chuyển khoản QR</td><td><span class="pill ok">Thành công</span></td></tr>
+    </table>
+    <p class="hint">Chỉ Quản lý và nhân viên được cấp quyền mở được màn hình này. Không hiển thị số thẻ (hệ thống không lưu).</p>
+  </div>
+</section>
+
+<!-- ============================================================ MH16 -->
+<section class="screen" id="mh16" data-title="MH16 · Nhật ký hệ thống" data-role="Quản lý · ql_antam" data-nav="Hệ thống">
+  <div class="body">
+    <div class="crumb">Hệ thống › Nhật ký hệ thống</div>
+    <h1>Nhật ký hệ thống <small>Chỉ xem · không sửa, không xóa</small></h1>
+    <div class="box"><div class="row">
+      <div class="f"><label>Từ ngày <span class="lv">C2</span></label><div class="in date">9/11/2026</div></div>
+      <div class="f"><label>Đến ngày <span class="lv">C2</span></label><div class="in date">10/11/2026</div></div>
+      <div class="f"><label>Loại đối tượng</label><div class="in sel">Tất cả</div></div>
+      <div class="f"><label>Mã đối tượng</label><div class="in ph">LH… / REF-…</div></div>
+      <div class="f"><label>Người thực hiện</label><div class="in sel">Tất cả</div></div>
+      <div class="f"><span class="btn pri">Lọc</span></div>
+    </div></div>
+    <div class="sp"></div>
+    <table class="t">
+      <tr><th>Thời điểm</th><th>Loại đối tượng</th><th>Mã đối tượng</th><th>Hành động</th><th>Trước</th><th>Sau</th><th>Người thực hiện</th><th>IP</th></tr>
+      <tr class="bad"><td>10/11 08:10</td><td>Truy cập trái phép <span class="lv">C4</span></td><td>/api/giao-dich</td><td>Từ chối truy cập danh sách giao dịch</td><td>—</td><td>HTTP 403</td><td>bs_minhtriet</td><td>192.168.1.40</td></tr>
+      <tr><td>10/11 07:50</td><td>Lịch hẹn</td><td>LH20261110-001</td><td>Cập nhật trạng thái tiếp nhận</td><td>Chưa đến</td><td>Đã đến</td><td>tn_ngocmai</td><td>192.168.1.25</td></tr>
+      <tr><td>10/11 07:30</td><td>Giao dịch hoàn tiền</td><td>REF-VNPAY-9901</td><td>Hoàn tiền tự động khi bác sĩ nghỉ</td><td>Đang chờ hoàn</td><td>Hoàn thành công</td><td>tn_ngocmai</td><td>192.168.1.25</td></tr>
+      <tr><td>09/11 14:00</td><td>Lịch hẹn</td><td>LH20261110-004</td><td>Nhân viên tiếp nhận đặt lịch hộ</td><td>—</td><td>Đã xác nhận</td><td>tn_ngocmai</td><td>192.168.1.25</td></tr>
+      <tr><td>09/11 10:22</td><td>Lịch hẹn</td><td>LH20261110-002</td><td>Thanh toán trực tuyến thành công</td><td>Chờ thanh toán</td><td>Đã xác nhận</td><td class="mut">Hệ thống</td><td>103.22.14.88</td></tr>
+      <tr><td>09/11 09:15</td><td>Lịch hẹn</td><td>LH20261110-001</td><td>Bệnh nhân tự đặt lịch tại phòng khám</td><td>—</td><td>Đã xác nhận</td><td>0901234567</td><td>113.161.72.10</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ MH17 -->
+<section class="screen" id="mh17" data-title="MH17 · Tài khoản & phân quyền" data-role="Quản lý · ql_antam" data-nav="Hệ thống">
+  <div class="body">
+    <div class="crumb">Hệ thống › Tài khoản &amp; phân quyền</div>
+    <h1>Tài khoản &amp; phân quyền</h1>
+    <div class="g73">
+      <div>
+        <div class="row" style="margin-bottom:8px"><div class="f"><label>Vai trò</label><div class="in sel">Tất cả</div></div><div class="f"><label>Trạng thái</label><div class="in sel">Tất cả</div></div><div class="f" style="flex:2"><label>Tên đăng nhập</label><div class="in srch ph">Tìm…</div></div></div>
+        <table class="t">
+          <tr><th>Tên đăng nhập</th><th>Vai trò</th><th>Hồ sơ liên kết <span class="lv">C1</span></th><th>Trạng thái</th><th>Ngày tạo</th></tr>
+          <tr><td>ql_antam</td><td>Quản lý</td><td>—</td><td><span class="pill ok">Hoạt động</span></td><td>01/11/2026</td></tr>
+          <tr class="hl"><td>bs_lananh</td><td>Bác sĩ</td><td>BS004 · Phạm Lan Anh</td><td><span class="pill ok">Hoạt động</span></td><td>01/11/2026</td></tr>
+          <tr><td>bs_minhtriet</td><td>Bác sĩ</td><td>BS001 · Nguyễn Minh Triết</td><td><span class="pill ok">Hoạt động</span></td><td>01/11/2026</td></tr>
+          <tr><td>tn_ngocmai</td><td>Tiếp nhận</td><td>—</td><td><span class="pill ok">Hoạt động</span></td><td>01/11/2026</td></tr>
+          <tr><td>0901234567</td><td>Bệnh nhân</td><td>BN0001 · Nguyễn Văn An</td><td><span class="pill ok">Hoạt động</span></td><td>02/11/2026</td></tr>
+          <tr><td colspan="5" class="mut">… 7 tài khoản khác</td></tr>
+        </table>
+      </div>
+      <div class="box"><h4>Sửa tài khoản</h4>
+        <div class="f"><label class="req">Tên đăng nhập</label><div class="in ro">bs_lananh</div><div class="hint">Không đổi sau khi tạo</div></div>
+        <div class="f"><label class="req">Vai trò</label><div class="in sel">Bác sĩ</div></div>
+        <div class="f"><label>Hồ sơ liên kết <span class="lv">C1</span></label><div class="in ro">BS004 · Phạm Lan Anh · Tai - Mũi - Họng</div></div>
+        <div class="f"><label class="req">Trạng thái <span class="lv">C2</span></label><div class="radio"><span>Hoạt động</span><span class="on">Khóa</span></div></div>
+        <div class="alert warn"><b>Bác sĩ này còn 3 lịch sắp tới <span class="lv">C4</span></b>Khóa tài khoản chỉ chặn đăng nhập, không hủy lịch. Nếu bác sĩ nghỉ, dùng MH11 để hủy lịch và hoàn tiền.</div>
+        <p class="hint">Mật khẩu không hiển thị; chỉ có thao tác đặt lại mật khẩu.</p>
+        <div class="btns"><span class="btn">Hủy</span><span class="btn pri">Lưu</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ MH18 -->
+<section class="screen" id="mh18" data-title="MH18 · Trang lỗi 404 · Không tìm thấy trang" data-role="(mọi vai)" data-nav="">
+  <div class="err-page">
+    <div class="err-code">404</div>
+    <h2>Không tìm thấy trang bạn cần</h2>
+    <p>Đường dẫn có thể bị gõ sai, hoặc lịch hẹn này đã được đổi sang mã khác. Đây không phải lỗi của bạn, và dữ liệu lịch hẹn của bạn vẫn an toàn.</p>
+    <p>Bạn có thể tìm lại lịch bằng mã lịch hoặc số điện thoại, hoặc quay về trang chính.</p>
+    <div class="btns" style="justify-content:center"><span class="btn">Về trang chính</span><span class="btn pri">Tra cứu lịch hẹn</span></div>
+    <div class="emerg"><b>Cần khám gấp hoặc xác nhận lịch ngay?</b><br>Gọi quầy tiếp nhận Phòng khám An Tâm: <b>[số hotline phòng khám]</b> (trong giờ làm việc).<br>Trường hợp cấp cứu, gọi ngay <b>115</b> hoặc đến cơ sở y tế gần nhất.</div>
+    <p class="hint" style="margin-top:14px">Mã lỗi: 404 · gửi kèm mã này khi gọi hỗ trợ</p>
+  </div>
+</section>
+
+<!-- ============================================================ MH19 -->
+<section class="screen" id="mh19" data-title="MH19 · Trang bảo trì / mất kết nối" data-role="(mọi vai)" data-nav="">
+  <div class="g2" style="gap:0">
+    <div style="border-right:1px solid var(--line)">
+      <div class="err-page" style="padding:36px 26px">
+        <div class="err-code" style="font-size:44px">Đang bảo trì</div>
+        <h2>Hệ thống tạm dừng để nâng cấp</h2>
+        <p>Phòng khám đang bảo trì hệ thống đặt lịch từ <b>22:00</b> đến <b>23:30</b> hôm nay. Trong thời gian này bạn chưa đặt, đổi hay hủy lịch được.</p>
+        <p>Các lịch đã đặt <b>không bị ảnh hưởng</b>. Vui lòng quay lại sau 23:30.</p>
+        <div class="emerg"><b>Cần đặt lịch gấp?</b> Gọi <b>[số hotline phòng khám]</b>.<br>Cấp cứu: gọi <b>115</b>.</div>
+      </div>
+    </div>
+    <div>
+      <div class="banner">⚠ Mất kết nối tới máy chủ · Đang thử kết nối lại (lần 2)… Thay đổi chưa lưu vẫn được giữ trên màn hình.</div>
+      <div class="err-page" style="padding:30px 26px">
+        <div class="err-code" style="font-size:44px;color:var(--warn)">Mất kết nối</div>
+        <h2>Không gửi được yêu cầu đặt lịch</h2>
+        <p>Thiết bị của bạn đang mất mạng hoặc mạng chập chờn, nên yêu cầu <b>chưa tới được phòng khám</b>. Lịch chưa được đặt và bạn chưa bị trừ tiền.</p>
+        <p>Kiểm tra Wi-Fi hoặc dữ liệu di động rồi bấm Thử lại. Thông tin bạn đã nhập vẫn được giữ.</p>
+        <div class="btns" style="justify-content:center"><span class="btn pri">Thử lại</span></div>
+        <div class="emerg"><b>Cần hỗ trợ ngay?</b> Gọi <b>[số hotline phòng khám]</b>. Cấp cứu: <b>115</b>.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ MH20 -->
+<section class="screen" id="mh20" data-title="MH20 · Trang không có quyền truy cập (403)" data-role="Bác sĩ · bs_minhtriet" data-nav="Khám bệnh">
+  <div class="err-page">
+    <div class="err-code" style="color:var(--bad)">403</div>
+    <h2>Tài khoản của bạn không có quyền xem trang này</h2>
+    <p>Trang <b>Giao dịch thanh toán &amp; hoàn tiền</b> chỉ dành cho Quản lý và nhân viên được cấp quyền. Tài khoản <b>bs_minhtriet</b> (vai Bác sĩ) chưa được cấp quyền này.</p>
+    <p>Nếu bạn cần xem, hãy liên hệ Quản lý phòng khám để được cấp quyền. Lần truy cập này đã được ghi vào nhật ký hệ thống.</p>
+    <div class="btns" style="justify-content:center"><span class="btn pri">Về Danh sách khám của tôi</span></div>
+  </div>
+</section>
+
+<script>
+// Dựng thanh tiêu đề và đầu trang chung theo vai
+const NAV = {
+  "Quản lý":["Tổng quan","Đặt lịch","Tiếp nhận","Khám bệnh","Thanh toán","Quản lý","Hệ thống"],
+  "Nhân viên tiếp nhận":["Tổng quan","Đặt lịch","Tiếp nhận","Thanh toán"],
+  "Bác sĩ":["Khám bệnh"],
+  "Bệnh nhân":["Đặt lịch","Lịch hẹn của tôi","Tài khoản"]
+};
+document.querySelectorAll('.screen').forEach(s=>{
+  const role=s.dataset.role, vai=role.split(' · ')[0], tabs=NAV[vai];
+  let h=`<div class="bar"><b>${s.dataset.title}</b><span>Người xem: ${role}</span></div>`;
+  if(tabs){
+    h+=`<div class="hdr"><div class="logo"><i>✚</i>Phòng khám An Tâm</div><div class="nav">${tabs.map(t=>`<span class="${t===s.dataset.nav?'on':''}">${t}</span>`).join('')}</div><div class="who"><b>${role.split(' · ')[1]||''}</b> · ${vai} · <span class="lnk">Đăng xuất</span></div></div>`;
+  } else if(s.id!=='mh01'){
+    h+=`<div class="hdr"><div class="logo"><i>✚</i>Phòng khám An Tâm</div><div class="nav"></div></div>`;
+  }
+  s.insertAdjacentHTML('afterbegin',h);
+});
+if(location.hash){
+  const el=document.querySelector(location.hash);
+  if(el){document.body.classList.add('single');el.classList.add('on');}
+}
+</script>
+</body>
+</html>
