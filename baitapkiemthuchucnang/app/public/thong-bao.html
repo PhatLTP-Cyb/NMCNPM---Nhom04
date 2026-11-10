@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nhật ký thông báo</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/chung.js"></script>
+</head>
+<body>
+<main>
+  <h1>Nhật ký thông báo</h1>
+  <p class="ghi-chu">Thông báo không gửi thật; mỗi bản ghi là một thông báo hệ thống đã ghi nhận gửi (ASM-22).</p>
+  <div class="the">
+    <div class="hang">
+      <label>Mã lịch <input id="ma" placeholder="VD: LH000001"></label>
+      <button id="loc">Lọc</button>
+      <button class="phu" id="tat-ca">Xem tất cả</button>
+    </div>
+  </div>
+  <div id="kq" class="hop" hidden></div>
+  <div class="the">
+    <h2 id="tieu-de"></h2>
+    <div class="cuon"><table>
+      <thead><tr><th>#</th><th>Thời điểm</th><th>Mã lịch</th><th>Bệnh nhân</th><th>Loại</th><th>Kênh</th><th>Trạng thái</th><th>Nội dung</th></tr></thead>
+      <tbody id="ds"></tbody>
+    </table></div>
+  </div>
+</main>
+<script>
+async function tai(ma) {
+  try {
+    const d = await api('GET', '/api/thong-bao' + (ma ? `?maLich=${encodeURIComponent(ma)}` : ''));
+    $('#tieu-de').textContent = (ma ? `Thông báo của lịch ${ma}` : 'Tất cả thông báo') + ` – Tổng: ${d.tong}`;
+    $('#ds').innerHTML = d.thongBao.map((t) => `<tr><td>${t.ma_thong_bao}</td><td>${thoiDiemVN(t.thoi_diem_gui)}</td>
+      <td><b>${esc(t.ma_code_lich)}</b></td><td>${esc(t.ten_benh_nhan)}</td><td>${esc(t.loai_thong_bao)}</td>
+      <td>${esc(t.kenh_gui)}</td><td>${esc(t.trang_thai_gui)}</td><td>${esc(t.noi_dung)}</td></tr>`).join('')
+      || '<tr><td colspan="8" class="ghi-chu">Không có thông báo</td></tr>';
+  } catch (e) { hopThongBao($('#kq'), 'loi', esc(e.message)); }
+}
+$('#loc').onclick = () => tai($('#ma').value.trim());
+$('#tat-ca').onclick = () => { $('#ma').value = ''; tai(''); };
+tai('');
+</script>
+</body>
+</html>

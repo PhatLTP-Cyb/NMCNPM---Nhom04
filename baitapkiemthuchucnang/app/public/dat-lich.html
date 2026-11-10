@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đặt lịch khám</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/chung.js"></script>
+</head>
+<body>
+<main>
+  <h1>Đặt lịch khám</h1>
+
+  <div class="the">
+    <h2>1. Chọn bác sĩ và ngày</h2>
+    <div class="hang">
+      <label>Chuyên khoa <select id="ck"></select></label>
+      <label>Bác sĩ <select id="bs"></select></label>
+      <label>Ngày khám <input type="date" id="ngay"></label>
+      <label>Hình thức khám
+        <span style="font-weight:400">
+          <label style="flex-direction:row;display:inline-flex;align-items:center"><input type="radio" name="ht" checked style="min-width:0"> Tại phòng khám</label>
+          <label style="flex-direction:row;display:inline-flex;align-items:center;color:#98a2b3"><input type="radio" name="ht" disabled style="min-width:0"> Trực tuyến (ngoài phạm vi)</label>
+        </span>
+      </label>
+      <button id="xem">Xem khung giờ</button>
+    </div>
+  </div>
+
+  <div id="kq" class="hop" hidden></div>
+
+  <div class="the" id="the-khung" hidden>
+    <h2 id="tieu-de-khung">Khung giờ</h2>
+    <div id="luoi" class="luoi-khung"></div>
+    <p class="ghi-chu">Còn chỗ: bấm để chọn · Hết chỗ: đã đủ số bệnh nhân · Ngoài thời hạn đặt: cách hiện tại dưới 24 giờ hoặc quá 14 ngày.</p>
+  </div>
+
+  <div class="the" id="buoc2" hidden>
+    <h2>2. Thông tin đặt lịch</h2>
+    <div id="khung-chon" class="hop tin"></div>
+    <div class="hang">
+      <label>Số điện thoại <input id="sdt" inputmode="numeric" autocomplete="off"></label>
+      <button class="phu" id="gui-otp">Gửi OTP</button>
+      <label>Mã OTP <input id="otp" inputmode="numeric" autocomplete="off"></label>
+      <button class="phu" id="xac-thuc">Xác thực</button>
+    </div>
+    <div id="msg-otp" class="hop" hidden></div>
+
+    <div id="bn-cu" class="hop ok" hidden></div>
+    <div id="bn-moi" hidden>
+      <p class="ghi-chu">Bệnh nhân mới – vui lòng nhập thông tin:</p>
+      <div class="hang">
+        <label>Họ tên <input id="hoTen"><span class="loi-truong" data-truong="hoTen"></span></label>
+        <label>Ngày sinh <input type="date" id="ngaySinh"><span class="loi-truong" data-truong="ngaySinh"></span></label>
+        <label>Giới tính
+          <select id="gioiTinh"><option value="">-- Chọn --</option><option>Nam</option><option>Nữ</option><option>Khác</option></select>
+          <span class="loi-truong" data-truong="gioiTinh"></span>
+        </label>
+      </div>
+    </div>
+    <div id="phan-ly-do" hidden style="margin-top:10px">
+      <label>Lý do khám (không bắt buộc) <textarea id="lyDo" maxlength="600"></textarea><span class="loi-truong" data-truong="lyDo"></span></label>
+      <p><button id="dat">Đặt lịch</button></p>
+    </div>
+  </div>
+</main>
+<script>
+let khungChon = null;     // { ma_khung_gio, gio_bat_dau, ... }
+let daXacThuc = false;
+
+function datLaiXacThuc() {
+  daXacThuc = false;
+  $('#bn-cu').hidden = true; $('#bn-moi').hidden = true; $('#phan-ly-do').hidden = true;
+  document.querySelectorAll('.loi-truong').forEach((e) => (e.textContent = ''));
+}
+
+async function xemKhung() {
+  const bs = $('#bs').value, ngay = $('#ngay').value;
+  if (!bs || !ngay) { hopThongBao($('#kq'), 'loi', 'Vui lòng chọn bác sĩ và ngày khám'); return; }
+  const tenBs = $('#bs').selectedOptions[0].textContent;
+  const d = await api('GET', `/api/khung-gio?bacSi=${encodeURIComponent(bs)}&ngay=${encodeURIComponent(ngay)}`);
+  $('#the-khung').hidden = false;
+  $('#tieu-de-khung').textContent = `Khung giờ của ${tenBs} – ngày ${ngayVN(ngay)}`;
+  if (!d.lamViec) {
+    $('#luoi').innerHTML = '<div class="hop loi">Bác sĩ không làm việc vào ngày này</div>';
+    return;
+  }
+  const lop = { 'Còn chỗ': 'con-cho', 'Hết chỗ': 'het-cho', 'Ngoài thời hạn đặt': 'ngoai-han' };
+  $('#luoi').innerHTML = d.khung.map((k) => `
+    <button class="khung ${lop[k.trang_thai]} ${khungChon && khungChon.ma_khung_gio === k.ma_khung_gio ? 'dang-chon' : ''}"
+      data-id="${k.ma_khung_gio}" ${k.trang_thai === 'Còn chỗ' ? '' : 'disabled'}>
+      <b>${k.gio_bat_dau}</b>${k.trang_thai}</button>`).join('');
+  $('#luoi').querySelectorAll('button.khung').forEach((b) => (b.onclick = () => {
+    khungChon = { ...d.khung.find((k) => k.ma_khung_gio === +b.dataset.id), tenBs, ngay };
+    $('#luoi').querySelectorAll('.dang-chon').forEach((x) => x.classList.remove('dang-chon'));
+    b.classList.add('dang-chon');
+    $('#buoc2').hidden = false;
+    $('#khung-chon').innerHTML = `Khung đã chọn: <b>${esc(tenBs)}</b> · ${ngayVN(ngay)} · <b>${k2(khungChon)}</b> · Tại phòng khám`;
+    hopThongBao($('#kq'), '', '');
+  }));
+}
+const k2 = (k) => `${k.gio_bat_dau}–${k.gio_ket_thuc}`;
+
+$('#xem').onclick = () => { khungChon = null; $('#buoc2').hidden = true; hopThongBao($('#kq'), '', ''); xemKhung().catch((e) => hopThongBao($('#kq'), 'loi', esc(e.message))); };
+
+$('#sdt').oninput = datLaiXacThuc;
+$('#gui-otp').onclick = async () => {
+  datLaiXacThuc();
+  try {
+    const r = await api('POST', '/api/otp', { sdt: $('#sdt').value.trim() });
+    hopThongBao($('#msg-otp'), 'tin', `Đã gửi OTP tới ${esc($('#sdt').value.trim())}. <b>Mã OTP (giả lập): ${r.otpGiaLap}</b>`);
+  } catch (e) { hopThongBao($('#msg-otp'), 'loi', esc(e.message)); }
+};
+$('#xac-thuc').onclick = async () => {
+  datLaiXacThuc();
+  try {
+    const r = await api('POST', '/api/xac-thuc', { sdt: $('#sdt').value.trim(), otp: $('#otp').value.trim() });
+    daXacThuc = true;
+    hopThongBao($('#msg-otp'), 'ok', 'Xác thực thành công');
+    if (r.benhNhan) {
+      const b = r.benhNhan;
+      hopThongBao($('#bn-cu'), 'ok', `Bệnh nhân cũ: <b>${esc(b.ho_ten)}</b> · ${ngayVN(b.ngay_sinh)} · ${esc(b.gioi_tinh)}`);
+    } else {
+      $('#bn-moi').hidden = false;
+    }
+    $('#phan-ly-do').hidden = false;
+  } catch (e) { hopThongBao($('#msg-otp'), 'loi', esc(e.message)); }
+};
+
+$('#dat').onclick = async () => {
+  if (!khungChon || !daXacThuc) return;
+  document.querySelectorAll('.loi-truong').forEach((e) => (e.textContent = ''));
+  const body = {
+    maKhungGio: khungChon.ma_khung_gio, sdt: $('#sdt').value.trim(), otp: $('#otp').value.trim(),
+    lyDo: $('#lyDo').value,
+  };
+  if (!$('#bn-moi').hidden) Object.assign(body, { hoTen: $('#hoTen').value, ngaySinh: $('#ngaySinh').value, gioiTinh: $('#gioiTinh').value });
+  try {
+    const { lich: l } = await api('POST', '/api/dat-lich', body);
+    hopThongBao($('#kq'), 'ok', `<b>Đặt lịch thành công.</b> Mã lịch: <b>${esc(l.ma_code_lich)}</b> · Trạng thái: ${esc(l.trang_thai_lich)}<br>
+      Bác sĩ: ${esc(l.ten_bac_si)} · Chuyên khoa: ${esc(l.chuyen_khoa)} · Hình thức: ${esc(l.hinh_thuc_kham)}<br>
+      Thời gian: ${ngayVN(l.ngay_kham)} ${l.gio_bat_dau} · Phòng ${esc(l.phong)} · Bệnh nhân: ${esc(l.ten_benh_nhan)}`);
+    $('#buoc2').hidden = true; khungChon = null;
+    ['#sdt', '#otp', '#hoTen', '#ngaySinh', '#lyDo'].forEach((s) => ($(s).value = '')); $('#gioiTinh').value = '';
+    hopThongBao($('#msg-otp'), '', ''); datLaiXacThuc();
+    await xemKhung();
+  } catch (e) {
+    hopThongBao($('#kq'), 'loi', esc(e.message));
+    if (e.loiTruong) for (const [k, v] of Object.entries(e.loiTruong)) {
+      const el = document.querySelector(`.loi-truong[data-truong="${k}"]`); if (el) el.textContent = v;
+    }
+    if (['HET_CHO', 'THOI_HAN_DAT', 'KHONG_LAM_VIEC'].includes(e.maLoi)) {   // SC-02 buoc 4: tai lai danh sach khung
+      $('#buoc2').hidden = true; khungChon = null;
+      await xemKhung().catch(() => {});
+    }
+  }
+  capNhatDauTrang();
+};
+
+napChonBacSi($('#ck'), $('#bs'));
+</script>
+</body>
+</html>

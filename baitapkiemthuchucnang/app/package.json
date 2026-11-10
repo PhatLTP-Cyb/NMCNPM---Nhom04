@@ -1,0 +1,15 @@
+{
+  "name": "phong-kham-an-tam-dat-huy-lich",
+  "version": "1.0.0",
+  "description": "BT09 Nhom04 - Dat lich va Huy lich kham, Phong kham An Tam (ban phuc vu kiem thu chuc nang)",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "reset": "node seed.js",
+    "dong-thoi": "node tools/dong-thoi.js"
+  }
+}

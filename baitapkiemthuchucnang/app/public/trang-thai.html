@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trạng thái dữ liệu</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/chung.js"></script>
+</head>
+<body>
+<main>
+  <h1>Trạng thái dữ liệu (phục vụ kiểm thử)</h1>
+  <div id="kq" class="hop" hidden></div>
+
+  <div class="the">
+    <h2>Phiên bản và đồng hồ hệ thống</h2>
+    <p>Phiên bản app: <b id="pb"></b> · Đồng hồ hiện tại: <b id="dh"></b> <span class="ghi-chu">(mặc định sau reset: <span id="dh-md"></span>)</span></p>
+    <div class="hang">
+      <label>Đồng hồ hệ thống <input type="datetime-local" id="dh-moi" step="60"></label>
+      <button id="dat-dh">Đặt đồng hồ</button>
+      <button class="phu" id="dh-mac-dinh">Về mặc định</button>
+      <button class="nguy-hiem" id="reset" style="margin-left:auto">Reset dữ liệu mẫu</button>
+    </div>
+  </div>
+
+  <div class="the">
+    <h2>Tổng số</h2>
+    <div class="tong-so" id="tong"></div>
+  </div>
+
+  <div class="the">
+    <h2>Khung giờ (đối chiếu số chỗ)</h2>
+    <div class="hang">
+      <label>Chuyên khoa <select id="ck"></select></label>
+      <label>Bác sĩ <select id="bs"></select></label>
+      <label>Ngày <input type="date" id="ngay"></label>
+      <button id="xem-khung">Xem khung</button>
+    </div>
+    <div class="cuon" style="margin-top:10px"><table>
+      <thead><tr><th>Mã khung</th><th>Giờ</th><th>Ca</th><th>Trạng thái khung</th><th>Giới hạn</th><th>Số chỗ đã đặt (lưu)</th><th>Số lịch hiệu lực (đếm)</th><th>Khớp</th></tr></thead>
+      <tbody id="khung"></tbody>
+    </table></div>
+  </div>
+
+  <div class="the">
+    <h2>Lịch hẹn</h2>
+    <div class="cuon"><table>
+      <thead><tr><th>Mã lịch</th><th>Bệnh nhân</th><th>SĐT</th><th>Bác sĩ</th><th>Ngày giờ</th><th>Trạng thái</th><th>Tạo lúc</th><th>Cập nhật lúc</th></tr></thead>
+      <tbody id="lich"></tbody>
+    </table></div>
+  </div>
+
+  <div class="the">
+    <h2>Bệnh nhân</h2>
+    <div class="cuon"><table>
+      <thead><tr><th>Mã</th><th>Họ tên</th><th>Ngày sinh</th><th>Giới tính</th><th>Số điện thoại</th><th>Tạo lúc</th></tr></thead>
+      <tbody id="bn"></tbody>
+    </table></div>
+  </div>
+
+  <div class="the">
+    <h2>Nhật ký hệ thống (30 dòng mới nhất)</h2>
+    <div class="cuon"><table>
+      <thead><tr><th>#</th><th>Thời điểm</th><th>Đối tượng</th><th>Mã</th><th>Hành động</th><th>Trước</th><th>Sau</th><th>Chi tiết</th></tr></thead>
+      <tbody id="nk"></tbody>
+    </table></div>
+  </div>
+</main>
+<script>
+async function tai() {
+  const d = await api('GET', '/api/trang-thai');
+  $('#pb').textContent = d.version;
+  $('#dh').textContent = thoiDiemVN(d.dongHo);
+  $('#dh-md').textContent = thoiDiemVN(d.dongHoMacDinh);
+  $('#dh-moi').value = d.dongHo.replace(' ', 'T');
+  const t = d.thongKe;
+  $('#tong').innerHTML = [
+    ['Bệnh nhân', t.benhNhan], ['Lịch hẹn', t.lichHen], ['Đã xác nhận', t.lichDaXacNhan],
+    ['Bệnh nhân hủy', t.lichBenhNhanHuy], ['Thông báo', t.thongBao],
+  ].map(([k, v]) => `<div>${k}<b>${v}</b></div>`).join('');
+  $('#lich').innerHTML = d.lichHen.map((l) => `<tr><td><b>${esc(l.ma_code_lich)}</b></td><td>${esc(l.ten_benh_nhan)}</td><td>${esc(l.so_dien_thoai)}</td>
+    <td>${esc(l.ma_bac_si)} ${esc(l.ten_bac_si)}</td><td>${ngayVN(l.ngay_kham)} ${l.gio_bat_dau}</td>
+    <td><span class="nhan ${l.trang_thai_lich === 'Đã xác nhận' ? 'xac-nhan' : 'huy'}">${esc(l.trang_thai_lich)}</span></td>
+    <td>${thoiDiemVN(l.thoi_diem_tao)}</td><td>${thoiDiemVN(l.thoi_diem_cap_nhat)}</td></tr>`).join('');
+  $('#bn').innerHTML = d.benhNhan.map((b) => `<tr><td>BN${String(b.ma_benh_nhan).padStart(2, '0')}</td><td>${esc(b.ho_ten)}</td>
+    <td>${ngayVN(b.ngay_sinh)}</td><td>${esc(b.gioi_tinh)}</td><td>${esc(b.so_dien_thoai)}</td><td>${thoiDiemVN(b.thoi_diem_tao)}</td></tr>`).join('');
+  $('#nk').innerHTML = d.nhatKy.map((n) => `<tr><td>${n.ma_nhat_ky}</td><td>${thoiDiemVN(n.thoi_diem)}</td><td>${esc(n.doi_tuong)}</td>
+    <td>${esc(n.ma_doi_tuong || '')}</td><td>${esc(n.hanh_dong)}</td><td>${esc(n.trang_thai_truoc || '')}</td>
+    <td>${esc(n.trang_thai_sau || '')}</td><td>${esc(n.chi_tiet || '')}</td></tr>`).join('');
+  capNhatDauTrang();
+}
+
+async function xemKhung() {
+  const bs = $('#bs').value, ngay = $('#ngay').value;
+  if (!bs || !ngay) return;
+  const d = await api('GET', `/api/trang-thai/khung?bacSi=${encodeURIComponent(bs)}&ngay=${encodeURIComponent(ngay)}`);
+  $('#khung').innerHTML = d.khung.map((k) => `<tr><td>${k.ma_khung_gio}</td><td>${k.gio_bat_dau}</td><td>${esc(k.ca_lam_viec)}</td>
+    <td>${esc(k.trang_thai_khung)}</td><td>${k.gioi_han_benh_nhan}</td><td>${k.so_cho_da_dat}</td><td>${k.so_lich_hieu_luc}</td>
+    <td>${k.so_cho_da_dat === k.so_lich_hieu_luc && k.so_cho_da_dat <= k.gioi_han_benh_nhan ? '✔' : '<b style="color:#b42318">✘ LỆCH</b>'}</td></tr>`).join('')
+    || '<tr><td colspan="8" class="ghi-chu">Không có khung (bác sĩ không có lịch làm việc ngày này)</td></tr>';
+}
+
+const baoLoi = (e) => hopThongBao($('#kq'), 'loi', esc(e.message));
+$('#dat-dh').onclick = async () => {
+  try {
+    const r = await api('POST', '/api/dong-ho', { thoiDiem: $('#dh-moi').value });
+    hopThongBao($('#kq'), 'ok', `Đã đặt đồng hồ hệ thống: <b>${thoiDiemVN(r.dongHo)}</b>`);
+    await tai(); await xemKhung();
+  } catch (e) { baoLoi(e); }
+};
+$('#dh-mac-dinh').onclick = async () => {
+  try {
+    const r = await api('POST', '/api/dong-ho', { macDinh: true });
+    hopThongBao($('#kq'), 'ok', `Đã đặt đồng hồ về mặc định: <b>${thoiDiemVN(r.dongHo)}</b>`);
+    await tai(); await xemKhung();
+  } catch (e) { baoLoi(e); }
+};
+$('#reset').onclick = async () => {
+  if (!confirm('Xóa toàn bộ dữ liệu hiện tại và tạo lại dữ liệu mẫu?')) return;
+  try {
+    await api('POST', '/api/reset');
+    hopThongBao($('#kq'), 'ok', 'Đã reset dữ liệu mẫu. Đồng hồ về 16/11/2026 08:00.');
+    await tai(); await xemKhung();
+  } catch (e) { baoLoi(e); }
+};
+$('#xem-khung').onclick = () => xemKhung().catch(baoLoi);
+
+napChonBacSi($('#ck'), $('#bs'));
+tai().catch(baoLoi);
+</script>
+</body>
+</html>

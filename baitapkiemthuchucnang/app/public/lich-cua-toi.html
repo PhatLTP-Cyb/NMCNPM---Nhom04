@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lịch hẹn của tôi</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/chung.js"></script>
+</head>
+<body>
+<main>
+  <h1>Lịch hẹn của tôi</h1>
+  <div class="the">
+    <div class="hang">
+      <label>Số điện thoại <input id="sdt" inputmode="numeric" autocomplete="off"></label>
+      <button class="phu" id="gui-otp">Gửi OTP</button>
+      <label>Mã OTP <input id="otp" inputmode="numeric" autocomplete="off"></label>
+      <button id="xem">Xem lịch hẹn</button>
+    </div>
+    <div id="msg-otp" class="hop" hidden></div>
+  </div>
+  <div id="kq" class="hop" hidden></div>
+  <div class="the" id="the-ds" hidden>
+    <h2 id="tieu-de"></h2>
+    <div class="cuon"><table>
+      <thead><tr><th>Mã lịch</th><th>Bác sĩ</th><th>Chuyên khoa</th><th>Ngày giờ</th><th>Hình thức</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+      <tbody id="ds"></tbody>
+    </table></div>
+  </div>
+</main>
+<div id="modal" class="modal-nen" hidden>
+  <div class="modal">
+    <h2>Xác nhận hủy lịch</h2>
+    <p id="modal-nd"></p>
+    <p class="ghi-chu">Chỉ được hủy lịch trước giờ khám ít nhất 24 giờ.</p>
+    <div class="hang" style="justify-content:flex-end">
+      <button class="phu" id="khong">Không</button>
+      <button class="nguy-hiem" id="dong-y">Đồng ý hủy</button>
+    </div>
+  </div>
+</div>
+<script>
+let xacThuc = null;   // { sdt, otp } sau khi xem lich thanh cong
+let lichDangHuy = null;
+
+$('#gui-otp').onclick = async () => {
+  try {
+    const r = await api('POST', '/api/otp', { sdt: $('#sdt').value.trim() });
+    hopThongBao($('#msg-otp'), 'tin', `Đã gửi OTP tới ${esc($('#sdt').value.trim())}. <b>Mã OTP (giả lập): ${r.otpGiaLap}</b>`);
+  } catch (e) { hopThongBao($('#msg-otp'), 'loi', esc(e.message)); }
+};
+
+async function taiDanhSach(sdt, otp) {
+  const d = await api('POST', '/api/lich-cua-toi', { sdt, otp });
+  xacThuc = { sdt, otp };
+  $('#the-ds').hidden = false;
+  $('#tieu-de').textContent = `Lịch hẹn của ${d.benhNhan.ho_ten} (${d.lich.length} lịch)`;
+  $('#ds').innerHTML = d.lich.map((l) => `<tr>
+    <td><b>${esc(l.ma_code_lich)}</b></td><td>${esc(l.ten_bac_si)}</td><td>${esc(l.chuyen_khoa)}</td>
+    <td>${ngayVN(l.ngay_kham)} ${l.gio_bat_dau}</td><td>${esc(l.hinh_thuc_kham)}</td>
+    <td><span class="nhan ${l.trang_thai_lich === 'Đã xác nhận' ? 'xac-nhan' : 'huy'}">${esc(l.trang_thai_lich)}</span></td>
+    <td>${l.trang_thai_lich === 'Đã xác nhận'
+      ? `<button class="nguy-hiem" data-ma="${esc(l.ma_code_lich)}" data-nd="${esc(`${l.ma_code_lich} – BS ${l.ten_bac_si} (${l.chuyen_khoa}) – ${ngayVN(l.ngay_kham)} ${l.gio_bat_dau}`)}">Hủy lịch</button>`
+      : ''}</td></tr>`).join('');
+  $('#ds').querySelectorAll('button').forEach((b) => (b.onclick = () => {
+    lichDangHuy = b.dataset.ma;
+    $('#modal-nd').innerHTML = `Bạn có chắc muốn hủy lịch <b>${esc(b.dataset.nd)}</b>?`;
+    $('#modal').hidden = false;
+  }));
+}
+
+$('#xem').onclick = async () => {
+  hopThongBao($('#kq'), '', '');
+  $('#the-ds').hidden = true; xacThuc = null;
+  try { await taiDanhSach($('#sdt').value.trim(), $('#otp').value.trim()); }
+  catch (e) { hopThongBao($('#kq'), 'loi', esc(e.message)); }
+};
+
+$('#khong').onclick = () => { $('#modal').hidden = true; lichDangHuy = null; };
+$('#dong-y').onclick = async () => {
+  $('#modal').hidden = true;
+  if (!lichDangHuy || !xacThuc) return;
+  try {
+    const { lich: l } = await api('POST', '/api/huy-lich', { ...xacThuc, maLich: lichDangHuy });
+    hopThongBao($('#kq'), 'ok', `<b>Đã hủy lịch ${esc(l.ma_code_lich)}</b> (${esc(l.ten_bac_si)} – ${ngayVN(l.ngay_kham)} ${l.gio_bat_dau}). Trạng thái: ${esc(l.trang_thai_lich)}`);
+  } catch (e) { hopThongBao($('#kq'), 'loi', esc(e.message)); }
+  lichDangHuy = null;
+  await taiDanhSach(xacThuc.sdt, xacThuc.otp).catch(() => {});
+};
+</script>
+</body>
+</html>

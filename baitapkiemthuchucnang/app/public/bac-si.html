@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Danh sách lịch bác sĩ</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/chung.js"></script>
+</head>
+<body>
+<main>
+  <h1>Danh sách lịch bác sĩ</h1>
+  <p class="ghi-chu">Màn hình phía phòng khám, chỉ đọc. Chỉ gồm lịch "Đã xác nhận" (FR-09).</p>
+  <div class="the">
+    <div class="hang">
+      <label>Chuyên khoa <select id="ck"></select></label>
+      <label>Bác sĩ <select id="bs"></select></label>
+      <label>Ngày <input type="date" id="ngay"></label>
+      <button id="xem">Xem danh sách</button>
+    </div>
+  </div>
+  <div id="kq" class="hop" hidden></div>
+  <div class="the" id="the-ds" hidden>
+    <h2 id="tieu-de"></h2>
+    <div class="cuon"><table>
+      <thead><tr><th>Giờ</th><th>Mã lịch</th><th>Bệnh nhân</th><th>Số điện thoại</th><th>Hình thức</th><th>Lý do khám</th></tr></thead>
+      <tbody id="ds"></tbody>
+    </table></div>
+  </div>
+</main>
+<script>
+$('#xem').onclick = async () => {
+  hopThongBao($('#kq'), '', ''); $('#the-ds').hidden = true;
+  const bs = $('#bs').value, ngay = $('#ngay').value;
+  if (!bs || !ngay) return hopThongBao($('#kq'), 'loi', 'Vui lòng chọn bác sĩ và ngày');
+  try {
+    const d = await api('GET', `/api/lich-bac-si?bacSi=${encodeURIComponent(bs)}&ngay=${encodeURIComponent(ngay)}`);
+    if (!d.lamViec) hopThongBao($('#kq'), 'tin', 'Bác sĩ không làm việc vào ngày này');
+    $('#the-ds').hidden = false;
+    $('#tieu-de').textContent = `${$('#bs').selectedOptions[0].textContent} – ngày ${ngayVN(ngay)} – Số lịch: ${d.lich.length}`;
+    $('#ds').innerHTML = d.lich.length ? d.lich.map((l) => `<tr><td>${l.gio_bat_dau}</td><td><b>${esc(l.ma_code_lich)}</b></td>
+      <td>${esc(l.ten_benh_nhan)}</td><td>${esc(l.so_dien_thoai)}</td><td>${esc(l.hinh_thuc_kham)}</td><td>${esc(l.ly_do_kham || '')}</td></tr>`).join('')
+      : '<tr><td colspan="6" class="ghi-chu">Không có lịch nào</td></tr>';
+  } catch (e) { hopThongBao($('#kq'), 'loi', esc(e.message)); }
+};
+napChonBacSi($('#ck'), $('#bs'));
+</script>
+</body>
+</html>
